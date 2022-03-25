@@ -2,8 +2,8 @@ package com.sonin.security;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.sonin.sys.entity.SysUser;
-import com.sonin.sys.service.SysUserService;
+import com.sonin.modules.sys.entity.SysUser;
+import com.sonin.modules.sys.service.SysUserService;
 import com.sonin.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

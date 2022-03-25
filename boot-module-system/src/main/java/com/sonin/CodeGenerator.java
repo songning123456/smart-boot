@@ -25,7 +25,7 @@ public class CodeGenerator {
         // 包配置
         // todo 业务模块:修改
         put("moduleName", "sys");
-        put("parent", "com.sonin");
+        put("parent", "com.sonin.modules");
     }};
 
     public static void main(String[] args) {

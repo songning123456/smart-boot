@@ -1,7 +1,7 @@
 server:
   port: 5050
   servlet:
-    context-path: /biz
+    context-path: /boot
 
 spring:
   datasource:
@@ -9,6 +9,18 @@ spring:
     url: jdbc:mysql://192.168.2.126:3306/smart-boot?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
     password: 123456
+  redis:
+    database: 3
+    host: 192.168.2.126
+    lettuce:
+      pool:
+        max-active: 8   #最大连接数据库连接数,设 0 为没有限制
+        max-idle: 8     #最大等待连接中的数量,设 0 为没有限制
+        max-wait: -1ms  #最大建立连接等待时间。如果超过此时间将接到异常。设为-1表示无限制。
+        min-idle: 0     #最小等待连接中的数量,设 0 为没有限制
+      shutdown-timeout: 100ms
+    password: ''
+    port: 6379
 
 mybatis-plus:
   mapper-locations: classpath*:com/sonin/modules/**/xml/*Mapper.xml

@@ -1,8 +1,8 @@
 package com.sonin.security;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.sonin.sys.entity.SysUser;
-import com.sonin.sys.service.SysUserService;
+import com.sonin.modules.sys.entity.SysUser;
+import com.sonin.modules.sys.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
