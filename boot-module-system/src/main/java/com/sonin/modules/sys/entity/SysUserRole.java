@@ -20,12 +20,12 @@ public class SysUserRole implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    @TableId(type = IdType.ASSIGN_UUID)
+    private String id;
 
-    private Long userId;
+    private String userId;
 
-    private Long roleId;
+    private String roleId;
 
 
 }

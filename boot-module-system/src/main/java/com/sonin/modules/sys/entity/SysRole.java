@@ -25,8 +25,8 @@ public class SysRole implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    @TableId(type = IdType.ASSIGN_UUID)
+    private String id;
 
     private String name;
 
@@ -42,6 +42,6 @@ public class SysRole implements Serializable {
     private LocalDateTime updateTime;
 
     @TableField(exist = false)
-    private List<Long> menuIds = new ArrayList<>();
+    private List<String> menuIds = new ArrayList<>();
 
 }

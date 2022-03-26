@@ -38,7 +38,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     RedisUtil redisUtil;
 
     @Override
-    public String getUserAuthorityInfo(Long userId) {
+    public String getUserAuthorityInfo(String userId) {
 
         SysUser sysUser = sysUserMapper.selectById(userId);
         //  ROLE_admin,ROLE_normal,sys:user:list,....

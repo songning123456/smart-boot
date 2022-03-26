@@ -1,9 +1,9 @@
 package com.sonin.modules.sys.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sonin.api.vo.Result;
 import com.sonin.core.query.BaseFactory;
-import com.sonin.modules.sys.dto.SysMenuDTO;
 import com.sonin.modules.sys.entity.SysMenu;
 import com.sonin.modules.sys.entity.SysRoleMenu;
 import com.sonin.modules.sys.entity.SysUser;
@@ -11,6 +11,8 @@ import com.sonin.modules.sys.entity.SysUserRole;
 import com.sonin.modules.sys.service.SysMenuService;
 import com.sonin.modules.sys.service.SysRoleMenuService;
 import com.sonin.modules.sys.service.SysUserService;
+import com.sonin.modules.sys.vo.SysMenuVO;
+import com.sonin.utils.BeanExtUtils;
 import com.sonin.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -63,21 +65,21 @@ public class SysMenuController {
         // 获取权限信息
         // ROLE_admin,ROLE_normal,sys:user:list,....
         String authorityInfo = sysUserService.getUserAuthorityInfo(sysUser.getId());
-        String[] authorityInfoArray = StringUtils.tokenizeToStringArray(authorityInfo, ",");
+        String[] authorities = StringUtils.tokenizeToStringArray(authorityInfo, ",");
         // 获取导航栏信息
-        List<SysMenuDTO> navs = getCurrentUserNav();
+        List<SysMenuVO> navs = getCurrentUserNav();
         Map<String, Object> resMap = new HashMap<String, Object>() {{
-            put("authorities", authorityInfoArray);
+            put("authorities", authorities);
             put("navs", navs);
         }};
         result.setResult(resMap);
         return result;
     }
 
-    private List<SysMenuDTO> getCurrentUserNav() {
+    private List<SysMenuVO> getCurrentUserNav() {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         SysUser sysUser = sysUserService.getOne(new QueryWrapper<SysUser>().eq("username", username));
-        List<Long> menuIds = new ArrayList<>();
+        List<String> menuIds = new ArrayList<>();
         try {
             List<Map<String, Object>> mapList = BaseFactory.join()
                     .select("DISTINCT sys_role_menu.menu_id as menuId")
@@ -86,50 +88,35 @@ public class SysMenuController {
                     .where()
                     .eq(true, "sys_user_role.user_id", sysUser.getId())
                     .selectMaps();
-            menuIds = mapList.stream().map(item -> Long.parseLong("" + item.get("menuId"))).collect(Collectors.toList());
+            menuIds = mapList.stream().map(item -> "" + item.get("menuId")).collect(Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        List<SysMenu> menus = sysMenuService.listByIds(menuIds);
+        List<SysMenu> sysMenuList = sysMenuService.listByIds(menuIds);
         // 转树状结构
-        List<SysMenu> menuTree = buildTreeMenu(menus);
-        // 实体转DTO
-        return convert(menuTree);
+        return buildTreeMenu(sysMenuList);
     }
 
-    private List<SysMenu> buildTreeMenu(List<SysMenu> menus) {
-        List<SysMenu> finalMenus = new ArrayList<>();
+    private List<SysMenuVO> buildTreeMenu(List<SysMenu> sysMenuList) {
+        List<SysMenuVO> finalMenus = new ArrayList<>();
         // 先各自寻找到各自的孩子
-        for (SysMenu k : menus) {
-            for (SysMenu v : menus) {
+        for (SysMenu k : sysMenuList) {
+            for (SysMenu v : sysMenuList) {
                 if (k.getId().equals(v.getParentId())) {
                     k.getChildren().add(v);
                 }
             }
             // 提取出父节点
-            if (k.getParentId() == 0L) {
-                finalMenus.add(k);
+            if (StrUtil.isBlank(k.getParentId())) {
+                try {
+                    SysMenuVO sysMenuVO = BeanExtUtils.bean2Bean(k, SysMenuVO.class);
+                    finalMenus.add(sysMenuVO);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
         return finalMenus;
-    }
-
-    private List<SysMenuDTO> convert(List<SysMenu> menuTree) {
-        List<SysMenuDTO> menuDTOs = new ArrayList<>();
-        menuTree.forEach(menu -> {
-            SysMenuDTO dto = new SysMenuDTO();
-            dto.setId(menu.getId());
-            dto.setName(menu.getPermission());
-            dto.setTitle(menu.getName());
-            dto.setComponent(menu.getComponent());
-            dto.setPath(menu.getPath());
-            if (menu.getChildren().size() > 0) {
-                // 子节点调用当前方法进行再次转换
-                dto.setChildren(convert(menu.getChildren()));
-            }
-            menuDTOs.add(dto);
-        });
-        return menuDTOs;
     }
 
     @GetMapping("/info/{id}")
@@ -142,13 +129,13 @@ public class SysMenuController {
 
     @GetMapping("/list")
     @PreAuthorize("hasAuthority('sys:menu:list')")
-    public Result<Object> listCtrl() {
-        Result<Object> result = new Result<>();
+    public Result<List<SysMenuVO>> listCtrl() {
+        Result<List<SysMenuVO>> result = new Result<>();
         // 获取所有菜单信息
         List<SysMenu> sysMenus = sysMenuService.list(new QueryWrapper<SysMenu>().orderByAsc("orderNum"));
         // 转成树状结构
-        sysMenus = buildTreeMenu(sysMenus);
-        result.setResult(sysMenus);
+        List<SysMenuVO> sysMenuVOList = buildTreeMenu(sysMenus);
+        result.setResult(sysMenuVOList);
         return result;
     }
 

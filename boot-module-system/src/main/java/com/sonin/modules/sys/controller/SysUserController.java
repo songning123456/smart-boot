@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sonin.api.vo.Result;
 import com.sonin.constant.Const;
 import com.sonin.modules.sys.dto.PasswordDTO;
+import com.sonin.modules.sys.dto.SysUserDTO;
 import com.sonin.modules.sys.entity.SysRole;
 import com.sonin.modules.sys.entity.SysUser;
 import com.sonin.modules.sys.entity.SysUserRole;
@@ -55,7 +56,7 @@ public class SysUserController {
      * @return
      */
     @GetMapping("/userInfo")
-    public Result<Object> userInfo(Principal principal) {
+    public Result<Object> userInfoCtrl(Principal principal) {
         Result<Object> result = new Result<>();
         SysUser sysUser = sysUserService.getOne(new QueryWrapper<SysUser>().eq("username", principal.getName()));
         Map<String, Object> resMap = new HashMap<String, Object>() {{
@@ -80,16 +81,16 @@ public class SysUserController {
 
     @GetMapping("/list")
     @PreAuthorize("hasAuthority('sys:user:list')")
-    public Result<Object> list(String username,
-                               @RequestParam(defaultValue = "1") Integer pageNo,
-                               @RequestParam(defaultValue = "10") Integer pageSize) {
+    public Result<Object> listCtrl(SysUserDTO sysUserDTO) {
         Result<Object> result = new Result<>();
-        Page<SysUser> pageData = sysUserService.page(new Page<>(pageNo, pageSize), new QueryWrapper<SysUser>().like(StringUtils.isNotEmpty(username), "username", username));
-        pageData.getRecords().forEach(item -> {
+        String username = sysUserDTO.getUsername();
+        Page<SysUser> page = new Page<>(sysUserDTO.getPageNo(), sysUserDTO.getPageSize());
+        Page<SysUser> sysUserPage = sysUserService.page(page, new QueryWrapper<SysUser>().like(StringUtils.isNotEmpty(username), "username", username));
+        sysUserPage.getRecords().forEach(item -> {
             List<SysRole> sysRoles = sysRoleService.list(new QueryWrapper<SysRole>().inSql("id", "select role_id from sys_user_role where user_id = " + item.getId()));
             item.setSysRoles(sysRoles);
         });
-        result.setResult(pageData);
+        result.setResult(sysUserPage);
         return result;
     }
 
@@ -125,7 +126,7 @@ public class SysUserController {
 
     @PostMapping("/role/{userId}")
     @PreAuthorize("hasAuthority('sys:user:role')")
-    public Result<Object> rolePermCtrl(@PathVariable("userId") Long userId, @RequestBody Long[] roleIds) {
+    public Result<Object> rolePermCtrl(@PathVariable("userId") String userId, @RequestBody String[] roleIds) {
         List<SysUserRole> userRoles = new ArrayList<>();
         Arrays.stream(roleIds).forEach(r -> {
             SysUserRole sysUserRole = new SysUserRole();

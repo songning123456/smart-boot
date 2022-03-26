@@ -26,18 +26,23 @@ public class SysMenu implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    @TableId(type = IdType.ASSIGN_UUID)
+    private String id;
 
     /**
      * 父菜单ID，一级菜单为0
      */
-    private Long parentId;
+    private String parentId;
 
     /**
      * 菜单名称
      */
     private String name;
+
+    /**
+     * 菜单标题
+     */
+    private String metaTitle;
 
     /**
      * 菜单URL
@@ -62,7 +67,7 @@ public class SysMenu implements Serializable {
     /**
      * 菜单图标
      */
-    private String icon;
+    private String metaIcon;
 
     /**
      * 排序

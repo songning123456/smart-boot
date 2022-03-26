@@ -56,7 +56,7 @@ public class SysRoleController {
         SysRole sysRole = sysRoleService.getById(id);
         // 获取角色相关联的菜单id
         List<SysRoleMenu> roleMenus = sysRoleMenuService.list(new QueryWrapper<SysRoleMenu>().eq("role_id", id));
-        List<Long> menuIds = roleMenus.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
+        List<String> menuIds = roleMenus.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
         sysRole.setMenuIds(menuIds);
         result.setResult(sysRole);
         return result;
@@ -117,7 +117,7 @@ public class SysRoleController {
 
     @PostMapping("/perm/{roleId}")
     @PreAuthorize("hasAuthority('sys:role:perm')")
-    public Result<Object> info(@PathVariable("roleId") Long roleId, @RequestBody Long[] menuIds) {
+    public Result<Object> info(@PathVariable("roleId") String roleId, @RequestBody String[] menuIds) {
         Result<Object> result = new Result<>();
         List<SysRoleMenu> sysRoleMenus = new ArrayList<>();
         Arrays.stream(menuIds).forEach(menuId -> {
