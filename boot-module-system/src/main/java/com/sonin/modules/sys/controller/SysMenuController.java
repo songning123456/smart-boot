@@ -132,7 +132,7 @@ public class SysMenuController {
     public Result<List<SysMenuVO>> listCtrl() {
         Result<List<SysMenuVO>> result = new Result<>();
         // 获取所有菜单信息
-        List<SysMenu> sysMenus = sysMenuService.list(new QueryWrapper<SysMenu>().orderByAsc("orderNum"));
+        List<SysMenu> sysMenus = sysMenuService.list(new QueryWrapper<SysMenu>().orderByAsc("order_num"));
         // 转成树状结构
         List<SysMenuVO> sysMenuVOList = buildTreeMenu(sysMenus);
         result.setResult(sysMenuVOList);

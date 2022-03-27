@@ -3,9 +3,9 @@ package com.sonin.modules.sys.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import lombok.Data;
@@ -37,9 +37,9 @@ public class SysRole implements Serializable {
      */
     private String remark;
 
-    private LocalDateTime createTime;
+    private Date createTime;
 
-    private LocalDateTime updateTime;
+    private Date updateTime;
 
     @TableField(exist = false)
     private List<String> menuIds = new ArrayList<>();

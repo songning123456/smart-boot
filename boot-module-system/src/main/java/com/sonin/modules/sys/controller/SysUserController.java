@@ -12,6 +12,8 @@ import com.sonin.modules.sys.entity.SysUserRole;
 import com.sonin.modules.sys.service.SysRoleService;
 import com.sonin.modules.sys.service.SysUserRoleService;
 import com.sonin.modules.sys.service.SysUserService;
+import com.sonin.modules.sys.vo.SysUserVO;
+import com.sonin.utils.BeanExtUtils;
 import com.sonin.utils.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -68,29 +71,42 @@ public class SysUserController {
         return result;
     }
 
-    @GetMapping("/info/{id}")
+    @GetMapping("/rolesOfUser/{userId}")
     @PreAuthorize("hasAuthority('sys:user:list')")
-    public Result<Object> infoCtrl(@PathVariable("id") Long id) {
-        Result<Object> result = new Result<>();
-        SysUser sysUser = sysUserService.getById(id);
-        List<SysRole> sysRoles = sysRoleService.list(new QueryWrapper<SysRole>().inSql("id", "select role_id from sys_user_role where user_id = " + id));
-        sysUser.setSysRoles(sysRoles);
-        result.setResult(sysUser);
+    public Result<SysUserVO> rolesOfUserCtrl(@PathVariable("userId") String userId) throws Exception {
+        Result<SysUserVO> result = new Result<>();
+        SysUser sysUser = sysUserService.getById(userId);
+        SysUserVO sysUserVO = BeanExtUtils.bean2Bean(sysUser, SysUserVO.class);
+        List<SysRole> sysRoles = sysRoleService.list(new QueryWrapper<SysRole>().inSql("id", "select role_id from sys_user_role where user_id = " + userId));
+        sysUserVO.setSysRoles(sysRoles);
+        result.setResult(sysUserVO);
         return result;
     }
 
     @GetMapping("/list")
     @PreAuthorize("hasAuthority('sys:user:list')")
-    public Result<Object> listCtrl(SysUserDTO sysUserDTO) {
-        Result<Object> result = new Result<>();
+    public Result<Page<SysUserVO>> listCtrl(SysUserDTO sysUserDTO) throws Exception {
+        Result<Page<SysUserVO>> result = new Result<>();
         String username = sysUserDTO.getUsername();
-        Page<SysUser> page = new Page<>(sysUserDTO.getPageNo(), sysUserDTO.getPageSize());
-        Page<SysUser> sysUserPage = sysUserService.page(page, new QueryWrapper<SysUser>().like(StringUtils.isNotEmpty(username), "username", username));
-        sysUserPage.getRecords().forEach(item -> {
-            List<SysRole> sysRoles = sysRoleService.list(new QueryWrapper<SysRole>().inSql("id", "select role_id from sys_user_role where user_id = " + item.getId()));
-            item.setSysRoles(sysRoles);
-        });
-        result.setResult(sysUserPage);
+        Page<SysUser> sysUserPage = sysUserService.page(new Page<>(sysUserDTO.getPageNo(), sysUserDTO.getPageSize()), new QueryWrapper<SysUser>().like(StringUtils.isNotEmpty(username), "username", username));
+        List<SysUser> sysUserList = sysUserPage.getRecords();
+        List<SysUserVO> sysUserVOList = new ArrayList<>();
+        for (SysUser sysUser : sysUserList) {
+            SysUserVO sysUserVO = BeanExtUtils.bean2Bean(sysUser, SysUserVO.class);
+            List<SysUserRole> sysUserRoleList = sysUserRoleService.list(new QueryWrapper<SysUserRole>().eq("user_id", sysUser.getId()));
+            if (!sysUserRoleList.isEmpty()) {
+                List<String> roleIdList = sysUserRoleList.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+                List<SysRole> sysRoles = sysRoleService.list(new QueryWrapper<SysRole>().in("id", roleIdList));
+                sysUserVO.setSysRoles(sysRoles);
+            } else {
+                sysUserVO.setSysRoles(new ArrayList<>());
+            }
+            sysUserVOList.add(sysUserVO);
+        }
+        Page<SysUserVO> sysUserVOPage = new Page<>(sysUserDTO.getPageNo(), sysUserDTO.getPageSize());
+        sysUserVOPage.setTotal(sysUserPage.getTotal());
+        sysUserVOPage.setRecords(sysUserVOList);
+        result.setResult(sysUserVOPage);
         return result;
     }
 

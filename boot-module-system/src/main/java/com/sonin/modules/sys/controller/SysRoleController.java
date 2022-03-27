@@ -3,6 +3,7 @@ package com.sonin.modules.sys.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sonin.api.vo.Result;
+import com.sonin.modules.sys.dto.SysRoleDTO;
 import com.sonin.modules.sys.entity.SysRole;
 import com.sonin.modules.sys.entity.SysRoleMenu;
 import com.sonin.modules.sys.entity.SysUser;
@@ -64,12 +65,11 @@ public class SysRoleController {
 
     @PreAuthorize("hasAuthority('sys:role:list')")
     @GetMapping("/list")
-    public Result<Object> listCtrl(String name,
-                                   @RequestParam(defaultValue = "1") Integer pageNo,
-                                   @RequestParam(defaultValue = "10") Integer pageSize) {
-        Result<Object> result = new Result<>();
-        Page<SysRole> pageData = sysRoleService.page(new Page<>(pageNo, pageSize), new QueryWrapper<SysRole>().like(StringUtils.isNotEmpty(name), "name", name));
-        result.setResult(pageData);
+    public Result<Page<SysRole>> listCtrl(SysRoleDTO sysRoleDTO) {
+        Result<Page<SysRole>> result = new Result<>();
+        String name = sysRoleDTO.getName();
+        Page<SysRole> sysRolePage = sysRoleService.page(new Page<>(sysRoleDTO.getPageNo(), sysRoleDTO.getPageSize()), new QueryWrapper<SysRole>().like(StringUtils.isNotEmpty(name), "name", name));
+        result.setResult(sysRolePage);
         return result;
     }
 
