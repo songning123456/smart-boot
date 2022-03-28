@@ -99,21 +99,22 @@ public class SysMenuController {
 
     private List<SysMenuVO> buildTreeMenu(List<SysMenu> sysMenuList) {
         List<SysMenuVO> finalMenus = new ArrayList<>();
+        List<SysMenuVO> sysMenuVOList = new ArrayList<>();
+        try {
+            sysMenuVOList = BeanExtUtils.beans2Beans(sysMenuList, SysMenuVO.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // 先各自寻找到各自的孩子
-        for (SysMenu k : sysMenuList) {
-            for (SysMenu v : sysMenuList) {
+        for (SysMenuVO k : sysMenuVOList) {
+            for (SysMenuVO v : sysMenuVOList) {
                 if (k.getId().equals(v.getParentId())) {
                     k.getChildren().add(v);
                 }
             }
             // 提取出父节点
             if (StrUtil.isBlank(k.getParentId())) {
-                try {
-                    SysMenuVO sysMenuVO = BeanExtUtils.bean2Bean(k, SysMenuVO.class);
-                    finalMenus.add(sysMenuVO);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                finalMenus.add(k);
             }
         }
         return finalMenus;

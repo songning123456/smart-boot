@@ -34,10 +34,6 @@ public class SysMenu implements Serializable {
      */
     private String parentId;
 
-    /**
-     * 菜单名称
-     */
-    private String name;
 
     /**
      * 菜单标题
@@ -53,11 +49,6 @@ public class SysMenu implements Serializable {
      * 授权(多个用逗号分隔，如:user:list,user:create)
      */
     private String permission;
-
-    /**
-     * 组件
-     */
-    private String component;
 
     /**
      * 类型 0:目录;1:菜单; 2:按钮;
@@ -83,8 +74,5 @@ public class SysMenu implements Serializable {
      * 更新时间
      */
     private Date updateTime;
-
-    @TableField(exist = false)
-    private List<SysMenu> children = new ArrayList<>();
 
 }
