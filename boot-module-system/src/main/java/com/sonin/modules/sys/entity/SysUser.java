@@ -17,10 +17,7 @@ import lombok.EqualsAndHashCode;
  * @since 2022-03-25
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class SysUser implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class SysUser {
 
     @TableId(type = IdType.ASSIGN_UUID)
     private String id;

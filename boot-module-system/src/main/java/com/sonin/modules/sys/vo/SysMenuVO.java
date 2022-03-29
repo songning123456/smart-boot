@@ -41,6 +41,7 @@ public class SysMenuVO {
      */
     private String metaIcon;
 
+    private Integer orderNum;
 
     private List<SysMenuVO> children = new ArrayList<>();
 }

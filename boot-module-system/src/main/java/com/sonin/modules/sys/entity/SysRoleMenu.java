@@ -15,10 +15,7 @@ import lombok.EqualsAndHashCode;
  * @since 2022-03-25
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class SysRoleMenu implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class SysRoleMenu {
 
     @TableId(type = IdType.ASSIGN_UUID)
     private String id;

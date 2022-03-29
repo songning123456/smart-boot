@@ -147,7 +147,7 @@ public class SysMenuController {
         return Result.ok();
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     @PreAuthorize("hasAuthority('sys:menu:update')")
     public Result<Object> update(@Validated @RequestBody SysMenu sysMenu) {
         sysMenuService.updateById(sysMenu);
@@ -155,7 +155,7 @@ public class SysMenuController {
         try {
             List<Map<String, Object>> mapList = BaseFactory.join()
                     .from(SysUserRole.class)
-                    .innerJoin(SysRoleMenu.class, SysRoleMenu.class.getDeclaredField("roleId"), SysRoleMenu.class.getDeclaredField("roleId"))
+                    .innerJoin(SysRoleMenu.class, SysRoleMenu.class.getDeclaredField("roleId"), SysUserRole.class.getDeclaredField("roleId"))
                     .innerJoin(SysUser.class, SysUser.class.getDeclaredField("id"), SysUserRole.class.getDeclaredField("userId"))
                     .where()
                     .eq(true, "sys_role_menu.menu_id", sysMenu.getId())
@@ -165,13 +165,14 @@ public class SysMenuController {
             });
         } catch (Exception e) {
             e.printStackTrace();
+            return Result.error(e.getMessage());
         }
         return Result.ok();
     }
 
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAuthority('sys:menu:delete')")
-    public Result delete(@PathVariable("id") Long id) {
+    public Result delete(@PathVariable("id") String id) {
         int count = sysMenuService.count(new QueryWrapper<SysMenu>().eq("parent_id", id));
         if (count > 0) {
             return Result.error("请先删除子菜单");
@@ -180,7 +181,7 @@ public class SysMenuController {
         try {
             List<Map<String, Object>> mapList = BaseFactory.join()
                     .from(SysUserRole.class)
-                    .innerJoin(SysRoleMenu.class, SysRoleMenu.class.getDeclaredField("roleId"), SysRoleMenu.class.getDeclaredField("roleId"))
+                    .innerJoin(SysRoleMenu.class, SysRoleMenu.class.getDeclaredField("roleId"), SysUserRole.class.getDeclaredField("roleId"))
                     .innerJoin(SysUser.class, SysUser.class.getDeclaredField("id"), SysUserRole.class.getDeclaredField("userId"))
                     .where()
                     .eq(true, "sys_role_menu.menu_id", id)

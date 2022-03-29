@@ -1,13 +1,10 @@
 package com.sonin.modules.sys.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,10 +18,7 @@ import lombok.EqualsAndHashCode;
  * @since 2022-03-25
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class SysMenu implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class SysMenu {
 
     @TableId(type = IdType.ASSIGN_UUID)
     private String id;
