@@ -120,14 +120,6 @@ public class SysMenuController {
         return finalMenus;
     }
 
-    @GetMapping("/info/{id}")
-    @PreAuthorize("hasAuthority('sys:menu:list')")
-    public Result<Object> infoCtrl(@PathVariable(name = "id") Long id) {
-        Result<Object> result = new Result<>();
-        result.setResult(sysMenuService.getById(id));
-        return result;
-    }
-
     @GetMapping("/list")
     @PreAuthorize("hasAuthority('sys:menu:list')")
     public Result<List<SysMenuVO>> listCtrl() {
@@ -189,15 +181,16 @@ public class SysMenuController {
             mapList.forEach(item -> {
                 redisUtil.del("GrantedAuthority:" + item.get("SysUser_username"));
             });
+            // 同步删除中间关联表
+            transactionTemplate.execute((transactionStatus -> {
+                sysMenuService.removeById(id);
+                sysRoleMenuService.remove(new QueryWrapper<SysRoleMenu>().eq("menu_id", id));
+                return 1;
+            }));
         } catch (Exception e) {
             e.printStackTrace();
+            return Result.error(e.getMessage());
         }
-        // 同步删除中间关联表
-        transactionTemplate.execute((transactionStatus -> {
-            sysMenuService.removeById(id);
-            sysRoleMenuService.remove(new QueryWrapper<SysRoleMenu>().eq("menu_id", id));
-            return 1;
-        }));
         return Result.ok();
     }
 
