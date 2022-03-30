@@ -36,11 +36,14 @@ public class MybatisInterceptor implements Interceptor {
             return invocation.proceed();
         }
         if (SqlCommandType.INSERT == sqlCommandType) {
+            Date currentDate = new Date();
             forEachObj(parameter, new HashMap<String, Object>() {{
-                put("createTime", new Date());
+                put("createTime", currentDate);
+                put("updateTime", currentDate);
             }});
         }
         if (SqlCommandType.UPDATE == sqlCommandType) {
+            Date currentDate = new Date();
             if (parameter instanceof MapperMethod.ParamMap) {
                 MapperMethod.ParamMap<?> paramMap = (MapperMethod.ParamMap<?>) parameter;
                 //update-begin-author:scott date:20190729 for:批量更新报错issues/IZA3Q--
@@ -51,7 +54,7 @@ public class MybatisInterceptor implements Interceptor {
                 }
             }
             forEachObj(parameter, new HashMap<String, Object>() {{
-                put("updateTime", new Date());
+                put("updateTime", currentDate);
             }});
         }
         return invocation.proceed();

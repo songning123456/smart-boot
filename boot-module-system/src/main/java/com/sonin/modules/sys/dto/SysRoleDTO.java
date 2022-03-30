@@ -10,7 +10,9 @@ import lombok.Data;
 @Data
 public class SysRoleDTO extends SysRole {
 
-    private Integer pageNo = 1;
+    private String roleIds;
+
+    private Integer currentPage = 1;
 
     private Integer pageSize = 10;
 
