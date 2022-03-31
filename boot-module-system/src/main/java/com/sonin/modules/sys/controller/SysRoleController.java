@@ -12,7 +12,6 @@ import com.sonin.modules.sys.entity.SysUserRole;
 import com.sonin.modules.sys.service.SysRoleMenuService;
 import com.sonin.modules.sys.service.SysRoleService;
 import com.sonin.modules.sys.service.SysUserRoleService;
-import com.sonin.modules.sys.service.SysUserService;
 import com.sonin.modules.sys.vo.SysRoleVO;
 import com.sonin.utils.BeanExtUtils;
 import com.sonin.utils.RedisUtil;
@@ -67,8 +66,8 @@ public class SysRoleController {
     }
 
     @PreAuthorize("hasAuthority('sys:role:list')")
-    @GetMapping("/list")
-    public Result<Page<SysRole>> listCtrl(SysRoleDTO sysRoleDTO) {
+    @GetMapping("/page")
+    public Result<Page<SysRole>> pageCtrl(SysRoleDTO sysRoleDTO) {
         Result<Page<SysRole>> result = new Result<>();
         String name = sysRoleDTO.getName();
         QueryWrapper<SysRole> queryWrapper = new QueryWrapper<SysRole>()
@@ -79,16 +78,29 @@ public class SysRoleController {
         return result;
     }
 
+    @PreAuthorize("hasAuthority('sys:role:list')")
+    @GetMapping("/list")
+    public Result<List<SysRole>> listCtrl(SysRoleDTO sysRoleDTO) {
+        Result<List<SysRole>> result = new Result<>();
+        String name = sysRoleDTO.getName();
+        QueryWrapper<SysRole> queryWrapper = new QueryWrapper<SysRole>()
+                .like(StringUtils.isNotEmpty(name), "name", name)
+                .orderByDesc("update_time");
+        List<SysRole> sysRoleList = sysRoleService.list(queryWrapper);
+        result.setResult(sysRoleList);
+        return result;
+    }
+
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('sys:role:save')")
-    public Result<Object> save(@Validated @RequestBody SysRole sysRole) {
+    public Result save(@Validated @RequestBody SysRole sysRole) {
         sysRoleService.save(sysRole);
         return Result.ok();
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('sys:role:update')")
-    public Result<Object> updateCtrl(@Validated @RequestBody SysRole sysRole) {
+    public Result updateCtrl(@Validated @RequestBody SysRole sysRole) {
         sysRoleService.updateById(sysRole);
         // 缓存同步删除
         try {
@@ -113,9 +125,9 @@ public class SysRoleController {
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAuthority('sys:role:delete')")
-    public Result<Object> deleteCtrl(@RequestParam(name = "roleIds") String roleIds) {
+    public Result deleteCtrl(@RequestParam(name = "ids") String ids) {
         // 缓存同步删除
-        List<String> roleIdList = Arrays.asList(roleIds.split(","));
+        List<String> roleIdList = Arrays.asList(ids.split(","));
         try {
             List<Map<String, Object>> mapList = BaseFactory.join()
                     .select("sys_user.username")
@@ -145,7 +157,7 @@ public class SysRoleController {
 
     @PostMapping("/permission/{roleId}")
     @PreAuthorize("hasAuthority('sys:role:perm')")
-    public Result<Object> info(@PathVariable("roleId") String roleId, @RequestBody String[] menuIds) {
+    public Result info(@PathVariable("roleId") String roleId, @RequestBody String[] menuIds) {
         List<SysRoleMenu> sysRoleMenuList = new ArrayList<>();
         Arrays.stream(menuIds).forEach(menuId -> {
             SysRoleMenu roleMenu = new SysRoleMenu();

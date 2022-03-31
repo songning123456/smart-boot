@@ -134,14 +134,14 @@ public class SysMenuController {
 
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('sys:menu:save')")
-    public Result<Object> saveCtrl(@Validated @RequestBody SysMenu sysMenu) {
+    public Result saveCtrl(@Validated @RequestBody SysMenu sysMenu) {
         sysMenuService.save(sysMenu);
         return Result.ok();
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('sys:menu:update')")
-    public Result<Object> update(@Validated @RequestBody SysMenu sysMenu) {
+    public Result update(@Validated @RequestBody SysMenu sysMenu) {
         sysMenuService.updateById(sysMenu);
         // 清除所有与该菜单相关的权限缓存
         try {

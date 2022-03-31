@@ -3,13 +3,11 @@ package com.sonin.modules.sys.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sonin.api.vo.Result;
-import com.sonin.constant.Const;
-import com.sonin.modules.sys.dto.PasswordDTO;
+import com.sonin.core.query.BaseFactory;
 import com.sonin.modules.sys.dto.SysUserDTO;
 import com.sonin.modules.sys.entity.SysRole;
 import com.sonin.modules.sys.entity.SysUser;
 import com.sonin.modules.sys.entity.SysUserRole;
-import com.sonin.modules.sys.service.SysRoleService;
 import com.sonin.modules.sys.service.SysUserRoleService;
 import com.sonin.modules.sys.service.SysUserService;
 import com.sonin.modules.sys.vo.SysUserVO;
@@ -18,12 +16,13 @@ import com.sonin.utils.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,8 +43,6 @@ public class SysUserController {
     @Autowired
     private SysUserService sysUserService;
     @Autowired
-    private SysRoleService sysRoleService;
-    @Autowired
     private SysUserRoleService sysUserRoleService;
     @Autowired
     private TransactionTemplate transactionTemplate;
@@ -55,86 +52,78 @@ public class SysUserController {
     /**
      * 获取用户信息接口
      *
-     * @param principal
      * @return
      */
-    @GetMapping("/userInfo")
-    public Result<Object> userInfoCtrl(Principal principal) {
-        Result<Object> result = new Result<>();
-        SysUser sysUser = sysUserService.getOne(new QueryWrapper<SysUser>().eq("username", principal.getName()));
-        Map<String, Object> resMap = new HashMap<String, Object>() {{
-            put("id", sysUser.getId());
-            put("username", sysUser.getUsername());
-            put("avatar", sysUser.getAvatar());
-        }};
-        result.setResult(resMap);
-        return result;
-    }
-
-    @GetMapping("/rolesOfUser/{userId}")
-    @PreAuthorize("hasAuthority('sys:user:list')")
-    public Result<SysUserVO> rolesOfUserCtrl(@PathVariable("userId") String userId) throws Exception {
+    @GetMapping("/myInfo")
+    public Result<SysUserVO> myInfoCtrl() throws Exception {
         Result<SysUserVO> result = new Result<>();
-        SysUser sysUser = sysUserService.getById(userId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        SysUser sysUser = sysUserService.getOne(new QueryWrapper<SysUser>().eq("username", authentication.getName()));
         SysUserVO sysUserVO = BeanExtUtils.bean2Bean(sysUser, SysUserVO.class);
-        List<SysRole> sysRoles = sysRoleService.list(new QueryWrapper<SysRole>().inSql("id", "select role_id from sys_user_role where user_id = " + userId));
-        sysUserVO.setSysRoles(sysRoles);
         result.setResult(sysUserVO);
         return result;
     }
 
-    @GetMapping("/list")
-    @PreAuthorize("hasAuthority('sys:user:list')")
-    public Result<Page<SysUserVO>> listCtrl(SysUserDTO sysUserDTO) throws Exception {
-        Result<Page<SysUserVO>> result = new Result<>();
-        String username = sysUserDTO.getUsername();
-        Page<SysUser> sysUserPage = sysUserService.page(new Page<>(sysUserDTO.getPageNo(), sysUserDTO.getPageSize()), new QueryWrapper<SysUser>().like(StringUtils.isNotEmpty(username), "username", username));
-        List<SysUser> sysUserList = sysUserPage.getRecords();
-        List<SysUserVO> sysUserVOList = new ArrayList<>();
-        for (SysUser sysUser : sysUserList) {
-            SysUserVO sysUserVO = BeanExtUtils.bean2Bean(sysUser, SysUserVO.class);
-            List<SysUserRole> sysUserRoleList = sysUserRoleService.list(new QueryWrapper<SysUserRole>().eq("user_id", sysUser.getId()));
-            if (!sysUserRoleList.isEmpty()) {
-                List<String> roleIdList = sysUserRoleList.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
-                List<SysRole> sysRoles = sysRoleService.list(new QueryWrapper<SysRole>().in("id", roleIdList));
-                sysUserVO.setSysRoles(sysRoles);
-            } else {
-                sysUserVO.setSysRoles(new ArrayList<>());
-            }
-            sysUserVOList.add(sysUserVO);
+    @GetMapping("/info/{id}")
+    public Result<SysUserVO> infoCtrl(@PathVariable("id") String id) {
+        Result<SysUserVO> result = new Result<>();
+        SysUserVO sysUserVO = new SysUserVO();
+        try {
+            List<Map<String, Object>> mapList = BaseFactory.join()
+                    .from(SysUser.class)
+                    .innerJoin(SysUserRole.class, SysUserRole.class.getDeclaredField("userId"), SysUser.class.getDeclaredField("id"))
+                    .innerJoin(SysRole.class, SysRole.class.getDeclaredField("id"), SysUserRole.class.getDeclaredField("roleId"))
+                    .where()
+                    .eq(true, "sys_user.id", id)
+                    .selectMaps();
+            List<SysRole> sysRoleList = BaseFactory.result().maps2Beans(mapList, SysRole.class);
+            List<String> roleIds = sysRoleList.stream().map(SysRole::getId).collect(Collectors.toList());
+            sysUserVO.setRoleIds(roleIds);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return result.error500(e.getMessage());
         }
-        Page<SysUserVO> sysUserVOPage = new Page<>(sysUserDTO.getPageNo(), sysUserDTO.getPageSize());
-        sysUserVOPage.setTotal(sysUserPage.getTotal());
-        sysUserVOPage.setRecords(sysUserVOList);
-        result.setResult(sysUserVOPage);
+        result.setResult(sysUserVO);
+        return result;
+    }
+
+    @GetMapping("/page")
+    @PreAuthorize("hasAuthority('sys:user:list')")
+    public Result<Page<SysUser>> pageCtrl(SysUserDTO sysUserDTO) throws Exception {
+        Result<Page<SysUser>> result = new Result<>();
+        String username = sysUserDTO.getUsername();
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>()
+                .like(StringUtils.isNotEmpty(username), "username", username)
+                .orderByDesc("update_time");
+        Page<SysUser> sysUserPage = sysUserService.page(new Page<>(sysUserDTO.getPageNo(), sysUserDTO.getPageSize()), queryWrapper);
+        result.setResult(sysUserPage);
         return result;
     }
 
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('sys:user:save')")
-    public Result<Object> saveCtrl(@Validated @RequestBody SysUser sysUser) {
+    public Result saveCtrl(@Validated @RequestBody SysUser sysUser) {
         // 默认密码
-        String password = passwordEncoder.encode(Const.DEFULT_PASSWORD);
+        String password = passwordEncoder.encode(sysUser.getPassword());
         sysUser.setPassword(password);
-        // 默认头像
-        sysUser.setAvatar(Const.DEFULT_AVATAR);
         sysUserService.save(sysUser);
         return Result.ok();
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('sys:user:update')")
-    public Result<Object> update(@Validated @RequestBody SysUser sysUser) {
+    public Result update(@Validated @RequestBody SysUser sysUser) {
         sysUserService.updateById(sysUser);
         return Result.ok();
     }
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAuthority('sys:user:delete')")
-    public Result<Object> delete(@RequestBody Long[] ids) {
+    public Result delete(@RequestParam(name = "ids") String ids) {
+        List<String> userIdList = Arrays.asList(ids.split(","));
         transactionTemplate.execute((transactionStatus -> {
-            sysUserService.removeByIds(Arrays.asList(ids));
-            sysUserRoleService.remove(new QueryWrapper<SysUserRole>().in("user_id", Arrays.asList(ids)));
+            sysUserService.removeByIds(userIdList);
+            sysUserRoleService.remove(new QueryWrapper<SysUserRole>().in("user_id", userIdList));
             return 1;
         }));
         return Result.ok();
@@ -142,7 +131,7 @@ public class SysUserController {
 
     @PostMapping("/role/{userId}")
     @PreAuthorize("hasAuthority('sys:user:role')")
-    public Result<Object> rolePermCtrl(@PathVariable("userId") String userId, @RequestBody String[] roleIds) {
+    public Result rolePermCtrl(@PathVariable("userId") String userId, @RequestBody String[] roleIds) {
         List<SysUserRole> userRoles = new ArrayList<>();
         Arrays.stream(roleIds).forEach(r -> {
             SysUserRole sysUserRole = new SysUserRole();
@@ -161,24 +150,21 @@ public class SysUserController {
         return Result.ok();
     }
 
-    @PostMapping("/rePass")
-    @PreAuthorize("hasAuthority('sys:user:repass')")
-    public Result<Object> rePassCtrl(@RequestBody Long userId) {
-
-        SysUser sysUser = sysUserService.getById(userId);
-        sysUser.setPassword(passwordEncoder.encode(Const.DEFULT_PASSWORD));
-        sysUserService.updateById(sysUser);
-        return Result.ok();
-    }
-
-    @PutMapping("/updatePwd")
-    public Result<Object> updatePwdCtrl(@Validated @RequestBody PasswordDTO passwordDTO, Principal principal) {
-        SysUser sysUser = sysUserService.getOne(new QueryWrapper<SysUser>().eq("username", principal.getName()));
-        boolean matches = passwordEncoder.matches(passwordDTO.getCurrentPwd(), sysUser.getPassword());
+    @PutMapping("/updatePassword")
+    public Result updatePwdCtrl(@Validated @RequestBody SysUserDTO sysUserDTO) {
+        if (StringUtils.isEmpty(sysUserDTO.getOldPassword())) {
+            return Result.error("旧密码不能为空");
+        }
+        if (StringUtils.isEmpty(sysUserDTO.getNewPassword())) {
+            return Result.error("新密码不能为空");
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        SysUser sysUser = sysUserService.getOne(new QueryWrapper<SysUser>().eq("username", authentication.getName()));
+        boolean matches = passwordEncoder.matches(sysUserDTO.getOldPassword(), sysUser.getPassword());
         if (!matches) {
             return Result.error("旧密码不正确");
         }
-        sysUser.setPassword(passwordEncoder.encode(passwordDTO.getPassword()));
+        sysUser.setPassword(passwordEncoder.encode(sysUserDTO.getNewPassword()));
         sysUserService.updateById(sysUser);
         return Result.ok();
     }
