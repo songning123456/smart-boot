@@ -44,8 +44,6 @@ public class SysRoleController {
     @Autowired
     private SysRoleService sysRoleService;
     @Autowired
-    private SysUserService sysUserService;
-    @Autowired
     private SysRoleMenuService sysRoleMenuService;
     @Autowired
     private SysUserRoleService sysUserRoleService;
@@ -56,8 +54,8 @@ public class SysRoleController {
 
     @PreAuthorize("hasAuthority('sys:role:list')")
     @GetMapping("/info/{id}")
-    public Result<Object> infoCtrl(@PathVariable("id") String id) throws Exception {
-        Result<Object> result = new Result<>();
+    public Result<SysRoleVO> infoCtrl(@PathVariable("id") String id) throws Exception {
+        Result<SysRoleVO> result = new Result<>();
         SysRole sysRole = sysRoleService.getById(id);
         SysRoleVO sysRoleVO = BeanExtUtils.bean2Bean(sysRole, SysRoleVO.class);
         // 获取角色相关联的菜单id
@@ -145,30 +143,39 @@ public class SysRoleController {
         return Result.ok();
     }
 
-    @PostMapping("/perm/{roleId}")
+    @PostMapping("/permission/{roleId}")
     @PreAuthorize("hasAuthority('sys:role:perm')")
     public Result<Object> info(@PathVariable("roleId") String roleId, @RequestBody String[] menuIds) {
-        Result<Object> result = new Result<>();
-        List<SysRoleMenu> sysRoleMenus = new ArrayList<>();
+        List<SysRoleMenu> sysRoleMenuList = new ArrayList<>();
         Arrays.stream(menuIds).forEach(menuId -> {
             SysRoleMenu roleMenu = new SysRoleMenu();
             roleMenu.setMenuId(menuId);
             roleMenu.setRoleId(roleId);
-            sysRoleMenus.add(roleMenu);
+            sysRoleMenuList.add(roleMenu);
         });
         // 删除缓存
-        List<SysUser> sysUsers = sysUserService.list(new QueryWrapper<SysUser>().inSql("id", "select user_id from sys_user_role where role_id = " + roleId));
-        sysUsers.forEach(item -> {
-            redisUtil.del("GrantedAuthority:" + item.getUsername());
-        });
+        try {
+            List<Map<String, Object>> mapList = BaseFactory.join()
+                    .select("sys_user.username")
+                    .from(SysUserRole.class)
+                    .innerJoin(SysUser.class, SysUser.class.getDeclaredField("id"), SysUserRole.class.getDeclaredField("userId"))
+                    .where()
+                    .eq(true, "sys_user_role.role_id", roleId)
+                    .selectMaps();
+            mapList.forEach(item -> {
+                redisUtil.del("GrantedAuthority:" + item.get("username"));
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error(e.getMessage());
+        }
         transactionTemplate.execute(transactionStatus -> {
             // 先删除原来的记录，再保存新的
             sysRoleMenuService.remove(new QueryWrapper<SysRoleMenu>().eq("role_id", roleId));
-            sysRoleMenuService.saveBatch(sysRoleMenus);
+            sysRoleMenuService.saveBatch(sysRoleMenuList);
             return 1;
         });
-        result.setResult(menuIds);
-        return result;
+        return Result.ok();
     }
 
 }
