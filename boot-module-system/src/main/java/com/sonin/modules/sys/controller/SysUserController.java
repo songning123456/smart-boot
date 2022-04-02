@@ -12,10 +12,8 @@ import com.sonin.modules.sys.service.SysUserRoleService;
 import com.sonin.modules.sys.service.SysUserService;
 import com.sonin.modules.sys.vo.SysUserVO;
 import com.sonin.utils.BeanExtUtils;
-import com.sonin.utils.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -46,8 +44,6 @@ public class SysUserController {
     private SysUserRoleService sysUserRoleService;
     @Autowired
     private TransactionTemplate transactionTemplate;
-    @Autowired
-    private RedisUtil redisUtil;
 
     /**
      * 获取用户信息接口
@@ -88,8 +84,7 @@ public class SysUserController {
     }
 
     @GetMapping("/page")
-    @PreAuthorize("hasAuthority('sys:user:list')")
-    public Result<Page<SysUser>> pageCtrl(SysUserDTO sysUserDTO) throws Exception {
+    public Result<Page<SysUser>> pageCtrl(SysUserDTO sysUserDTO) {
         Result<Page<SysUser>> result = new Result<>();
         String username = sysUserDTO.getUsername();
         QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>()
@@ -101,7 +96,6 @@ public class SysUserController {
     }
 
     @PostMapping("/save")
-    @PreAuthorize("hasAuthority('sys:user:save')")
     public Result saveCtrl(@Validated @RequestBody SysUser sysUser) {
         // 默认密码
         String password = passwordEncoder.encode(sysUser.getPassword());
@@ -111,14 +105,12 @@ public class SysUserController {
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasAuthority('sys:user:update')")
     public Result update(@Validated @RequestBody SysUser sysUser) {
         sysUserService.updateById(sysUser);
         return Result.ok();
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasAuthority('sys:user:delete')")
     public Result delete(@RequestParam(name = "ids") String ids) {
         List<String> userIdList = Arrays.asList(ids.split(","));
         transactionTemplate.execute((transactionStatus -> {
@@ -130,7 +122,6 @@ public class SysUserController {
     }
 
     @PostMapping("/role/{userId}")
-    @PreAuthorize("hasAuthority('sys:user:role')")
     public Result rolePermCtrl(@PathVariable("userId") String userId, @RequestBody String[] roleIds) {
         List<SysUserRole> userRoles = new ArrayList<>();
         Arrays.stream(roleIds).forEach(r -> {
@@ -144,9 +135,6 @@ public class SysUserController {
             sysUserRoleService.saveBatch(userRoles);
             return 1;
         });
-        // 删除缓存
-        SysUser sysUser = sysUserService.getById(userId);
-        redisUtil.del("GrantedAuthority:" + sysUser.getUsername());
         return Result.ok();
     }
 

@@ -40,12 +40,7 @@ public class SysMenu {
     private String path;
 
     /**
-     * 授权(多个用逗号分隔，如:user:list,user:create)
-     */
-    private String permission;
-
-    /**
-     * 类型 0:目录;1:菜单; 2:按钮;
+     * 类型 0:目录;1:菜单
      */
     private Integer type;
 

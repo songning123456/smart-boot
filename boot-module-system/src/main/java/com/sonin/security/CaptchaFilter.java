@@ -1,7 +1,6 @@
 package com.sonin.security;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.sonin.constant.Const;
 import com.sonin.exception.CaptchaException;
 import com.sonin.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,15 +41,15 @@ public class CaptchaFilter extends OncePerRequestFilter {
     // 校验验证码逻辑
     private void validate(HttpServletRequest httpServletRequest) {
         String code = httpServletRequest.getParameter("code");
-        String key = httpServletRequest.getParameter("token");
-        if (StringUtils.isBlank(code) || StringUtils.isBlank(key)) {
+        String token = httpServletRequest.getParameter("token");
+        if (StringUtils.isBlank(code) || StringUtils.isBlank(token)) {
             throw new CaptchaException("验证码错误");
         }
-        if (!code.equals(redisUtil.hget(Const.CAPTCHA_KEY, key))) {
+        if (!code.equals(redisUtil.hget("captcha", token))) {
             throw new CaptchaException("验证码错误");
         }
         // 一次性使用
-        redisUtil.hdel(Const.CAPTCHA_KEY, key);
+        redisUtil.hdel("captcha", token);
     }
 
 }

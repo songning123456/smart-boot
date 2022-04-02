@@ -5,12 +5,12 @@ import com.sonin.modules.sys.entity.SysUser;
 import com.sonin.modules.sys.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,8 +36,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
      * @return
      */
     public List<GrantedAuthority> getUserAuthority(String userId) {
-        // 角色(ROLE_admin)、菜单操作权限 sys:user:list
-        String authority = sysUserService.getUserAuthorityInfo(userId);  // ROLE_admin,ROLE_normal,sys:user:list,....
-        return AuthorityUtils.commaSeparatedStringToAuthorityList(authority);
+        return new ArrayList<>();
     }
+
 }
