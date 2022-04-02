@@ -40,11 +40,6 @@ public class SysMenu {
     private String path;
 
     /**
-     * 类型 0:目录;1:菜单
-     */
-    private Integer type;
-
-    /**
      * 菜单图标
      */
     private String metaIcon;
