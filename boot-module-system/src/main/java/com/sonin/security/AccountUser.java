@@ -8,8 +8,6 @@ import java.util.Collection;
 
 public class AccountUser implements UserDetails {
 
-    private String userId;
-
     private String password;
 
     private final String username;
@@ -33,7 +31,6 @@ public class AccountUser implements UserDetails {
                        boolean credentialsNonExpired, boolean accountNonLocked,
                        Collection<? extends GrantedAuthority> authorities) {
         Assert.isTrue(username != null && !"".equals(username) && password != null, "Cannot pass null or empty values to constructor");
-        this.userId = userId;
         this.username = username;
         this.password = password;
         this.enabled = enabled;

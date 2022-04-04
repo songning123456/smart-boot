@@ -22,7 +22,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		response.setContentType("application/json;charset=UTF-8");
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		ServletOutputStream outputStream = response.getOutputStream();
-		Result result = Result.error("请先登录");
+		Result result = new Result();
+		result.setCode(HttpServletResponse.SC_UNAUTHORIZED);
+		result.setMessage(authException.getMessage());
 		outputStream.write(JSONUtil.toJsonStr(result).getBytes(StandardCharsets.UTF_8));
 		outputStream.flush();
 		outputStream.close();

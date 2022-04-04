@@ -20,7 +20,7 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
 		response.setContentType("application/json;charset=UTF-8");
 		ServletOutputStream outputStream = response.getOutputStream();
 		Result result = Result.error(exception.getMessage());
-		result.setCode(400);
+		result.setCode(500);
 		outputStream.write(JSONUtil.toJsonStr(result).getBytes(StandardCharsets.UTF_8));
 		outputStream.flush();
 		outputStream.close();
