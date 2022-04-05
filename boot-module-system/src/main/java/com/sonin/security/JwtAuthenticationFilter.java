@@ -1,11 +1,10 @@
 package com.sonin.security;
 
 import cn.hutool.core.util.StrUtil;
-import com.sonin.modules.sys.service.SysUserService;
+import com.sonin.utils.CustomApplicationContext;
 import com.sonin.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,15 +18,6 @@ import java.io.IOException;
 
 public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
-    @Autowired
-    JwtUtil jwtUtil;
-
-    @Autowired
-    UserDetailServiceImpl userDetailService;
-
-    @Autowired
-    SysUserService sysUserService;
-
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
@@ -35,6 +25,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
+        JwtUtil jwtUtil = CustomApplicationContext.getBean(JwtUtil.class);
         String jwt = request.getHeader(jwtUtil.getHeader());
         if (StrUtil.isBlankOrUndefined(jwt)) {
             chain.doFilter(request, response);

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -34,29 +35,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     JwtLogoutSuccessHandler jwtLogoutSuccessHandler;
 
     @Bean
-    JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-		return new JwtAuthenticationFilter(authenticationManager());
-    }
-
-    @Bean
     BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    private static final String[] URL_WHITELIST = {
+    private static final String[] HTTP_WHITELIST = {
             "/login",
             "/logout",
+    };
+
+    private static final String[] WEB_WHITELIST = {
             "/auth/captcha",
-            "/favicon.ico",
     };
 
 
-    protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .cors()
+                // 关闭csrf
+                .and()
+                .csrf()
+                .disable()
                 // 登录配置
                 .formLogin()
                 .successHandler(loginSuccessHandler)
                 .failureHandler(loginFailureHandler)
+                // 退出配置
                 .and()
                 .logout()
                 .logoutSuccessHandler(jwtLogoutSuccessHandler)
@@ -67,8 +71,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 配置拦截规则
                 .and()
                 .authorizeRequests()
-                .antMatchers(URL_WHITELIST).permitAll()
-                .anyRequest().authenticated()
+                .antMatchers(HTTP_WHITELIST)
+                .permitAll()
+                .anyRequest()
+                .authenticated()
                 // 异常处理器
                 .and()
                 .exceptionHandling()
@@ -76,13 +82,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(jwtAccessDeniedHandler)
                 // 配置自定义的过滤器
                 .and()
-                .addFilter(jwtAuthenticationFilter())
+                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
                 .addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailService);
+    }
+
+    @Override
+    public void configure(WebSecurity webSecurity) {
+        webSecurity.ignoring().antMatchers(WEB_WHITELIST);
     }
 
 }

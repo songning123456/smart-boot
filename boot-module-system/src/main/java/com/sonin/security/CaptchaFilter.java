@@ -24,7 +24,6 @@ public class CaptchaFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-
         String url = httpServletRequest.getRequestURI();
         if ("/boot/login".equals(url) && httpServletRequest.getMethod().equals("POST")) {
             try {
@@ -42,10 +41,7 @@ public class CaptchaFilter extends OncePerRequestFilter {
     private void validate(HttpServletRequest httpServletRequest) {
         String code = httpServletRequest.getParameter("code");
         String token = httpServletRequest.getParameter("token");
-        if (StringUtils.isBlank(code) || StringUtils.isBlank(token)) {
-            throw new CaptchaException("验证码错误");
-        }
-        if (!code.equals(redisUtil.hget("captcha", token))) {
+        if (StringUtils.isBlank(code) || StringUtils.isBlank(token) || !code.equals(redisUtil.hget("captcha", token))) {
             throw new CaptchaException("验证码错误");
         }
         // 一次性使用

@@ -17,7 +17,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
         SysUser sysUser = sysUserService.getOne(new QueryWrapper<SysUser>().eq("username", username));
         if (sysUser == null) {
             throw new UsernameNotFoundException("用户不存在");
