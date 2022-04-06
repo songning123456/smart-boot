@@ -27,6 +27,8 @@ public class SysUser {
 
     private String username;
 
+    private String realname;
+
     private String password;
 
     private String avatar;

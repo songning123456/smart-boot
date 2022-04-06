@@ -14,6 +14,7 @@ import com.sonin.modules.sys.vo.SysUserVO;
 import com.sonin.utils.BeanExtUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -86,9 +87,9 @@ public class SysUserController {
     @GetMapping("/page")
     public Result<Page<SysUser>> pageCtrl(SysUserDTO sysUserDTO) {
         Result<Page<SysUser>> result = new Result<>();
-        String username = sysUserDTO.getUsername();
         QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>()
-                .like(StringUtils.isNotEmpty(username), "username", username)
+                .like(StringUtils.isNotEmpty(sysUserDTO.getUsername()), "username", sysUserDTO.getUsername())
+                .like(StringUtils.isNotEmpty(sysUserDTO.getRealname()), "realname", sysUserDTO.getRealname())
                 .orderByDesc("update_time");
         Page<SysUser> sysUserPage = sysUserService.page(new Page<>(sysUserDTO.getPageNo(), sysUserDTO.getPageSize()), queryWrapper);
         result.setResult(sysUserPage);
@@ -105,8 +106,33 @@ public class SysUserController {
     }
 
     @PutMapping("/update")
-    public Result update(@Validated @RequestBody SysUser sysUser) {
-        sysUserService.updateById(sysUser);
+    public Result updateCtrl(@Validated @RequestBody SysUserDTO sysUserDTO) throws Exception {
+        SysUser newSysUser = BeanExtUtils.bean2Bean(sysUserDTO, SysUser.class);
+        transactionTemplate.execute((transactionStatus -> {
+            // 更改用户信息的时候不修改id、username
+            SysUser sysUser = sysUserService.getById(sysUserDTO.getId());
+            newSysUser.setId(sysUserDTO.getId());
+            newSysUser.setUsername(sysUser.getUsername());
+            sysUserService.updateById(newSysUser);
+            return 1;
+        }));
+        return Result.ok();
+    }
+
+    @PutMapping("/updateMyself")
+    public Result updateMyselfCtrl(@Validated @RequestBody SysUserDTO sysUserDTO) throws Exception {
+        SysUser newSysUser = BeanExtUtils.bean2Bean(sysUserDTO, SysUser.class);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        transactionTemplate.execute((transactionStatus -> {
+            // 更改用户自己信息的时候不修改id、username、password
+            SysUser sysUser = sysUserService.getOne(new QueryWrapper<SysUser>().eq("username", username));
+            newSysUser.setId(sysUser.getId());
+            newSysUser.setUsername(username);
+            newSysUser.setPassword(sysUser.getPassword());
+            sysUserService.updateById(newSysUser);
+            return 1;
+        }));
         return Result.ok();
     }
 
