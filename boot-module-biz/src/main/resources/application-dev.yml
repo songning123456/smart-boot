@@ -30,3 +30,5 @@ boot:
     header: Authorization
     expire: 604800 #7天，秒单位
     secret: ji8n3439n439n43ld9ne9343fdfer49h
+  path:
+    fileUpload: E:\\Downloads\\test
