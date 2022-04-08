@@ -65,13 +65,12 @@ public class FileUploadController {
     }
 
     @PostMapping("/shardUpload")
-    public Result<?> shardUploads(@RequestBody FileUploadDTO fileUploadDTO) throws Exception {
+    public Result<?> shardUploadCtrl(@RequestParam("file") MultipartFile file,
+                                  @RequestParam("fileType") String fileType,
+                                  @RequestParam("md5") String md5,
+                                  @RequestParam("fileName") String fileName,
+                                  @RequestParam(name = "currentChunk", defaultValue = "-1") Integer currentChunk) throws Exception {
         Result<?> result = new Result<>();
-        MultipartFile file = fileUploadDTO.getFile();
-        String fileType = fileUploadDTO.getFileType();
-        String md5 = fileUploadDTO.getMd5();
-        String fileName = fileUploadDTO.getFileName();
-        int currentChunk = fileUploadDTO.getCurrentChunk();
         String dirPath = fileUploadPath + File.separator + fileType + File.separator + md5;
         String fileName0 = fileName.split("\\.")[0];
         if (FileUtils.mkDir(dirPath)) {
