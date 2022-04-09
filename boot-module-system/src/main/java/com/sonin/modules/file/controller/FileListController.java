@@ -67,6 +67,15 @@ public class FileListController {
         fileList.setEncryptionId(SM2Utils.encrypt(CommonUtils.hexToByte(publicKey), file.getAbsolutePath().getBytes()));
         fileList.setFileName(file.getName());
         fileList.setParentId(parentId);
+        if (file.isFile()) {
+            fileList.setFileType("file");
+        } else if (file.isDirectory()) {
+            fileList.setFileType("directory");
+        } else if (file.isHidden()) {
+            fileList.setFileType("hidden");
+        } else if (file.isAbsolute()) {
+            fileList.setFileType("absolute");
+        }
         fileList.setUpdateTime(new Date(file.lastModified()));
         fileLists.add(fileList);
         if (file.isFile()) {

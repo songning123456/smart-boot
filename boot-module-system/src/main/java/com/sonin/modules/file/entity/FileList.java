@@ -30,6 +30,11 @@ public class FileList {
      */
     private String fileName;
 
+    /**
+     * 文件类型: 文件/目录
+     */
+    private String fileType;
+
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
