@@ -60,7 +60,7 @@ public class SysMenuController {
                     .orderBy(true, true, "order_num")
                     .selectMaps();
             List<SysMenu> sysMenuList = BaseFactory.result().maps2Beans(mapList, SysMenu.class);
-            List<SysMenuVO> sysMenuVOList = buildTreeMenu(sysMenuList);
+            List<SysMenuVO> sysMenuVOList = buildTree(sysMenuList);
             result.setResult(sysMenuVOList);
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,7 +69,7 @@ public class SysMenuController {
         return result;
     }
 
-    private List<SysMenuVO> buildTreeMenu(List<SysMenu> sysMenuList) {
+    private List<SysMenuVO> buildTree(List<SysMenu> sysMenuList) {
         List<SysMenuVO> finalMenus = new ArrayList<>();
         List<SysMenuVO> sysMenuVOList = new ArrayList<>();
         try {
@@ -98,7 +98,7 @@ public class SysMenuController {
         // 获取所有菜单信息
         List<SysMenu> sysMenus = sysMenuService.list(new QueryWrapper<SysMenu>().orderByAsc("order_num"));
         // 转成树状结构
-        List<SysMenuVO> sysMenuVOList = buildTreeMenu(sysMenus);
+        List<SysMenuVO> sysMenuVOList = buildTree(sysMenus);
         result.setResult(sysMenuVOList);
         return result;
     }
