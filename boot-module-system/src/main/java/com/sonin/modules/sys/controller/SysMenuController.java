@@ -110,13 +110,13 @@ public class SysMenuController {
     }
 
     @PutMapping("/update")
-    public Result update(@Validated @RequestBody SysMenu sysMenu) {
+    public Result updateCtrl(@Validated @RequestBody SysMenu sysMenu) {
         sysMenuService.updateById(sysMenu);
         return Result.ok();
     }
 
     @DeleteMapping("/delete/{id}")
-    public Result delete(@PathVariable("id") String id) {
+    public Result deleteCtrl(@PathVariable("id") String id) {
         int count = sysMenuService.count(new QueryWrapper<SysMenu>().eq("parent_id", id));
         if (count > 0) {
             return Result.error("请先删除子菜单");

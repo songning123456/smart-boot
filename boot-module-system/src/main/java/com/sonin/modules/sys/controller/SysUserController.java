@@ -137,7 +137,7 @@ public class SysUserController {
     }
 
     @DeleteMapping("/delete")
-    public Result delete(@RequestParam(name = "ids") String ids) {
+    public Result deleteCtrl(@RequestParam(name = "ids") String ids) {
         List<String> userIdList = Arrays.asList(ids.split(","));
         transactionTemplate.execute((transactionStatus -> {
             sysUserService.removeByIds(userIdList);
@@ -148,7 +148,7 @@ public class SysUserController {
     }
 
     @PostMapping("/role/{userId}")
-    public Result rolePermCtrl(@PathVariable("userId") String userId, @RequestBody String[] roleIds) {
+    public Result roleCtrl(@PathVariable("userId") String userId, @RequestBody String[] roleIds) {
         List<SysUserRole> userRoles = new ArrayList<>();
         Arrays.stream(roleIds).forEach(r -> {
             SysUserRole sysUserRole = new SysUserRole();

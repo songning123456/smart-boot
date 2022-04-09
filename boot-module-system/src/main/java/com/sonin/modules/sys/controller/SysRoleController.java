@@ -82,7 +82,7 @@ public class SysRoleController {
     }
 
     @PostMapping("/save")
-    public Result save(@Validated @RequestBody SysRole sysRole) {
+    public Result saveCtrl(@Validated @RequestBody SysRole sysRole) {
         sysRoleService.save(sysRole);
         return Result.ok();
     }
@@ -107,7 +107,7 @@ public class SysRoleController {
     }
 
     @PostMapping("/menu/{roleId}")
-    public Result info(@PathVariable("roleId") String roleId, @RequestBody String[] menuIds) {
+    public Result menuCtrl(@PathVariable("roleId") String roleId, @RequestBody String[] menuIds) {
         List<SysRoleMenu> sysRoleMenuList = new ArrayList<>();
         Arrays.stream(menuIds).forEach(menuId -> {
             SysRoleMenu roleMenu = new SysRoleMenu();

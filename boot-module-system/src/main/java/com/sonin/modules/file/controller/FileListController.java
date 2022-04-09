@@ -101,7 +101,7 @@ public class FileListController {
     }
 
     @DeleteMapping("/delete/{encryptionId}")
-    public Result delete(@PathVariable("encryptionId") String encryptionId) {
+    public Result deleteCtrl(@PathVariable("encryptionId") String encryptionId) {
         String path = new String(SM2Utils.decrypt(CommonUtils.hexToByte(privateKey), CommonUtils.hexToByte(encryptionId)));
         boolean successFlag = FileUtils.delFile(new File(path));
         if (successFlag) {
