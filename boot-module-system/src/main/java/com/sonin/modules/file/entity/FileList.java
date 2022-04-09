@@ -18,8 +18,16 @@ public class FileList {
 
     private String id;
 
+    /**
+    * 加密ID
+    */
+    private String encryptionId;
+
     private String parentId;
 
+    /**
+     * 文件/目录 名称
+     */
     private String fileName;
 
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
