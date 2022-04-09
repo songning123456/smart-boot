@@ -13,6 +13,6 @@ import lombok.Data;
 @Data
 public class FileListDTO {
 
-    private String fileType;
+    private String uploadPath;
 
 }

@@ -32,13 +32,13 @@ public class FileUploadController {
     @GetMapping("/isExist")
     public Result<Object> isExistCtrl(FileUploadDTO fileUploadDTO) {
         Result<Object> result = new Result<>();
-        String fileType = fileUploadDTO.getFileType();
+        String uploadPath = fileUploadDTO.getUploadPath();
         String md5 = fileUploadDTO.getMd5();
         // e.g: 测试视频.mp4
         String fileName = fileUploadDTO.getFileName();
         String prefixName = fileName.split("\\.")[0];
         // 上传文件所存放的目录(每个文件都有一个唯一的目录)
-        File uploadDir = new File(fileUploadPath + File.separator + fileType + File.separator + md5);
+        File uploadDir = new File(fileUploadPath + File.separator + uploadPath + File.separator + md5);
         // e.g: [0, 1, 2, 3......]
         List<Integer> shardNameList = new ArrayList<>();
         if (uploadDir.exists()) {
@@ -60,7 +60,7 @@ public class FileUploadController {
             }
             if (shardNameList.isEmpty()) {
                 result.setMessage("文件已上传");
-                result.setResult(File.separator + fileType + File.separator + md5 + File.separator + fileName);
+                result.setResult(File.separator + uploadPath + File.separator + md5 + File.separator + fileName);
             } else {
                 result.setResult(shardNameList);
                 result.setMessage("文件仅上传部分");
@@ -73,12 +73,12 @@ public class FileUploadController {
 
     @PostMapping("/shardUpload")
     public Result<?> shardUploadCtrl(@RequestParam("file") MultipartFile file,
-                                     @RequestParam("fileType") String fileType,
+                                     @RequestParam("uploadPath") String uploadPath,
                                      @RequestParam("md5") String md5,
                                      @RequestParam("fileName") String fileName,
                                      @RequestParam(name = "currentShard", defaultValue = "-1") Integer currentShard) throws Exception {
         Result<?> result = new Result<>();
-        String uploadDir = fileUploadPath + File.separator + fileType + File.separator + md5;
+        String uploadDir = fileUploadPath + File.separator + uploadPath + File.separator + md5;
         // e.g: 测试视频.mp4
         String prefixName = fileName.split("\\.")[0];
         if (FileUtils.mkDir(uploadDir)) {
@@ -99,10 +99,10 @@ public class FileUploadController {
     @GetMapping("/shardMerge")
     public Result<String> shardMergeCtrl(FileUploadDTO fileUploadDTO) {
         Result<String> result = new Result<>();
-        String fileType = fileUploadDTO.getFileType();
+        String uploadPath = fileUploadDTO.getUploadPath();
         String md5 = fileUploadDTO.getMd5();
         String fileName = fileUploadDTO.getFileName();
-        String uploadDir = fileUploadPath + File.separator + fileType + File.separator + md5;
+        String uploadDir = fileUploadPath + File.separator + uploadPath + File.separator + md5;
         String prefixName = fileName.split("\\.")[0];
         // 临时的分片目录: /.../测试视频.chunk
         File tmpShardDir = new File(uploadDir + File.separator + prefixName + SUFFIX_NAME);
@@ -117,7 +117,7 @@ public class FileUploadController {
             result.error500("分片合并失败");
         }
         // 返回结果路径
-        result.setResult(File.separator + fileType + File.separator + md5 + File.separator + fileName);
+        result.setResult(File.separator + uploadPath + File.separator + md5 + File.separator + fileName);
         return result;
     }
 

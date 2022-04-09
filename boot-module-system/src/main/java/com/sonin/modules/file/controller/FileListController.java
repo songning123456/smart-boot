@@ -42,18 +42,22 @@ public class FileListController {
     @GetMapping("/list")
     public Result<List<FileListVO>> listCtrl(FileListDTO fileListDTO) {
         Result<List<FileListVO>> result = new Result<>();
-        String fileType = fileListDTO.getFileType();
+        String uploadPath = fileListDTO.getUploadPath();
         // 上传文件所存放的目录(每个文件都有一个唯一的目录)
         File uploadDir;
-        if (StringUtils.isNotEmpty(fileType)) {
-            uploadDir = new File(fileUploadPath + File.separator + fileType);
+        if (StringUtils.isNotEmpty(uploadPath)) {
+            uploadDir = new File(fileUploadPath + File.separator + uploadPath);
         } else {
             uploadDir = new File(fileUploadPath);
         }
-        List<FileList> fileLists = new ArrayList<>();
-        buildList(uploadDir, fileLists, "");
-        List<FileListVO> fileListVOList = buildTree(fileLists);
-        result.setResult(fileListVOList);
+        if (uploadDir.exists()) {
+            List<FileList> fileLists = new ArrayList<>();
+            buildList(uploadDir, fileLists, "");
+            List<FileListVO> fileListVOList = buildTree(fileLists);
+            result.setResult(fileListVOList);
+        } else {
+            result.setResult(new ArrayList<>());
+        }
         return result;
     }
 
