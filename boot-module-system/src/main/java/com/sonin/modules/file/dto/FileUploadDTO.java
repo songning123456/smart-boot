@@ -1,7 +1,6 @@
 package com.sonin.modules.file.dto;
 
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * <pre>
@@ -14,14 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class FileUploadDTO {
 
-    private MultipartFile file;
-
     private String fileType;
 
     private String md5;
 
     private String fileName;
-
-    private Integer currentChunk = -1;
 
 }

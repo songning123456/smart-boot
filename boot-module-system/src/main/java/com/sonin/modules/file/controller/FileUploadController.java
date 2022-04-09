@@ -27,60 +27,70 @@ public class FileUploadController {
     @Value(value = "${boot.path.fileUpload}")
     private String fileUploadPath;
 
+    private static final String SUFFIX_NAME = ".chunk";
+
     @GetMapping("/isExist")
     public Result<Object> isExistCtrl(FileUploadDTO fileUploadDTO) {
         Result<Object> result = new Result<>();
         String fileType = fileUploadDTO.getFileType();
         String md5 = fileUploadDTO.getMd5();
+        // e.g: 测试视频.mp4
         String fileName = fileUploadDTO.getFileName();
-        File dirFile = new File(fileUploadPath + File.separator + fileType + File.separator + md5);
-        List<Integer> list = new ArrayList<>();
-        if (dirFile.exists()) {
-            File[] folders = dirFile.listFiles();
-            if (folders != null && folders.length != 0) {
-                for (File folder : folders) {
+        String prefixName = fileName.split("\\.")[0];
+        // 上传文件所存放的目录(每个文件都有一个唯一的目录)
+        File uploadDir = new File(fileUploadPath + File.separator + fileType + File.separator + md5);
+        // e.g: [0, 1, 2, 3......]
+        List<Integer> shardNameList = new ArrayList<>();
+        if (uploadDir.exists()) {
+            // 在文件目录下寻找分片目录: 测试视频.chunk
+            File[] tmpShardDirs = uploadDir.listFiles();
+            if (tmpShardDirs != null && tmpShardDirs.length != 0) {
+                for (File tmpShardDir : tmpShardDirs) {
                     // 判断是否存在文件夹，即已经上传的部分
-                    if (folder.isDirectory()) {
-                        File[] chunkFiles = folder.listFiles();
-                        if (chunkFiles != null && chunkFiles.length != 0) {
-                            for (File file : chunkFiles) {
-                                list.add(Integer.parseInt(file.getName()));
+                    if (tmpShardDir.isDirectory() && prefixName.equals(tmpShardDir.getName().split("\\.")[0])) {
+                        File[] shardFiles = tmpShardDir.listFiles();
+                        if (shardFiles != null && shardFiles.length != 0) {
+                            for (File shardFile : shardFiles) {
+                                shardNameList.add(Integer.parseInt(shardFile.getName()));
                             }
                         }
+                        break;
                     }
                 }
             }
-            if (list.isEmpty()) {
+            if (shardNameList.isEmpty()) {
                 result.setMessage("文件已上传");
                 result.setResult(File.separator + fileType + File.separator + md5 + File.separator + fileName);
             } else {
-                result.setResult(list);
+                result.setResult(shardNameList);
                 result.setMessage("文件仅上传部分");
             }
         } else {
-            result.setCode(201);
-            result.setMessage("文件未上传");
+            result.error500("文件未上传");
         }
         return result;
     }
 
     @PostMapping("/shardUpload")
     public Result<?> shardUploadCtrl(@RequestParam("file") MultipartFile file,
-                                  @RequestParam("fileType") String fileType,
-                                  @RequestParam("md5") String md5,
-                                  @RequestParam("fileName") String fileName,
-                                  @RequestParam(name = "currentChunk", defaultValue = "-1") Integer currentChunk) throws Exception {
+                                     @RequestParam("fileType") String fileType,
+                                     @RequestParam("md5") String md5,
+                                     @RequestParam("fileName") String fileName,
+                                     @RequestParam(name = "currentShard", defaultValue = "-1") Integer currentShard) throws Exception {
         Result<?> result = new Result<>();
-        String dirPath = fileUploadPath + File.separator + fileType + File.separator + md5;
-        String fileName0 = fileName.split("\\.")[0];
-        if (FileUtils.mkDir(dirPath)) {
-            File tmpFolder = new File(dirPath + File.separator + fileName0 + ".chunk");
-            if (!tmpFolder.exists()) {
-                tmpFolder.mkdirs();
+        String uploadDir = fileUploadPath + File.separator + fileType + File.separator + md5;
+        // e.g: 测试视频.mp4
+        String prefixName = fileName.split("\\.")[0];
+        if (FileUtils.mkDir(uploadDir)) {
+            // e.g: /.../测试视频.chunk
+            File tmpShardDir = new File(uploadDir + File.separator + prefixName + SUFFIX_NAME);
+            if (!tmpShardDir.exists()) {
+                tmpShardDir.mkdirs();
             }
-            File chunkFile = new File(dirPath + File.separator + fileName0 + ".chunk" + File.separator + currentChunk);
-            if (!chunkFile.exists()) {
-                file.transferTo(chunkFile);
+            // e.g: /.../测试视频.chunk/0, /.../测试视频.chunk/1 ...
+            File shardFile = new File(uploadDir + File.separator + prefixName + SUFFIX_NAME + File.separator + currentShard);
+            if (!shardFile.exists()) {
+                file.transferTo(shardFile);
             }
         }
         return result;
@@ -92,19 +102,21 @@ public class FileUploadController {
         String fileType = fileUploadDTO.getFileType();
         String md5 = fileUploadDTO.getMd5();
         String fileName = fileUploadDTO.getFileName();
-        String dirPath = fileUploadPath + File.separator + fileType + File.separator + md5;
-        String fileName0 = fileName.split("\\.")[0];
-        File chunkFolderFile = new File(dirPath + File.separator + fileName0 + ".chunk");
-        File[] files = chunkFolderFile.listFiles();
-        File mergeFile = new File(dirPath + File.separator + fileName);
-        if (files != null) {
-            List<File> fileList = Arrays.asList(files);
-            FileUtils.shardMerge(fileList, mergeFile);
-            FileUtils.delFile(chunkFolderFile);
+        String uploadDir = fileUploadPath + File.separator + fileType + File.separator + md5;
+        String prefixName = fileName.split("\\.")[0];
+        // 临时的分片目录: /.../测试视频.chunk
+        File tmpShardDir = new File(uploadDir + File.separator + prefixName + SUFFIX_NAME);
+        // e.g: 0、1、2、3......类似这样的文件
+        File[] shardFiles = tmpShardDir.listFiles();
+        File mergeFile = new File(uploadDir + File.separator + fileName);
+        if (shardFiles != null) {
+            FileUtils.shardMerge(Arrays.asList(shardFiles), mergeFile);
+            FileUtils.delFile(tmpShardDir);
             result.success("分片合并成功");
         } else {
             result.error500("分片合并失败");
         }
+        // 返回结果路径
         result.setResult(File.separator + fileType + File.separator + md5 + File.separator + fileName);
         return result;
     }
