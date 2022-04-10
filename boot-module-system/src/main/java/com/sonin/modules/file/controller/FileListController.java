@@ -48,7 +48,7 @@ public class FileListController {
         if (StringUtils.isNotEmpty(uploadPath)) {
             uploadDir = new File(fileUploadPath + File.separator + uploadPath);
         } else {
-            uploadDir = new File(fileUploadPath);
+            uploadDir = new File(fileUploadPath + File.separator + "default");
         }
         if (uploadDir.exists()) {
             List<FileList> fileLists = new ArrayList<>();

@@ -3,7 +3,9 @@ package com.sonin.modules.sys.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sonin.api.vo.Result;
+import com.sonin.core.query.BaseFactory;
 import com.sonin.modules.sys.dto.SysDictItemDTO;
+import com.sonin.modules.sys.entity.SysDict;
 import com.sonin.modules.sys.entity.SysDictItem;
 import com.sonin.modules.sys.service.SysDictItemService;
 import com.sonin.utils.BeanExtUtils;
@@ -11,8 +13,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <pre>
@@ -39,6 +43,27 @@ public class SysDictItemController {
                 .orderByDesc("order_num");
         Page<SysDictItem> sysDictItemPage = sysDictItemService.page(new Page<>(sysDictItemDTO.getCurrentPage(), sysDictItemDTO.getPageSize()), queryWrapper);
         result.setResult(sysDictItemPage);
+        return result;
+    }
+
+    @GetMapping("/dictItem/{dictCode}")
+    public Result<List<SysDictItem>> itemCtrl(@PathVariable("dictCode") String dictCode) {
+        Result<List<SysDictItem>> result = new Result<>();
+        List<SysDictItem> sysDictItemList = new ArrayList<>();
+        try {
+            List<Map<String, Object>> mapList = BaseFactory.join()
+                    .from(SysDict.class)
+                    .innerJoin(SysDictItem.class, SysDictItem.class.getDeclaredField("sysDictId"), SysDict.class.getDeclaredField("id"))
+                    .where()
+                    .eq(true, "sys_dict.dict_code", dictCode)
+                    .orderBy(true, true, "sys_dict_item.order_num")
+                    .selectMaps();
+            sysDictItemList = BaseFactory.result().maps2Beans(mapList, SysDictItem.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.error500(e.getMessage());
+        }
+        result.setResult(sysDictItemList);
         return result;
     }
 

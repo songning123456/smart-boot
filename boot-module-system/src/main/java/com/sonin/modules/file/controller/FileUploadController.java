@@ -3,6 +3,7 @@ package com.sonin.modules.file.controller;
 import com.sonin.api.vo.Result;
 import com.sonin.modules.file.dto.FileUploadDTO;
 import com.sonin.utils.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,9 @@ public class FileUploadController {
     public Result<Object> isExistCtrl(FileUploadDTO fileUploadDTO) {
         Result<Object> result = new Result<>();
         String uploadPath = fileUploadDTO.getUploadPath();
+        if (StringUtils.isEmpty(uploadPath)) {
+            uploadPath = "default";
+        }
         String md5 = fileUploadDTO.getMd5();
         // e.g: 测试视频.mp4
         String fileName = fileUploadDTO.getFileName();
