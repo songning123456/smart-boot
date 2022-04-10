@@ -7,7 +7,7 @@ APP=$BASE_APP_DIR/smart-boot.jar
 ARGS=""
 # 4. 日志文件所在位置(此处可以不修改, 默认)
 BASE_LOG_DIR=$BASE_APP_DIR/logs
-#	5. 是否开启远程调试(默认false)
+# 5. 是否开启远程调试(默认false)
 JAVA_DEBUG_ENABLE=false
 # 6. 远程调试端口(此处可以不修改, 默认)
 JAVA_DEBUG_PORT=8787
@@ -26,6 +26,8 @@ echo "The args is $ARGS"
 
 # 创建日志文件夹及堆内存溢出文件夹
 mkdir -p $BASE_LOG_DIR/HeapDumpOnOutOfMemoryError
+# 创建Tomcat临时缓存目录
+mkdir -p $BASE_LOG_DIR/tmp
 
 # 判断是否开启远程调试
 if [ 'trueX' == "${JAVA_DEBUG_ENABLE}X" ]; then
@@ -59,6 +61,8 @@ JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$BASE_LOG
 JAVA_OPTS="$JAVA_OPTS -XX:-OmitStackTraceInFastThrow"
 # 日志打印路径
 JAVA_OPTS="$JAVA_OPTS -Dlog.path=$BASE_LOG_DIR"
+# Tomcat临时缓存目录
+JAVA_OPTS="$JAVA_OPTS -Dserver.tomcat.basedir=$BASE_LOG_DIR/tmp"
 
 # 初始化psid
 psid=0
