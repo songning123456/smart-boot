@@ -16,8 +16,8 @@ public class SysUserDTO extends SysUser {
 
     private String newPassword;
 
-    private Integer pageNo = 1;
+    private Long currentPage = 1L;
 
-    private Integer pageSize = 10;
+    private Long pageSize = 10L;
 
 }

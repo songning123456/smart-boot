@@ -91,7 +91,7 @@ public class SysUserController {
                 .like(StringUtils.isNotEmpty(sysUserDTO.getUsername()), "username", sysUserDTO.getUsername())
                 .like(StringUtils.isNotEmpty(sysUserDTO.getRealname()), "realname", sysUserDTO.getRealname())
                 .orderByDesc("update_time");
-        Page<SysUser> sysUserPage = sysUserService.page(new Page<>(sysUserDTO.getPageNo(), sysUserDTO.getPageSize()), queryWrapper);
+        Page<SysUser> sysUserPage = sysUserService.page(new Page<>(sysUserDTO.getCurrentPage(), sysUserDTO.getPageSize()), queryWrapper);
         result.setResult(sysUserPage);
         return result;
     }

@@ -12,8 +12,8 @@ public class SysRoleDTO extends SysRole {
 
     private String roleIds;
 
-    private Integer currentPage = 1;
+    private Long currentPage = 1L;
 
-    private Integer pageSize = 10;
+    private Long pageSize = 10L;
 
 }
