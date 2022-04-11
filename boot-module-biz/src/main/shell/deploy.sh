@@ -20,11 +20,6 @@ mkdir -p $JAR_LOG_DIR/HeapDumpOnOutOfMemoryError
 # 创建Tomcat临时缓存目录
 mkdir -p $JAR_LOG_DIR/tmp
 
-# 判断是否开启远程调试
-if [ 'trueX' == "${JAVA_DEBUG_ENABLE}X" ]; then
-  JAVA_OPTS="${JAVA_OPTS} -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=${JAVA_DEBUG_PORT}"
-fi
-
 # ***java虚拟机启动参数
 # 仅支持IP4
 JAVA_OPTS="-Djava.net.preferIPv4Stack=true"
@@ -54,6 +49,10 @@ JAVA_OPTS="$JAVA_OPTS -XX:-OmitStackTraceInFastThrow"
 JAVA_OPTS="$JAVA_OPTS -Dlog.path=$JAR_LOG_DIR"
 # Tomcat临时缓存目录
 JAVA_OPTS="$JAVA_OPTS -Dserver.tomcat.basedir=$JAR_LOG_DIR/tmp"
+# 判断是否开启远程调试
+if [ 'trueX' == "${JAVA_DEBUG_ENABLE}X" ]; then
+  JAVA_OPTS="${JAVA_OPTS} -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=${JAVA_DEBUG_PORT}"
+fi
 
 # 初始化psid
 psid=0
