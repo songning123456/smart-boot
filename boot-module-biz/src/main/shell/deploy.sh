@@ -1,28 +1,19 @@
 # ***项目需要修改的参数
-# 1. 文件目录(此处必须修改, 执行脚本时参数可以不写)
+# 1. 文件目录
 BASE_APP_DIR=/home/cloud/apps/smart-boot
-# 2. 需要启动的jar包(此处必须修改, 执行脚本时参数可以不写)
-APP=$BASE_APP_DIR/smart-boot.jar
-# 3. 启动参数(此处可以不写, 执行脚本时参数也可以不写)
-ARGS=""
-# 4. 日志文件所在位置(此处可以不修改, 默认)
-BASE_LOG_DIR=$BASE_APP_DIR/logs
-# 5. 是否开启远程调试(默认false)
+# 2. 需要启动的jar包
+BASE_APP_NAME=smart-boot.jar
+
+# *** 根据需求修改
+# 3. 是否开启远程调试(默认false)
 JAVA_DEBUG_ENABLE=false
-# 6. 远程调试端口(此处可以不修改, 默认)
+# 4. 远程调试端口
 JAVA_DEBUG_PORT=8787
 
-# 参数2: 进行jar包全路径添加, e.g: /home/.../smart-boot.jar
-if test -n "$2"
-  then APP=$2
-fi
-echo "The path of jar is $APP"
-
-# 参数3: 进行启动参数添加
-if test -n "$3"
-  then ARGS=$3
-fi
-echo "The args is $ARGS"
+# 启动的jar包全路径
+APP=$BASE_APP_DIR/$BASE_APP_NAME
+# 日志文件所在位置
+BASE_LOG_DIR=$BASE_APP_DIR/logs
 
 # 创建日志文件夹及堆内存溢出文件夹
 mkdir -p $BASE_LOG_DIR/HeapDumpOnOutOfMemoryError
@@ -44,7 +35,7 @@ JAVA_OPTS="$JAVA_OPTS -Dclient.encoding.override=UTF-8"
 # 强行设置系统文件编码格式为utf-8
 JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"
 # 加快随机数产生过程
-JAVA_OPTS="$JAVA_OPTS -Djava.security.egd=file:/dev/./urandom "
+JAVA_OPTS="$JAVA_OPTS -Djava.security.egd=file:/dev/./urandom"
 # 最大堆、最小堆
 JAVA_OPTS="$JAVA_OPTS -Xmx128m -Xms128m"
 # 服务端
@@ -86,7 +77,7 @@ start() {
     echo "================================================"
   else
     echo -n "Starting $APP ..."
-    `nohup java $JAVA_OPTS -jar $APP $ARGS > $BASE_LOG_DIR/out.log 2>&1 &`
+    `nohup java $JAVA_OPTS -jar $APP > $BASE_LOG_DIR/out.log 2>&1 &`
     checkpid
     if [ $psid -ne 0 ]; then
       echo "success! pid=$psid [OK]"
@@ -130,8 +121,7 @@ case "$1" in
     start
     ;;
   *)
-echo "help: $0 {start|stop|restart}"
-echo "例子: ./deploy.sh start $APP"
+echo "例子: sh deploy.sh {start|stop|restart}"
 exit 1
 esac
 exit 0
