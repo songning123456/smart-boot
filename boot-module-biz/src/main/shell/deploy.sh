@@ -1,9 +1,8 @@
 # ***项目需要修改的参数
 # 1. 文件目录
-BASE_APP_DIR=/home/cloud/apps/smart-boot
+BOOT_JAR_DIR=/home/cloud/apps/smart-boot
 # 2. 需要启动的jar包
-BASE_APP_NAME=smart-boot.jar
-
+BOOT_JAR_NAME=smart-boot.jar
 # *** 根据需求修改
 # 3. 是否开启远程调试(默认false)
 JAVA_DEBUG_ENABLE=false
@@ -11,14 +10,14 @@ JAVA_DEBUG_ENABLE=false
 JAVA_DEBUG_PORT=8787
 
 # 启动的jar包全路径
-APP=$BASE_APP_DIR/$BASE_APP_NAME
+BOOT_JAR=$BOOT_JAR_DIR/$BOOT_JAR_NAME
 # 日志文件所在位置
-BASE_LOG_DIR=$BASE_APP_DIR/logs
+JAR_LOG_DIR=$BOOT_JAR_DIR/logs
 
 # 创建日志文件夹及堆内存溢出文件夹
-mkdir -p $BASE_LOG_DIR/HeapDumpOnOutOfMemoryError
+mkdir -p $JAR_LOG_DIR/HeapDumpOnOutOfMemoryError
 # 创建Tomcat临时缓存目录
-mkdir -p $BASE_LOG_DIR/tmp
+mkdir -p $JAR_LOG_DIR/tmp
 
 # 判断是否开启远程调试
 if [ 'trueX' == "${JAVA_DEBUG_ENABLE}X" ]; then
@@ -45,22 +44,22 @@ JAVA_OPTS="$JAVA_OPTS -D64"
 # 使用G1垃圾回收器
 JAVA_OPTS="$JAVA_OPTS -XX:+UseG1GC"
 # 打印GC日志信息
-JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCApplicationConcurrentTime -XX:+PrintHeapAtGC -XX:+UseGCLogFileRotation -Xloggc:$BASE_LOG_DIR/gc.log"
+JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCApplicationConcurrentTime -XX:+PrintHeapAtGC -XX:+UseGCLogFileRotation -Xloggc:$JAR_LOG_DIR/gc.log"
 # 打印堆溢出日志信息
-JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$BASE_LOG_DIR/HeapDumpOnOutOfMemoryError/"
+JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$JAR_LOG_DIR/HeapDumpOnOutOfMemoryError/"
 # 强制JVM始终抛出含堆栈的异常
 JAVA_OPTS="$JAVA_OPTS -XX:-OmitStackTraceInFastThrow"
 # 日志打印路径
-JAVA_OPTS="$JAVA_OPTS -Dlog.path=$BASE_LOG_DIR"
+JAVA_OPTS="$JAVA_OPTS -Dlog.path=$JAR_LOG_DIR"
 # Tomcat临时缓存目录
-JAVA_OPTS="$JAVA_OPTS -Dserver.tomcat.basedir=$BASE_LOG_DIR/tmp"
+JAVA_OPTS="$JAVA_OPTS -Dserver.tomcat.basedir=$JAR_LOG_DIR/tmp"
 
 # 初始化psid
 psid=0
 
 # 检测PID
 checkpid() {
-  javaps=`jps -l | grep $APP`
+  javaps=`jps -l | grep $BOOT_JAR`
   if [ -n "$javaps" ]; then
      psid=`echo $javaps | awk '{print $1}'`
   else
@@ -73,11 +72,11 @@ start() {
   checkpid
   if [ $psid -ne 0 ]; then
     echo "================================================"
-    echo "info: $APP already started! pid=$psid"
+    echo "info: $BOOT_JAR already started! pid=$psid"
     echo "================================================"
   else
-    echo -n "Starting $APP ..."
-    `nohup java $JAVA_OPTS -jar $APP > $BASE_LOG_DIR/out.log 2>&1 &`
+    echo -n "Starting $BOOT_JAR ..."
+    `nohup java $JAVA_OPTS -jar $BOOT_JAR > $JAR_LOG_DIR/out.log 2>&1 &`
     checkpid
     if [ $psid -ne 0 ]; then
       echo "success! pid=$psid [OK]"
@@ -91,7 +90,7 @@ start() {
 stop() {
   checkpid
   if [ $psid -ne 0 ]; then
-    echo "info: Stoping $APP... pid=$psid"
+    echo "info: Stoping $BOOT_JAR... pid=$psid"
     `kill -15 $psid`
     if [ $? -eq 0 ]; then
        echo "[OK]"
@@ -104,7 +103,7 @@ stop() {
     fi
   else
     echo "================================================"
-    echo "info: $APP already stoped!"
+    echo "info: $BOOT_JAR already stoped!"
     echo "================================================"
   fi
 }
