@@ -35,6 +35,11 @@ public class FileList {
      */
     private String fileType;
 
+    /**
+     * 后缀URL: e.g /image/md5值/test.jpeg
+     */
+    private String suffixUrl;
+
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 

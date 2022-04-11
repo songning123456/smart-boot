@@ -45,14 +45,13 @@ public class FileListController {
         String uploadPath = fileListDTO.getUploadPath();
         // 上传文件所存放的目录(每个文件都有一个唯一的目录)
         File uploadDir;
-        if (StringUtils.isNotEmpty(uploadPath)) {
-            uploadDir = new File(fileUploadPath + File.separator + uploadPath);
-        } else {
-            uploadDir = new File(fileUploadPath + File.separator + "default");
+        if (StringUtils.isEmpty(uploadPath)) {
+            uploadPath = "default";
         }
+        uploadDir = new File(fileUploadPath + File.separator + uploadPath);
         if (uploadDir.exists()) {
             List<FileList> fileLists = new ArrayList<>();
-            buildList(uploadDir, fileLists, "");
+            buildList(uploadDir, fileLists, "", uploadPath);
             List<FileListVO> fileListVOList = buildTree(fileLists);
             result.setResult(fileListVOList);
         } else {
@@ -61,7 +60,7 @@ public class FileListController {
         return result;
     }
 
-    private void buildList(File file, List<FileList> fileLists, String parentId) {
+    private void buildList(File file, List<FileList> fileLists, String parentId, String uploadPath) {
         FileList fileList = new FileList();
         fileList.setId(file.getAbsolutePath());
         fileList.setEncryptionId(SM2Utils.encrypt(CommonUtils.hexToByte(publicKey), file.getAbsolutePath().getBytes()));
@@ -69,6 +68,23 @@ public class FileListController {
         fileList.setParentId(parentId);
         if (file.isFile()) {
             fileList.setFileType("file");
+            String[] params;
+            if (System.getProperties().getProperty("os.name").contains("Windows")) {
+                params = fileList.getId().split("\\\\");
+            } else  {
+                params = fileList.getId().split("/");
+            }
+            boolean flag = false;
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String param : params) {
+                if (uploadPath.equals(param)) {
+                    flag = true;
+                }
+                if (flag) {
+                    stringBuilder.append(File.separator).append(param);
+                }
+            }
+            fileList.setSuffixUrl(stringBuilder.toString());
         } else if (file.isDirectory()) {
             fileList.setFileType("directory");
         } else if (file.isHidden()) {
@@ -86,7 +102,7 @@ public class FileListController {
             return;
         }
         for (File fileEntity : files) {
-            buildList(fileEntity, fileLists, file.getAbsolutePath());
+            buildList(fileEntity, fileLists, file.getAbsolutePath(), uploadPath);
         }
     }
 

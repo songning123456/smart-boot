@@ -6,7 +6,7 @@ BOOT_JAR_NAME=smart-boot.jar
 
 # ***根据需求修改
 # 3. 是否开启远程调试(默认false)
-JAVA_DEBUG_ENABLE=false
+JAVA_DEBUG_ENABLE=true
 # 4. 远程调试端口
 JAVA_DEBUG_PORT=8787
 
@@ -15,6 +15,8 @@ BOOT_JAR=$BOOT_JAR_DIR/$BOOT_JAR_NAME
 # 日志文件所在位置
 JAR_LOG_DIR=$BOOT_JAR_DIR/logs
 
+# 启动时要先进入到目录中，否则读取不到config文件夹下的配置文件
+cd $BOOT_JAR_DIR
 # 创建日志文件夹及堆内存溢出文件夹
 mkdir -p $JAR_LOG_DIR/HeapDumpOnOutOfMemoryError
 # 创建Tomcat临时缓存目录
