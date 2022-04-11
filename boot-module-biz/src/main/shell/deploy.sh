@@ -3,7 +3,8 @@
 BOOT_JAR_DIR=/home/cloud/apps/smart-boot
 # 2. 需要启动的jar包
 BOOT_JAR_NAME=smart-boot.jar
-# *** 根据需求修改
+
+# ***根据需求修改
 # 3. 是否开启远程调试(默认false)
 JAVA_DEBUG_ENABLE=false
 # 4. 远程调试端口
