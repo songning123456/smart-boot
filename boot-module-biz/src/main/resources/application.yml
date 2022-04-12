@@ -1,5 +1,5 @@
 spring:
   application:
-    name: smart-boot
+    name: smart-boot-biz
   profiles:
     active: dev
