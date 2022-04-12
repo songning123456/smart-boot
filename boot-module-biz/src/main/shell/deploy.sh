@@ -6,12 +6,12 @@ BOOT_JAR_NAME=smart-boot.jar
 
 # ***根据需求修改
 # 3. 是否开启远程调试(默认false)
-JAVA_DEBUG_ENABLE=true
+JAVA_DEBUG_ENABLE=false
 # 4. 远程调试端口
 JAVA_DEBUG_PORT=8787
 # 5. 启动堆大小
-HEAP_MIN=4096m
-HEAP_MAX=4096m
+HEAP_MIN=128m
+HEAP_MAX=128m
 
 # 启动的jar包全路径
 BOOT_JAR=$BOOT_JAR_DIR/$BOOT_JAR_NAME
