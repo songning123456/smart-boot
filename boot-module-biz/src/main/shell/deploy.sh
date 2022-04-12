@@ -9,6 +9,9 @@ BOOT_JAR_NAME=smart-boot.jar
 JAVA_DEBUG_ENABLE=true
 # 4. 远程调试端口
 JAVA_DEBUG_PORT=8787
+# 5. 启动堆大小
+HEAP_MIN=4096m
+HEAP_MAX=4096m
 
 # 启动的jar包全路径
 BOOT_JAR=$BOOT_JAR_DIR/$BOOT_JAR_NAME
@@ -34,7 +37,7 @@ JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"
 # 加快随机数产生过程
 JAVA_OPTS="$JAVA_OPTS -Djava.security.egd=file:/dev/./urandom"
 # 最大堆、最小堆
-JAVA_OPTS="$JAVA_OPTS -Xmx128m -Xms128m"
+JAVA_OPTS="$JAVA_OPTS -Xmx${HEAP_MAX} -Xms${HEAP_MIN}"
 # 服务端
 JAVA_OPTS="$JAVA_OPTS -server"
 # 64位环境
