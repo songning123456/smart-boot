@@ -22,7 +22,7 @@
             <outputDirectory>config</outputDirectory>
             <includes>
                 <include>application*.yml</include>
-                <include>logback-spring.yml</include>
+                <include>logback-spring.xml</include>
                 <include>*.properties</include>
             </includes>
         </fileSet>
