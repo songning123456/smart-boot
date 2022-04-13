@@ -16,6 +16,7 @@
     <description>smart-boot project for Spring Boot</description>
 
     <modules>
+        <module>boot-module-base</module>
         <module>boot-module-system</module>
         <module>boot-module-biz</module>
     </modules>

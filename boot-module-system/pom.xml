@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>com.sonin</groupId>
-            <artifactId>smart-base</artifactId>
+            <artifactId>boot-module-base</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
