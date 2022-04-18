@@ -99,6 +99,12 @@
             <artifactId>guava</artifactId>
             <version>21.0</version>
         </dependency>
+        <!-- websocket-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+            <version>4.3.18.RELEASE</version>
+        </dependency>
     </dependencies>
 
 </project>
