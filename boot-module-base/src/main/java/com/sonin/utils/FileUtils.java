@@ -6,8 +6,12 @@ import java.io.RandomAccessFile;
 import java.util.List;
 
 /**
+ * <pre>
+ * 文件工具类
+ * </pre>
+ *
  * @author sonin
- * @date 2021/12/15 17:05
+ * @version 1.0 2022/4/20 17:22
  */
 public class FileUtils {
 

@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * <pre>
+ * 分页工具类
+ * </pre>
+ *
  * @author sonin
- * @date 2021/11/1 13:40
- * 假分页
+ * @version 1.0 2022/4/20 17:22
  */
-public class CustomPageUtils {
+public class PageUtils {
 
     public static <T> List<T> page(int pageNo, int pageSize, List<T> totalList) {
         List<T> pageList = new ArrayList<>();
