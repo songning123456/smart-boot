@@ -1,20 +1,19 @@
 # ***项目需要修改的参数
-# 1. 文件目录
-BOOT_JAR_DIR=/home/cloud/apps/smart-boot
-# 2. 需要启动的jar包
-BOOT_JAR_NAME=smart-boot.jar
-
-# ***根据需求修改
-# 3. 是否开启远程调试(默认false)
+# 启动堆大小
+HEAP_MIN=1024m
+HEAP_MAX=1024m
+# 是否开启远程调试(默认false)
 JAVA_DEBUG_ENABLE=false
-# 4. 远程调试端口
+# 远程调试端口
 JAVA_DEBUG_PORT=8787
-# 5. 启动堆大小
-HEAP_MIN=128m
-HEAP_MAX=128m
 
-# 启动的jar包全路径
-BOOT_JAR=$BOOT_JAR_DIR/$BOOT_JAR_NAME
+
+# 执行脚本的绝对路径
+SHELL_DIR=$(cd $(dirname "${BASH_SOURCE[0]}");pwd)
+# 部署路径，删除执行脚本绝对路径的'/bin'
+BOOT_JAR_DIR=${SHELL_DIR%/bin*}
+# 启动的jar包全路径/*.jar，此路径下只能存在一个jar包
+BOOT_JAR=$BOOT_JAR_DIR/*.jar
 # 日志文件所在位置
 JAR_LOG_DIR=$BOOT_JAR_DIR/logs
 
