@@ -277,6 +277,38 @@ public class Result implements IBase {
     }
 
     /**
+     * <pre>
+     * map => Bean1,...,BeanN
+     * </pre>
+     *
+     * @param srcMap
+     * @param classObjs
+     */
+    public void map2MultiBean(Map<String, Object> srcMap, Object... classObjs) {
+        Map<String, Object> name2ObjMap = new HashMap<>();
+        for (Object classObj : classObjs) {
+            name2ObjMap.putIfAbsent(classObj.getClass().getSimpleName(), classObj);
+        }
+        Object classObj;
+        Field field;
+        String suffixFieldName;
+        for (Map.Entry<String, Object> item : srcMap.entrySet()) {
+            classObj = name2ObjMap.get(item.getKey().split(UNDERLINE)[0]);
+            if (classObj != null) {
+                try {
+                    suffixFieldName = this.splitByLowerUnderscore(item.getKey());
+                    field = classObj.getClass().getDeclaredField(suffixFieldName);
+                    field.setAccessible(true);
+                    field.set(classObj, item.getValue());
+                    field.setAccessible(false);
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        name2ObjMap.clear();
+    }
+
+    /**
      * e.g: DemoA_aName => aName
      *
      * @param srcFieldName
