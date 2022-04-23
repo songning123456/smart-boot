@@ -34,7 +34,7 @@ public class AppWebSocketHandler implements WebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) {
-        log.info("webSocket afterConnectionEstablished success: {}", webSocketSession.getId());
+        log.info("websocket afterConnectionEstablished success: {}", webSocketSession.getId());
     }
 
     @Override
@@ -53,12 +53,19 @@ public class AppWebSocketHandler implements WebSocketHandler {
                     if (claim != null && !jwtUtil.isTokenExpired(claim)) {
                         String username = claim.getSubject();
                         String uuid = jsonObject.getString("uuid");
-                        // 存储 username:uuid => session
-                        IWebsocketConstant.uuid2SessionMap.putIfAbsent(username + ":" + uuid, webSocketSession);
+                        String time = jsonObject.getString("time");
+                        // 存储 username:uuid:time => session
+                        IWebsocketConstant.unique2SessionMap.putIfAbsent(username + ":" + uuid + ":" + time, webSocketSession);
                         // component: 具体的业务处理逻辑
                         if (!StrUtil.isEmpty(jsonObject.getString("component"))) {
-                            IWebsocketService websocketService = (IWebsocketService) CustomApplicationContext.getBean(jsonObject.getString("component"));
-                            websocketService.handle(jsonObject);
+                            try {
+                                IWebsocketService websocketService = (IWebsocketService) CustomApplicationContext.getBean(jsonObject.getString("component"));
+                                websocketService.handle(jsonObject);
+                            } catch (Exception e) {
+                                log.error("websocket未获取到组件: {}", e.getMessage());
+                                jsonObject.put("data", e.getMessage());
+                                webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(jsonObject)));
+                            }
                         }
                     }
                 }
@@ -99,14 +106,14 @@ public class AppWebSocketHandler implements WebSocketHandler {
      */
     private void removeUUID(WebSocketSession webSocketSession) {
         String uuid = "";
-        for (Map.Entry<String, WebSocketSession> item : IWebsocketConstant.uuid2SessionMap.entrySet()) {
+        for (Map.Entry<String, WebSocketSession> item : IWebsocketConstant.unique2SessionMap.entrySet()) {
             if (webSocketSession.getId().equals(item.getValue().getId())) {
                 uuid = item.getKey();
                 break;
             }
         }
         if (!"".equals(uuid)) {
-            IWebsocketConstant.uuid2SessionMap.remove(uuid);
+            IWebsocketConstant.unique2SessionMap.remove(uuid);
         }
     }
 
@@ -121,12 +128,12 @@ public class AppWebSocketHandler implements WebSocketHandler {
      */
     private void remove() {
         List<String> uuidList = new ArrayList<>();
-        for (Map.Entry<String, WebSocketSession> item : IWebsocketConstant.uuid2SessionMap.entrySet()) {
+        for (Map.Entry<String, WebSocketSession> item : IWebsocketConstant.unique2SessionMap.entrySet()) {
             if (!item.getValue().isOpen()) {
                 uuidList.add(item.getKey());
             }
         }
-        uuidList.forEach(IWebsocketConstant.uuid2SessionMap::remove);
+        uuidList.forEach(IWebsocketConstant.unique2SessionMap::remove);
     }
 
 }

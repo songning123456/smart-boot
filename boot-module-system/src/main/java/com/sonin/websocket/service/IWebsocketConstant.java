@@ -19,7 +19,7 @@ public interface IWebsocketConstant {
 
     String PONG = "pong";
 
-    // uuid命名规则: username:uuid
-    Map<String, WebSocketSession> uuid2SessionMap = new ConcurrentHashMap<>();
+    // username:uuid:time => session
+    Map<String, WebSocketSession> unique2SessionMap = new ConcurrentHashMap<>();
 
 }
