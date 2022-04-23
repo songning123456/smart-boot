@@ -1,5 +1,6 @@
 package com.sonin.websocket.interceptor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.socket.WebSocketHandler;
@@ -15,6 +16,7 @@ import java.util.Map;
  * @author sonin
  * @version 1.0 2022/4/18 17:39
  */
+@Slf4j
 public class AppHandshakeInterceptor implements HandshakeInterceptor {
 
     @Override
@@ -24,6 +26,7 @@ public class AppHandshakeInterceptor implements HandshakeInterceptor {
 
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
-
+        log.info("Websocket connected, remoteAddress: [{}]", request.getRemoteAddress());
     }
+
 }
