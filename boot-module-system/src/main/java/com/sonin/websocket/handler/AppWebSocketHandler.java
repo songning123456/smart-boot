@@ -4,9 +4,12 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sonin.utils.CustomApplicationContext;
+import com.sonin.utils.JwtUtil;
 import com.sonin.websocket.service.IWebsocketConstant;
 import com.sonin.websocket.service.IWebsocketService;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
@@ -26,9 +29,12 @@ import java.util.Map;
 @Component
 public class AppWebSocketHandler implements WebSocketHandler {
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) {
-        log.info("webSocket打开: {}", webSocketSession.getId());
+        log.info("webSocket afterConnectionEstablished success: {}", webSocketSession.getId());
     }
 
     @Override
@@ -41,14 +47,20 @@ public class AppWebSocketHandler implements WebSocketHandler {
             } else {
                 // 解析JSON字符串
                 JSONObject jsonObject = JSON.parseObject(payloadStr);
-                // 存储 uuid => session
-                if (!StrUtil.isEmpty(jsonObject.getString("uuid"))) {
-                    IWebsocketConstant.uuid2SessionMap.putIfAbsent(jsonObject.getString("uuid"), webSocketSession);
-                }
-                // component: 具体的业务处理逻辑
-                if (!StrUtil.isEmpty(jsonObject.getString("component"))) {
-                    IWebsocketService websocketService = (IWebsocketService) CustomApplicationContext.getBean(jsonObject.getString("component"));
-                    websocketService.handle(jsonObject);
+                String token = jsonObject.getString("token");
+                if (!StrUtil.isEmpty(token)) {
+                    Claims claim = jwtUtil.getClaimByToken(token);
+                    if (claim != null && !jwtUtil.isTokenExpired(claim)) {
+                        String username = claim.getSubject();
+                        String uuid = jsonObject.getString("uuid");
+                        // 存储 username:uuid => session
+                        IWebsocketConstant.uuid2SessionMap.putIfAbsent(username + ":" + uuid, webSocketSession);
+                        // component: 具体的业务处理逻辑
+                        if (!StrUtil.isEmpty(jsonObject.getString("component"))) {
+                            IWebsocketService websocketService = (IWebsocketService) CustomApplicationContext.getBean(jsonObject.getString("component"));
+                            websocketService.handle(jsonObject);
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
