@@ -42,13 +42,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String[] HTTP_WHITELIST = {
             "/login",
             "/logout",
-            "/boot/websocket/app"
     };
 
     private static final String[] WEB_WHITELIST = {
             "/auth/captcha",
-            "/boot/websocket/app",
-            "/ws/**"
+            "/websocket/app",
     };
 
 
