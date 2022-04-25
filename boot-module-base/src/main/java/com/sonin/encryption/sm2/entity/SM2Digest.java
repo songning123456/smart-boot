@@ -1,6 +1,6 @@
-package com.sonin.encryption.entity;
+package com.sonin.encryption.sm2.entity;
 
-import com.sonin.encryption.util.CommonUtils;
+import com.sonin.encryption.sm2.utils.ByteUtils;
 
 /**
  * @Author sonin
@@ -154,11 +154,11 @@ public class SM2Digest {
     }
 
     private static byte[] bigEndianIntToByte(int num) {
-        return back(CommonUtils.intToBytes(num));
+        return back(ByteUtils.intToBytes(num));
     }
 
     private static int bigEndianByteToInt(byte[] bytes) {
-        return CommonUtils.byteToInt(back(bytes));
+        return ByteUtils.byteToInt(back(bytes));
     }
 
     private static int ffj(int x, int y, int z, int j) {
@@ -227,7 +227,7 @@ public class SM2Digest {
         pos += in.length;
         System.arraycopy(padd, 0, out, pos, padd.length);
         pos += padd.length;
-        byte[] tmp = back(CommonUtils.longToBytes(n));
+        byte[] tmp = back(ByteUtils.longToBytes(n));
         System.arraycopy(tmp, 0, out, pos, tmp.length);
         return out;
     }

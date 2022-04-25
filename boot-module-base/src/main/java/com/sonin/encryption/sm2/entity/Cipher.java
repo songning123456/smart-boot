@@ -1,8 +1,8 @@
-package com.sonin.encryption.entity;
+package com.sonin.encryption.sm2.entity;
 
 import java.math.BigInteger;
 
-import com.sonin.encryption.util.CommonUtils;
+import com.sonin.encryption.sm2.utils.ByteUtils;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
@@ -33,11 +33,11 @@ public class Cipher {
         this.sm2KeyBase = new SM2Digest();
         this.sm2c2 = new SM2Digest();
 
-        byte[] p = CommonUtils.byteConvert32Bytes(p2.getX().toBigInteger());
+        byte[] p = ByteUtils.byteConvert32Bytes(p2.getX().toBigInteger());
         this.sm2KeyBase.update(p, 0, p.length);
         this.sm2c2.update(p, 0, p.length);
 
-        p = CommonUtils.byteConvert32Bytes(p2.getY().toBigInteger());
+        p = ByteUtils.byteConvert32Bytes(p2.getY().toBigInteger());
         this.sm2KeyBase.update(p, 0, p.length);
         this.ct = 1;
         nextKey();
@@ -91,7 +91,7 @@ public class Cipher {
     }
 
     public void doFinal(byte[] c3) {
-        byte[] p = CommonUtils.byteConvert32Bytes(p2.getY().toBigInteger());
+        byte[] p = ByteUtils.byteConvert32Bytes(p2.getY().toBigInteger());
         this.sm2c2.update(p, 0, p.length);
         this.sm2c2.doFinal(c3);
         reset();

@@ -1,4 +1,4 @@
-package com.sonin.encryption.entity;
+package com.sonin.encryption.sm2.entity;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;

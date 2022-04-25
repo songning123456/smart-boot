@@ -2,8 +2,8 @@ package com.sonin.modules.file.controller;
 
 import cn.hutool.core.util.StrUtil;
 import com.sonin.api.vo.Result;
-import com.sonin.encryption.util.CommonUtils;
-import com.sonin.encryption.util.SM2Utils;
+import com.sonin.encryption.sm2.utils.ByteUtils;
+import com.sonin.encryption.sm2.utils.SM2Utils;
 import com.sonin.modules.file.dto.FileListDTO;
 import com.sonin.modules.file.entity.FileList;
 import com.sonin.modules.file.vo.FileListVO;
@@ -63,7 +63,7 @@ public class FileListController {
     private void buildList(File file, List<FileList> fileLists, String parentId, String uploadPath) {
         FileList fileList = new FileList();
         fileList.setId(file.getAbsolutePath());
-        fileList.setEncryptionId(SM2Utils.encrypt(CommonUtils.hexToByte(publicKey), file.getAbsolutePath().getBytes()));
+        fileList.setEncryptionId(SM2Utils.encrypt(ByteUtils.hexToByte(publicKey), file.getAbsolutePath().getBytes()));
         fileList.setFileName(file.getName());
         fileList.setParentId(parentId);
         if (file.isFile()) {
@@ -131,7 +131,7 @@ public class FileListController {
 
     @DeleteMapping("/delete/{encryptionId}")
     public Result deleteCtrl(@PathVariable("encryptionId") String encryptionId) {
-        String path = new String(SM2Utils.decrypt(CommonUtils.hexToByte(privateKey), CommonUtils.hexToByte(encryptionId)));
+        String path = new String(SM2Utils.decrypt(ByteUtils.hexToByte(privateKey), ByteUtils.hexToByte(encryptionId)));
         boolean successFlag = FileUtils.delFile(new File(path));
         if (successFlag) {
             return Result.ok();

@@ -1,4 +1,4 @@
-package com.sonin.encryption.util;
+package com.sonin.encryption.sm2.utils;
 
 
 import java.math.BigInteger;
@@ -8,7 +8,7 @@ import java.math.BigInteger;
  * @Date 2021/4/10 10:32 上午
  * @Version 1.0
  **/
-public class CommonUtils {
+public class ByteUtils {
 
     /**
      * 整形转换成网络传输的字节流（字节数组）型数据

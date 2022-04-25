@@ -1,11 +1,11 @@
-package com.sonin.encryption.util;
+package com.sonin.encryption.sm2.utils;
 
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sonin.encryption.entity.Cipher;
-import com.sonin.encryption.entity.SM2;
+import com.sonin.encryption.sm2.entity.Cipher;
+import com.sonin.encryption.sm2.entity.SM2;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
@@ -30,8 +30,8 @@ public class SM2Utils {
         BigInteger privateKey = ecPrivateKeyParameters.getD();
         ECPoint publicKey = ecPublicKeyParameters.getQ();
 
-        result.put("publicKey", CommonUtils.byteToHex(publicKey.getEncoded()));
-        result.put("privateKey", CommonUtils.byteToHex(privateKey.toByteArray()));
+        result.put("publicKey", ByteUtils.byteToHex(publicKey.getEncoded()));
+        result.put("privateKey", ByteUtils.byteToHex(privateKey.toByteArray()));
         return result;
     }
 
@@ -63,7 +63,7 @@ public class SM2Utils {
         cipher.doFinal(c3);
 
         // C1 C2 C3拼装成加密字串
-        return CommonUtils.byteToHex(c1.getEncoded()) + CommonUtils.byteToHex(source) + CommonUtils.byteToHex(c3);
+        return ByteUtils.byteToHex(c1.getEncoded()) + ByteUtils.byteToHex(source) + ByteUtils.byteToHex(c3);
 
     }
 
@@ -82,11 +82,11 @@ public class SM2Utils {
             return null;
         }
         // 加密字节数组转换为十六进制的字符串 长度变为encryptedData.length * 2
-        String data = CommonUtils.byteToHex(encryptedData);
-        byte[] c1Bytes = CommonUtils.hexToByte(data.substring(0, 130));
+        String data = ByteUtils.byteToHex(encryptedData);
+        byte[] c1Bytes = ByteUtils.hexToByte(data.substring(0, 130));
         int c2Len = encryptedData.length - 97;
-        byte[] c2 = CommonUtils.hexToByte(data.substring(130, 130 + 2 * c2Len));
-        byte[] c3 = CommonUtils.hexToByte(data.substring(130 + 2 * c2Len, 194 + 2 * c2Len));
+        byte[] c2 = ByteUtils.hexToByte(data.substring(130, 130 + 2 * c2Len));
+        byte[] c3 = ByteUtils.hexToByte(data.substring(130 + 2 * c2Len, 194 + 2 * c2Len));
 
         SM2 sm2 = SM2.getInstance();
         BigInteger userD = new BigInteger(1, privateKey);

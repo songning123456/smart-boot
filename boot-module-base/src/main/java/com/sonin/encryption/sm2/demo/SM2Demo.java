@@ -1,7 +1,7 @@
-package com.sonin.encryption.demo;
+package com.sonin.encryption.sm2.demo;
 
-import com.sonin.encryption.util.CommonUtils;
-import com.sonin.encryption.util.SM2Utils;
+import com.sonin.encryption.sm2.utils.ByteUtils;
+import com.sonin.encryption.sm2.utils.SM2Utils;
 
 import java.util.Map;
 
@@ -25,11 +25,11 @@ public class SM2Demo {
         System.out.println("原始文本: " + sourceText);
 
         // 加密文本
-        String encryptText = SM2Utils.encrypt(CommonUtils.hexToByte(keys.get("publicKey")), sourceText.getBytes());
+        String encryptText = SM2Utils.encrypt(ByteUtils.hexToByte(keys.get("publicKey")), sourceText.getBytes());
         System.out.println("加密文本: " + encryptText);
 
         // 解密文本
-        String decryptText = new String(SM2Utils.decrypt(CommonUtils.hexToByte(keys.get("privateKey")), CommonUtils.hexToByte(encryptText)));
+        String decryptText = new String(SM2Utils.decrypt(ByteUtils.hexToByte(keys.get("privateKey")), ByteUtils.hexToByte(encryptText)));
         System.out.println("解密文本: " + decryptText);
 
         System.out.println("\n=========\n");
