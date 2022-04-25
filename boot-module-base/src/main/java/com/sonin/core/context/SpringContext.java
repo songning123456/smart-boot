@@ -1,4 +1,4 @@
-package com.sonin.utils;
+package com.sonin.core.context;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -8,15 +8,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Lazy(false)
-public class CustomApplicationContext implements ApplicationContextAware {
+public class SpringContext implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;
 
-    public CustomApplicationContext() {
+    public SpringContext() {
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        CustomApplicationContext.applicationContext = applicationContext;
+        SpringContext.applicationContext = applicationContext;
     }
 
     public static ApplicationContext getApplicationContext() {

@@ -1,7 +1,7 @@
 package com.sonin.security;
 
 import cn.hutool.core.util.StrUtil;
-import com.sonin.utils.CustomApplicationContext;
+import com.sonin.core.context.SpringContext;
 import com.sonin.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -25,7 +25,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-        JwtUtil jwtUtil = CustomApplicationContext.getBean(JwtUtil.class);
+        JwtUtil jwtUtil = SpringContext.getBean(JwtUtil.class);
         String jwt = request.getHeader(jwtUtil.getHeader());
         if (StrUtil.isBlankOrUndefined(jwt)) {
             chain.doFilter(request, response);

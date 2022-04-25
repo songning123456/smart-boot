@@ -3,7 +3,7 @@ package com.sonin.websocket.handler;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.sonin.utils.CustomApplicationContext;
+import com.sonin.core.context.SpringContext;
 import com.sonin.utils.JwtUtil;
 import com.sonin.websocket.service.IWebsocketConstant;
 import com.sonin.websocket.service.IWebsocketService;
@@ -59,7 +59,7 @@ public class AppWebSocketHandler implements WebSocketHandler {
                         // component: 具体的业务处理逻辑
                         if (!StrUtil.isEmpty(jsonObject.getString("component"))) {
                             try {
-                                IWebsocketService websocketService = (IWebsocketService) CustomApplicationContext.getBean(jsonObject.getString("component"));
+                                IWebsocketService websocketService = (IWebsocketService) SpringContext.getBean(jsonObject.getString("component"));
                                 websocketService.handle(jsonObject);
                             } catch (Exception e) {
                                 log.error("websocket未获取到组件: {}", e.getMessage());
