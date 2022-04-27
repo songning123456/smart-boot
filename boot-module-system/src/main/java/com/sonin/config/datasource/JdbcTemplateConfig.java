@@ -37,7 +37,7 @@ public class JdbcTemplateConfig {
         Map<String, DataSource> dataSourceMap = this.dynamicRoutingDataSource.getCurrentDataSources();
         for (String key : dataSourceMap.keySet()) {
             SpringContext.setJdbcTemplateBean(key, JdbcTemplate.class, this.dynamicRoutingDataSource.getDataSource(key));
-            log.info("~" + key + " JdbcTemplateBean实例化完成 <<<");
+            log.info(">>> " + key + " JdbcTemplateBean实例化完成 <<<");
         }
         log.info(">>> JdbcTemplateBean实例化结束 <<<");
     }
