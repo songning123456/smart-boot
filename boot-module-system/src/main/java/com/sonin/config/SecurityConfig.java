@@ -42,14 +42,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String[] HTTP_WHITELIST = {
             "/login",
             "/logout",
+            "/druid/**",
     };
 
     private static final String[] WEB_WHITELIST = {
             "/auth/captcha",
             "/websocket/app",
-            "/file/excel/import", // todo 待删除
-            "/file/excel/export", // todo 待删除
-            "/file/excel/template", // todo 待删除
     };
 
 

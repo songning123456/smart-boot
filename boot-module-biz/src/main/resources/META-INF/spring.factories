@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.sonin.config.datasource.DataSourceConfig,\
+com.sonin.config.datasource.JdbcTemplateConfig

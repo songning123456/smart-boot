@@ -6,24 +6,65 @@ server:
 spring:
   servlet:
     multipart:
+      # 开启multipart上传功能
+      enabled: true
+      # 文件写入磁盘的阈值
+      file-size-threshold: 2KB
+      # 最大文件大小
       max-file-size: 10MB
+      # 最大请求大小
       max-request-size: 10MB
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.2.126:3306/smart-boot-biz?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: root
-    password: 123456
+    dynamic:
+      # 通过http://ip:port/boot/druid/api.html访问
+      druid:
+        # 初始化、最小、最大 值
+        initial-size: 5
+        min-idle: 5
+        maxActive: 20
+        # 配置获取连接等待超时的时间
+        maxWait: 60000
+        # 配置间隔多久才进行一次检测,检测需要关闭的空闲连接,单位是毫秒
+        timeBetweenEvictionRunsMillis: 60000
+        # 配置一个连接在池中最小生存的时间,单位是毫秒
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: SELECT 1
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        # 打开PSCache,并且指定每个连接上PSCache的大小
+        poolPreparedStatements: true
+        maxPoolPreparedStatementPerConnectionSize: 20
+        # 配置监控统计拦截的filters,去掉后监控界面sql无法统计,'wall'用于防火墙
+        filters: stat,wall,slf4j
+        # 通过connectProperties属性来打开mergeSql功能,慢SQL记录
+        connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+      datasource:
+        master:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://192.168.2.126:3306/smart-boot-biz?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+          username: root
+          password: 123456
   redis:
     database: 3
-    host: 192.168.2.126 # 服务器地址
-    password: '' # 服务器连接密码（默认为空）
-    port: 6379 # 服务器连接端口
-    timeout: 2000 # 连接超时时间（毫秒）
+    # 服务器地址
+    host: 192.168.2.126
+    # 服务器连接密码（默认为空）
+    password: ''
+    # 服务器连接端口
+    port: 6379
+    # 连接超时时间（毫秒）
+    timeout: 2000
     jedis:
       pool:
-        max-active: 50 # 连接池最大连接数（使用负值表示没有限制）
-        max-idle: 20 # 连接池中的最大空闲连接
-        max-wait: 1000 # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        # 连接池最大连接数（使用负值表示没有限制）
+        max-active: 50
+        # 连接池中的最大空闲连接
+        max-idle: 20
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: 1000
 
 mybatis-plus:
   mapper-locations: classpath*:com/sonin/modules/**/xml/*Mapper.xml
@@ -31,7 +72,8 @@ mybatis-plus:
 boot:
   jwt:
     header: Authorization
-    expire: 604800 #7天，秒单位
+    #7天，秒单位
+    expire: 604800
     secret: ji8n3439n439n43ld9ne9343fdfer49h
   path:
     fileUpload: E:\\Downloads\\test

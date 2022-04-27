@@ -25,7 +25,7 @@ public class BootApplicationRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         // 初始化时jedis订阅websocket主题
-        log.info("~初始化时jedis订阅websocket主题~");
+        log.info(">>> 初始化时jedis订阅websocket主题 <<<");
         jedisSubscribeInit.subscribe("websocket");
     }
 
