@@ -48,6 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/auth/captcha",
             "/websocket/app",
             "/file/excel/import", // todo 待删除
+            "/file/excel/export", // todo 待删除
+            "/file/excel/template", // todo 待删除
     };
 
 

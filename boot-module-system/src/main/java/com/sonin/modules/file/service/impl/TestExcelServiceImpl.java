@@ -3,6 +3,10 @@ package com.sonin.modules.file.service.impl;
 import com.sonin.api.vo.Result;
 import com.sonin.modules.file.service.ExcelService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -15,18 +19,18 @@ import java.util.Map;
 
 /**
  * <pre>
- * Excel导入测试
+ * Excel导入导出测试
  * </pre>
  *
  * @author sonin
  * @version 1.0 2022/4/27 10:32
  */
-@Service("importTest")
+@Service("excelTest")
 @Slf4j
-public class ImportTestExcelServiceImpl implements ExcelService {
+public class TestExcelServiceImpl implements ExcelService {
 
     @Override
-    public Result handle(HttpServletRequest request) throws Exception {
+    public Result importHandle(HttpServletRequest request) throws Exception {
         Result result = new Result();
         MultiValueMap<String, MultipartFile> multiValueMap = ((StandardMultipartHttpServletRequest) request).getMultiFileMap();
         for (Map.Entry<String, List<MultipartFile>> item : multiValueMap.entrySet()) {
@@ -54,6 +58,32 @@ public class ImportTestExcelServiceImpl implements ExcelService {
         }
         result.setMessage("导入成功");
         return result;
+    }
+
+    @Override
+    public Workbook exportHandle(HttpServletRequest request) throws Exception {
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        // 创建sheet0
+        HSSFSheet hssfSheet0 = workbook.createSheet("sheet0");
+        // 创建第0行
+        HSSFRow row0 = hssfSheet0.createRow(0);
+        // 创建第0行-0列
+        HSSFCell cell0 = row0.createCell(0);
+        cell0.setCellValue("测试值");
+        return workbook;
+    }
+
+    @Override
+    public Workbook templateHandle(HttpServletRequest request) throws Exception {
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        // 创建sheet0
+        HSSFSheet hssfSheet0 = workbook.createSheet("sheet0");
+        // 创建第0行
+        HSSFRow row0 = hssfSheet0.createRow(0);
+        // 创建第0行-0列
+        HSSFCell cell0 = row0.createCell(0);
+        cell0.setCellValue("测试值");
+        return workbook;
     }
 
 }
