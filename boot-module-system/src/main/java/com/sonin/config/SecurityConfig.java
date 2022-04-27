@@ -47,6 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String[] WEB_WHITELIST = {
             "/auth/captcha",
             "/websocket/app",
+            "/file/excel/import", // todo 待删除
     };
 
 
