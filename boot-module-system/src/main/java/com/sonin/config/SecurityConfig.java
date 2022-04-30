@@ -53,39 +53,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .cors()
+                // 允许iframe嵌套
+                .headers().frameOptions().disable()
+                .and().cors()
                 // 关闭csrf
-                .and()
-                .csrf()
-                .disable()
+                .and().csrf().disable()
                 // 登录配置
-                .formLogin()
-                .successHandler(loginSuccessHandler)
-                .failureHandler(loginFailureHandler)
+                .formLogin().successHandler(loginSuccessHandler).failureHandler(loginFailureHandler)
                 // 退出配置
-                .and()
-                .logout()
-                .logoutSuccessHandler(jwtLogoutSuccessHandler)
+                .and().logout().logoutSuccessHandler(jwtLogoutSuccessHandler)
                 // 禁用session
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 // 配置拦截规则
-                .and()
-                .authorizeRequests()
-                .antMatchers(HTTP_WHITELIST)
-                .permitAll()
-                .anyRequest()
-                .authenticated()
+                .and().authorizeRequests().antMatchers(HTTP_WHITELIST).permitAll().anyRequest().authenticated()
                 // 异常处理器
-                .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .accessDeniedHandler(jwtAccessDeniedHandler)
+                .and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).accessDeniedHandler(jwtAccessDeniedHandler)
                 // 配置自定义的过滤器
-                .and()
-                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-                .addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class);
+                .and().addFilter(new JwtAuthenticationFilter(authenticationManager())).addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override

@@ -47,12 +47,12 @@ public class DruidConfig {
         ServletRegistrationBean bean = new ServletRegistrationBean(new StatViewServlet(), "/druid/*");
         Map<String, String> initMap = new HashMap<>();
         // 登陆页面账户与密码
-        initMap.put(ResourceServlet.PARAM_NAME_USERNAME, "root");
-        initMap.put(ResourceServlet.PARAM_NAME_PASSWORD, "123456");
+        // initMap.put(ResourceServlet.PARAM_NAME_USERNAME, "root");
+        // initMap.put(ResourceServlet.PARAM_NAME_PASSWORD, "123456");
         // 监控后台允许ip
         initMap.put(ResourceServlet.PARAM_NAME_ALLOW, "");
         // 黑名单
-        initMap.put(ResourceServlet.PARAM_NAME_DENY, "192.168.0.1");
+        // initMap.put(ResourceServlet.PARAM_NAME_DENY, "192.168.0.1");
         bean.setInitParameters(initMap);
         return bean;
     }
