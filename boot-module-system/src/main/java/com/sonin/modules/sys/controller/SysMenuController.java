@@ -1,14 +1,13 @@
 package com.sonin.modules.sys.controller;
 
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sonin.api.vo.Result;
 import com.sonin.core.query.BaseFactory;
 import com.sonin.modules.sys.entity.*;
+import com.sonin.modules.sys.pojo.SysMenuDFS;
 import com.sonin.modules.sys.service.SysMenuService;
 import com.sonin.modules.sys.service.SysRoleMenuService;
 import com.sonin.modules.sys.vo.SysMenuVO;
-import com.sonin.utils.BeanExtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +15,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +59,7 @@ public class SysMenuController {
                     .orderBy(true, true, "order_num")
                     .selectMaps();
             List<SysMenu> sysMenuList = BaseFactory.result().maps2Beans(mapList, SysMenu.class);
-            List<SysMenuVO> sysMenuVOList = buildTree(sysMenuList);
+            List<SysMenuVO> sysMenuVOList = new SysMenuDFS().buildTree(sysMenuList);
             result.setResult(sysMenuVOList);
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,27 +68,17 @@ public class SysMenuController {
         return result;
     }
 
-    private List<SysMenuVO> buildTree(List<SysMenu> sysMenuList) {
-        List<SysMenuVO> finalMenus = new ArrayList<>();
-        List<SysMenuVO> sysMenuVOList = new ArrayList<>();
-        try {
-            sysMenuVOList = BeanExtUtils.beans2Beans(sysMenuList, SysMenuVO.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        // 先各自寻找到各自的孩子
-        for (SysMenuVO k : sysMenuVOList) {
-            for (SysMenuVO v : sysMenuVOList) {
-                if (k.getId().equals(v.getParentId())) {
-                    k.getChildren().add(v);
-                }
-            }
-            // 提取出父节点
-            if (StrUtil.isBlank(k.getParentId())) {
-                finalMenus.add(k);
-            }
-        }
-        return finalMenus;
+    @GetMapping("/dfs")
+    public Result<LinkedList<LinkedList<SysMenu>>> dfsCtrl() {
+        Result<LinkedList<LinkedList<SysMenu>>> result = new Result<>();
+        SysMenuDFS sysMenuDFS = new SysMenuDFS();
+        // 获取所有菜单信息
+        List<SysMenu> sysMenus = sysMenuService.list(new QueryWrapper<SysMenu>().orderByAsc("order_num"));
+        // 转成树状结构
+        List<SysMenuVO> sysMenuTree = sysMenuDFS.buildTree(sysMenus);
+        // 解析每一条链路
+        result.setResult(sysMenuDFS.result(sysMenuTree));
+        return result;
     }
 
     @GetMapping("/list")
@@ -98,7 +87,7 @@ public class SysMenuController {
         // 获取所有菜单信息
         List<SysMenu> sysMenus = sysMenuService.list(new QueryWrapper<SysMenu>().orderByAsc("order_num"));
         // 转成树状结构
-        List<SysMenuVO> sysMenuVOList = buildTree(sysMenus);
+        List<SysMenuVO> sysMenuVOList = new SysMenuDFS().buildTree(sysMenus);
         result.setResult(sysMenuVOList);
         return result;
     }
