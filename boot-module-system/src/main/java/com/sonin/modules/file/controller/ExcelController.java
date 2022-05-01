@@ -7,6 +7,7 @@ import com.sonin.modules.file.service.ExcelService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,7 +28,7 @@ import java.nio.charset.StandardCharsets;
 @RequestMapping("/file/excel")
 public class ExcelController {
 
-    @GetMapping("/import")
+    @PostMapping("/import")
     public void importCtrl(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("application/json;charset=UTF-8");
         ServletOutputStream outputStream = response.getOutputStream();
