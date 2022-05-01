@@ -1,5 +1,6 @@
 package com.sonin.core.query;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.common.base.CaseFormat;
@@ -46,6 +47,11 @@ public abstract class Base implements IBase {
             tableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, className);
             fields = clazz.getDeclaredFields();
             for (Field field : fields) {
+                // 过滤掉 @TableField(exist = false) 情况
+                TableField tableFieldAnno = field.getAnnotation(TableField.class);
+                if (tableFieldAnno != null && !tableFieldAnno.exist()) {
+                    continue;
+                }
                 classFieldName = field.getName();
                 tableFieldName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, classFieldName);
                 alias = DOUBLE_QUOTES + className + UNDERLINE + classFieldName + DOUBLE_QUOTES;
