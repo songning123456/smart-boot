@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @Service("websocket")
 @Slf4j
-public class JedisSubscribeServiceImpl implements JedisSubscribeService {
+public class WebsocketSubscribeServiceImpl implements JedisSubscribeService {
 
     @Override
     public void handle(String message) {
@@ -31,7 +31,7 @@ public class JedisSubscribeServiceImpl implements JedisSubscribeService {
         try {
             WebsocketDTO websocketDTO = JSON.parseObject(message, WebsocketDTO.class);
             String pushType = websocketDTO.getPushType();
-            if ("one".equals(pushType)) {
+            if ("me".equals(pushType)) {
                 // one: 推送给我
                 String key = websocketDTO.getUsername() + ":" + websocketDTO.getUuid() + ":" + websocketDTO.getTime();
                 WebSocketSession webSocketSession = IWebsocketConstant.unique2SessionMap.get(key);

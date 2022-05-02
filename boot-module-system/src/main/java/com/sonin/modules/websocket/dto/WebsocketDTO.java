@@ -16,15 +16,24 @@ public class WebsocketDTO extends Websocket {
 
     /**
      * <pre>
-     * one: 推送给我；some: 推送给指定username；all: 所有人
+     * me: 推送给我；some: 推送给指定username；all: 所有人
      * </pre>
      *
      * @param null
      * @author sonin
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
-    private String pushType = "one";
+    private String pushType = "me";
 
-    private String data = "";
+    /**
+     * <pre>
+     * 请求的数据
+     * </pre>
+     *
+     * @param null
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    private String reqData = "";
 
 }
