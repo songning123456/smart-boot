@@ -96,6 +96,27 @@ public class SysUserController {
         return result;
     }
 
+    /**
+     * <pre>
+     * 根据条件查询所有用户
+     * </pre>
+     *
+     * @param sysUserDTO
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    @GetMapping("/list")
+    public Result<List<SysUser>> listCtrl(SysUserDTO sysUserDTO) {
+        Result<List<SysUser>> result = new Result<>();
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>()
+                .like(StringUtils.isNotEmpty(sysUserDTO.getUsername()), "username", sysUserDTO.getUsername())
+                .like(StringUtils.isNotEmpty(sysUserDTO.getRealname()), "realname", sysUserDTO.getRealname())
+                .orderByDesc("update_time");
+        List<SysUser> sysUserList = sysUserService.list(queryWrapper);
+        result.setResult(sysUserList);
+        return result;
+    }
+
     @PostMapping("/save")
     public Result saveCtrl(@Validated @RequestBody SysUser sysUser) {
         // 默认密码

@@ -20,7 +20,7 @@ public class Websocket {
      *
      * @param null
      * @author sonin
-     * @Description: TODO(这里描述这个方法的需求变更情况)
+     * @Description: 如果是多个username, 以 ',' 分割
      */
     private String username = "";
 
