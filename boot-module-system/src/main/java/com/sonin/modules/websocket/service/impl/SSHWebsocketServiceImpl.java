@@ -42,7 +42,7 @@ public class SSHWebsocketServiceImpl implements IWebsocketService {
             sshResult = sshTemplate.execute(jsonObject.getString("remoteIp"), jsonObject.getInteger("remotePort"), jsonObject.getString("remoteUsername"), remotePassword, sshSession -> sshSession.executeCommand(jsonObject.getString("command")));
         } catch (Exception e) {
             e.printStackTrace();
-            sshResult = new SshResult(e);
+            sshResult = new SshResult(false, e.getMessage());
         }
         // 设置用户名
         String username = jwtUtil.getClaimByToken(jsonObject.getString("token")).getSubject();
