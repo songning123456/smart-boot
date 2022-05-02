@@ -19,6 +19,7 @@
         <module>boot-module-base</module>
         <module>boot-module-system</module>
         <module>boot-module-biz</module>
+        <module>boot-module-third</module>
     </modules>
 
     <properties>
