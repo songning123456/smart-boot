@@ -62,7 +62,7 @@ public class AppWebSocketHandler implements WebSocketHandler {
                                 IWebsocketService websocketService = (IWebsocketService) SpringContext.getBean(jsonObject.getString("component"));
                                 websocketService.handle(jsonObject);
                             } catch (Exception e) {
-                                log.error("websocket未获取到组件: {}", e.getMessage());
+                                log.error("websocket组件异常: {}", e.getMessage());
                                 jsonObject.put("resData", e.getMessage());
                                 webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(jsonObject)));
                             }
