@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.5.62, for Win64 (AMD64)
 --
--- Host: 192.168.2.126    Database: smart-boot-biz
+-- Host: 192.168.2.126    Database: smart-boot-third
 -- ------------------------------------------------------
 -- Server version	5.7.29-log
 
@@ -248,7 +248,7 @@ INSERT INTO `sys_user_role` VALUES ('42394118b01244ba894da15018678cf6','4dfdd462
 UNLOCK TABLES;
 
 --
--- Dumping routines for database 'smart-boot-biz'
+-- Dumping routines for database 'smart-boot-third'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
