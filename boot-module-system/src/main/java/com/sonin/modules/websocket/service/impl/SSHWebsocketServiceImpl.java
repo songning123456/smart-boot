@@ -6,9 +6,11 @@ import com.sonin.jedis.template.JedisTemplate;
 import com.sonin.modules.websocket.entity.Websocket;
 import com.sonin.ssh.command.SshTemplate;
 import com.sonin.ssh.pojo.SshResult;
+import com.sonin.utils.CryptoUtils;
 import com.sonin.utils.JwtUtil;
 import com.sonin.websocket.service.IWebsocketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,6 +24,8 @@ import org.springframework.stereotype.Service;
 @Service("SSH")
 public class SSHWebsocketServiceImpl implements IWebsocketService {
 
+    @Value("${boot.encryption.crypto.secretKey:}")
+    private String secretKey;
     @Autowired
     private SshTemplate sshTemplate;
     @Autowired
@@ -33,7 +37,9 @@ public class SSHWebsocketServiceImpl implements IWebsocketService {
     public void handle(JSONObject jsonObject) {
         SshResult sshResult;
         try {
-            sshResult = sshTemplate.execute(jsonObject.getString("remoteIp"), jsonObject.getInteger("remotePort"), jsonObject.getString("remoteUsername"), jsonObject.getString("remotePassword"), sshSession -> sshSession.executeCommand(jsonObject.getString("command")));
+            // 密码解密
+            String remotePassword = CryptoUtils.aesDecrypt(jsonObject.getString("remotePassword"), secretKey);
+            sshResult = sshTemplate.execute(jsonObject.getString("remoteIp"), jsonObject.getInteger("remotePort"), jsonObject.getString("remoteUsername"), remotePassword, sshSession -> sshSession.executeCommand(jsonObject.getString("command")));
         } catch (Exception e) {
             e.printStackTrace();
             sshResult = new SshResult(e);

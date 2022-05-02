@@ -4,6 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.sonin.api.vo.Result;
 import com.sonin.jedis.template.JedisTemplate;
 import com.sonin.modules.websocket.dto.WebsocketDTO;
+import com.sonin.modules.websocket.entity.Websocket;
+import com.sonin.utils.BeanExtUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/websocket")
+@Slf4j
 public class WebsocketController {
 
     @Autowired
@@ -36,9 +40,15 @@ public class WebsocketController {
         }
         // 可以结合具体的业务逻辑设置data值
         websocketDTO.setResData("响应的结果: " + websocketDTO.getReqData());
-        String message = JSON.toJSONString(websocketDTO);
+        Websocket websocket;
+        try {
+            websocket = BeanExtUtils.bean2Bean(websocketDTO, Websocket.class);
+        } catch (Exception e) {
+            log.error("WebsocketDTO转Websocket error: {}", e.getMessage());
+            websocket = new Websocket();
+        }
         // jedis发布消息
-        jedisTemplate.publish("websocket", message);
+        jedisTemplate.publish("websocket", JSON.toJSONString(websocket));
         return Result.ok();
     }
 

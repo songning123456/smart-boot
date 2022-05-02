@@ -33,10 +33,10 @@ public class FileListController {
     @Value(value = "${boot.path.fileUpload}")
     private String fileUploadPath;
 
-    @Value(value = "${boot.encryption.publicKey}")
+    @Value(value = "${boot.encryption.sm2.publicKey}")
     private String publicKey;
 
-    @Value(value = "${boot.encryption.privateKey}")
+    @Value(value = "${boot.encryption.sm2.privateKey}")
     private String privateKey;
 
     @GetMapping("/list")
