@@ -32,7 +32,7 @@ public class WebsocketSubscribeServiceImpl implements JedisSubscribeService {
             WebsocketDTO websocketDTO = JSON.parseObject(message, WebsocketDTO.class);
             String pushType = websocketDTO.getPushType();
             if ("me".equals(pushType)) {
-                // one: 推送给我
+                // me: 推送给我
                 String key = websocketDTO.getUsername() + ":" + websocketDTO.getUuid() + ":" + websocketDTO.getTime();
                 WebSocketSession webSocketSession = IWebsocketConstant.unique2SessionMap.get(key);
                 if (webSocketSession != null && webSocketSession.isOpen()) {

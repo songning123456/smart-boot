@@ -39,15 +39,15 @@ public class SshSession {
      * 执行失败Result为false，并携带失败信息
      * 执行异常Result为false，并携带异常
      */
-    public Result executeCommand(String cmd) {
+    public SshResult executeCommand(String cmd) {
         return executeCommand(cmd, (Integer) ConstantEnum.getValue("ssh", "cmdTimeout"));
     }
 
-    public Result executeCommand(String cmd, int timoutMillis) {
+    public SshResult executeCommand(String cmd, int timoutMillis) {
         return executeCommand(cmd, null, timoutMillis);
     }
 
-    public Result executeCommand(String cmd, ILineProcessor iLineProcessor) {
+    public SshResult executeCommand(String cmd, ILineProcessor iLineProcessor) {
         return executeCommand(cmd, iLineProcessor, ConstantEnum.getValue("ssh", "cmdTimeout"));
     }
 
@@ -58,20 +58,20 @@ public class SshSession {
      * @param iLineProcessor 回调处理行
      * @return 如果lineProcessor不为null, 那么永远返回Result.true
      */
-    public Result executeCommand(String cmd, ILineProcessor iLineProcessor, int timeoutMillis) {
+    public SshResult executeCommand(String cmd, ILineProcessor iLineProcessor, int timeoutMillis) {
         Session session = null;
         try {
             session = connection.openSession();
             return executeCommand(session, cmd, timeoutMillis, iLineProcessor);
         } catch (Exception e) {
-            return new Result(e);
+            return new SshResult(e);
         } finally {
             close(session);
         }
     }
 
-    public Result executeCommand(Session session, String cmd, int timeoutMillis, ILineProcessor iLineProcessor) throws Exception {
-        Future<Result> future = ThreadPool.getThreadPoolExecutor().submit(() -> {
+    public SshResult executeCommand(Session session, String cmd, int timeoutMillis, ILineProcessor iLineProcessor) throws Exception {
+        Future<SshResult> future = ThreadPool.getThreadPoolExecutor().submit(() -> {
             session.execCommand(cmd);
             Stream stream = new Stream();
             // 如果客户端需要进行行处理，则直接进行回调
@@ -81,25 +81,25 @@ public class SshSession {
                 // 获取标准输出
                 String stdout = stream.getResult(session.getStdout());
                 if (stdout != null) {
-                    return new Result(true, stdout);
+                    return new SshResult(true, stdout);
                 }
                 String errorInfo = stream.getResult(session.getStderr());
                 if (StringUtils.isNotEmpty(errorInfo)) {
                     log.error("errorInfo: {}", errorInfo);
                     log.error("address: {} execute cmd: ({}) error", address, cmd);
-                    return new Result(false, errorInfo);
+                    return new SshResult(false, errorInfo);
                 }
             }
-            return new Result(true, null);
+            return new SshResult(true, null);
         });
-        Result result;
+        SshResult sshResult;
         try {
-            result = future.get(timeoutMillis, TimeUnit.MILLISECONDS);
+            sshResult = future.get(timeoutMillis, TimeUnit.MILLISECONDS);
             future.cancel(true);
         } catch (TimeoutException e) {
             throw new SshException(e);
         }
-        return result;
+        return sshResult;
     }
 
     private void close(Session session) {

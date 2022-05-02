@@ -2,7 +2,7 @@ package com.sonin;
 
 import com.sonin.ssh.command.SshTemplate;
 import com.sonin.ssh.exception.SshException;
-import com.sonin.ssh.pojo.Result;
+import com.sonin.ssh.pojo.SshResult;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,8 +33,8 @@ public class BootApplicationTest {
         String username = "cloud";
         String password = "cloud";
 
-        Result result = sshTemplate.execute(ip, port, username, password, sshSession -> sshSession.executeCommand("ls"));
-        System.out.println(result.getResult());
+        SshResult sshResult = sshTemplate.execute(ip, port, username, password, sshSession -> sshSession.executeCommand("ls"));
+        System.out.println(sshResult.getResult());
     }
 
 }

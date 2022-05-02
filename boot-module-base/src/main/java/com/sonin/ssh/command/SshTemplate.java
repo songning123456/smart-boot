@@ -1,7 +1,7 @@
 package com.sonin.ssh.command;
 
 import ch.ethz.ssh2.Connection;
-import com.sonin.ssh.pojo.Result;
+import com.sonin.ssh.pojo.SshResult;
 import com.sonin.ssh.pojo.SshSession;
 import com.sonin.ssh.enums.ConstantEnum;
 import com.sonin.ssh.exception.SshException;
@@ -25,23 +25,23 @@ public class SshTemplate {
      * @return
      * @throws SshException
      */
-    public Result execute(String ip, ISshCallback iSshCallback) throws SshException {
+    public SshResult execute(String ip, ISshCallback iSshCallback) throws SshException {
         return execute(ip, ConstantEnum.getValue("ssh", "defaultPort"), ConstantEnum.getValue("ssh", "username"), ConstantEnum.getValue("ssh", "password"), iSshCallback);
     }
 
-    public Result execute(String ip, int port, String username, String password, ISshCallback iSshCallback) throws SshException {
-        Result result;
+    public SshResult execute(String ip, int port, String username, String password, ISshCallback iSshCallback) throws SshException {
+        SshResult sshResult;
         Connection connection = null;
         try {
             connection = getConnection(ip, port, username, password);
-            result = iSshCallback.call(new SshSession(connection, ip + ":" + port));
+            sshResult = iSshCallback.call(new SshSession(connection, ip + ":" + port));
         } catch (Exception e) {
             log.error("Ssh Error: {}", e.getMessage());
             throw new SshException("SSH error: " + e.getMessage(), e);
         } finally {
             close(connection);
         }
-        return result;
+        return sshResult;
     }
 
     /**

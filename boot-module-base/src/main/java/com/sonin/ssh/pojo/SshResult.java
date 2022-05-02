@@ -7,7 +7,7 @@ import lombok.Data;
  * @date 2020/10/1 10:42
  */
 @Data
-public class Result {
+public class SshResult {
 
     private Boolean success;
 
@@ -15,16 +15,16 @@ public class Result {
 
     private Exception exception;
 
-    public Result(Boolean success, String result) {
+    public SshResult(Boolean success, String result) {
         this.success = success;
         this.result = result;
     }
 
-    public Result(Boolean success) {
+    public SshResult(Boolean success) {
         this.success = success;
     }
 
-    public Result(Exception e) {
+    public SshResult(Exception e) {
         this.success = false;
         this.exception = e;
     }

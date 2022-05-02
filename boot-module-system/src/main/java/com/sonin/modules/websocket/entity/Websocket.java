@@ -59,6 +59,17 @@ public class Websocket {
 
     /**
      * <pre>
+     * me: 推送给我；some: 推送给指定username；all: 所有人
+     * </pre>
+     *
+     * @param null
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    private String pushType = "me";
+
+    /**
+     * <pre>
      * 响应的数据
      * </pre>
      *
@@ -67,5 +78,18 @@ public class Websocket {
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
     private String resData = "";
+
+    public Websocket() {
+
+    }
+
+    public Websocket(String username, String uuid, String time, String component, String pushType, String resData) {
+        this.username = username;
+        this.uuid = uuid;
+        this.time = time;
+        this.component = component;
+        this.pushType = pushType;
+        this.resData = resData;
+    }
 
 }

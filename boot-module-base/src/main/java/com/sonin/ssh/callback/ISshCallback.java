@@ -1,7 +1,7 @@
 package com.sonin.ssh.callback;
 
 
-import com.sonin.ssh.pojo.Result;
+import com.sonin.ssh.pojo.SshResult;
 import com.sonin.ssh.pojo.SshSession;
 
 /**
@@ -16,6 +16,6 @@ public interface ISshCallback {
      * @param sshSession
      * @return
      */
-    Result call(SshSession sshSession);
+    SshResult call(SshSession sshSession);
 
 }
