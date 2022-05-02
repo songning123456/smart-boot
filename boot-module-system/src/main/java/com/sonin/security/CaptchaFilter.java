@@ -2,7 +2,7 @@ package com.sonin.security;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.sonin.exception.CaptchaException;
-import com.sonin.utils.RedisUtil;
+import com.sonin.jedis.template.JedisTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -17,10 +17,9 @@ import java.io.IOException;
 public class CaptchaFilter extends OncePerRequestFilter {
 
     @Autowired
-    RedisUtil redisUtil;
-
+    private JedisTemplate jedisTemplate;
     @Autowired
-    LoginFailureHandler loginFailureHandler;
+    private LoginFailureHandler loginFailureHandler;
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
@@ -41,11 +40,10 @@ public class CaptchaFilter extends OncePerRequestFilter {
     private void validate(HttpServletRequest httpServletRequest) {
         String code = httpServletRequest.getParameter("code");
         String token = httpServletRequest.getParameter("token");
-        if (StringUtils.isBlank(code) || StringUtils.isBlank(token) || !code.equals(redisUtil.hget("captcha", token))) {
+        if (StringUtils.isBlank(code) || StringUtils.isBlank(token) || !code.equals(jedisTemplate.hget("captcha", token))) {
             throw new CaptchaException("验证码错误");
         }
-        // 一次性使用
-        redisUtil.hdel("captcha", token);
+        jedisTemplate.hdel("captcha", token);
     }
 
 }

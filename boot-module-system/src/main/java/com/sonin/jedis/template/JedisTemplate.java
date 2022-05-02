@@ -23,38 +23,63 @@ public class JedisTemplate {
     @Autowired
     private JedisPool jedisPool;
 
-    /**
-     * 向Redis中存值，永久有效
-     */
+    public String select(int index) {
+        String result = "";
+        try (Jedis jedis = jedisPool.getResource()) {
+            result = jedis.select(index);
+        } catch (Exception e) {
+            log.error("Jedis异常", e);
+        }
+        return result;
+    }
+
     public String set(String key, String value) {
         try (Jedis jedis = jedisPool.getResource()) {
             return jedis.set(key, value);
         } catch (Exception e) {
-            log.error("Redis异常", e);
+            log.error("Jedis异常", e);
             return "0";
         }
     }
 
-    /**
-     * 根据传入Key获取指定Value
-     */
+    public Long hset(String key, String field, String value, int seconds) {
+        long result = -1L;
+        try (Jedis jedis = jedisPool.getResource()) {
+            result = jedis.hset(key, field, value);
+            if (seconds > 0) {
+                jedis.expire(key, seconds);
+            }
+        } catch (Exception e) {
+            log.error("Jedis异常", e);
+        }
+        return result;
+    }
+
     public String get(String key) {
-        String value;
+        String value = "0";
         try (Jedis jedis = jedisPool.getResource()) {
             value = jedis.get(key);
         } catch (Exception e) {
-            return "0";
+            log.error("Jedis异常", e);
         }
         return value;
     }
 
-    /**
-     * 校验Key值是否存在
-     */
+    public String hget(String key, String field) {
+        String value = "0";
+        try (Jedis jedis = jedisPool.getResource()) {
+            value = jedis.hget(key, field);
+        } catch (Exception e) {
+            log.error("Jedis异常", e);
+        }
+        return value;
+    }
+
     public Boolean exists(String key) {
         try (Jedis jedis = jedisPool.getResource()) {
             return jedis.exists(key);
         } catch (Exception e) {
+            log.error("Jedis异常", e);
             return false;
         }
     }
@@ -66,8 +91,19 @@ public class JedisTemplate {
         try (Jedis jedis = jedisPool.getResource()) {
             return jedis.del(key);
         } catch (Exception e) {
+            log.error("Jedis异常", e);
             return 0L;
         }
+    }
+
+    public Long hdel(String key, String... fields) {
+        long result = -1L;
+        try (Jedis jedis = jedisPool.getResource()) {
+            result = jedis.hdel(key, fields);
+        } catch (Exception e) {
+            log.error("Jedis异常", e);
+        }
+        return result;
     }
 
     /**
@@ -75,15 +111,16 @@ public class JedisTemplate {
      *
      * @param key
      * @param value
-     * @param time  锁的超时时间，单位：秒
+     * @param secondsToExpire 锁的超时时间，单位：秒
      * @return 获取锁成功返回"OK"，失败返回null
      */
-    public String getDistributedLock(String key, String value, int time) {
+    public String getDistributedLock(String key, String value, int secondsToExpire) {
         String ret = "";
         try (Jedis jedis = jedisPool.getResource()) {
-            ret = jedis.set(key, value, new SetParams().nx().ex(time));
+            ret = jedis.set(key, value, new SetParams().nx().ex(secondsToExpire));
             return ret;
         } catch (Exception e) {
+            log.error("Jedis异常", e);
             return null;
         }
     }
