@@ -2,6 +2,7 @@ package com.sonin.jedis.template;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -23,18 +24,12 @@ public class JedisTemplate {
     @Autowired
     private JedisPool jedisPool;
 
-    public String select(int index) {
-        String result = "";
-        try (Jedis jedis = jedisPool.getResource()) {
-            result = jedis.select(index);
-        } catch (Exception e) {
-            log.error("Jedis异常", e);
-        }
-        return result;
-    }
+    @Value("${spring.redis.database:0}")
+    private int database;
 
     public String set(String key, String value) {
         try (Jedis jedis = jedisPool.getResource()) {
+            jedis.select(database);
             return jedis.set(key, value);
         } catch (Exception e) {
             log.error("Jedis异常", e);
@@ -45,6 +40,7 @@ public class JedisTemplate {
     public Long hset(String key, String field, String value, int seconds) {
         long result = -1L;
         try (Jedis jedis = jedisPool.getResource()) {
+            jedis.select(database);
             result = jedis.hset(key, field, value);
             if (seconds > 0) {
                 jedis.expire(key, seconds);
@@ -58,6 +54,7 @@ public class JedisTemplate {
     public String get(String key) {
         String value = "0";
         try (Jedis jedis = jedisPool.getResource()) {
+            jedis.select(database);
             value = jedis.get(key);
         } catch (Exception e) {
             log.error("Jedis异常", e);
@@ -68,6 +65,7 @@ public class JedisTemplate {
     public String hget(String key, String field) {
         String value = "0";
         try (Jedis jedis = jedisPool.getResource()) {
+            jedis.select(database);
             value = jedis.hget(key, field);
         } catch (Exception e) {
             log.error("Jedis异常", e);
@@ -77,6 +75,7 @@ public class JedisTemplate {
 
     public Boolean exists(String key) {
         try (Jedis jedis = jedisPool.getResource()) {
+            jedis.select(database);
             return jedis.exists(key);
         } catch (Exception e) {
             log.error("Jedis异常", e);
@@ -89,6 +88,7 @@ public class JedisTemplate {
      */
     public Long del(String key) {
         try (Jedis jedis = jedisPool.getResource()) {
+            jedis.select(database);
             return jedis.del(key);
         } catch (Exception e) {
             log.error("Jedis异常", e);
@@ -99,6 +99,7 @@ public class JedisTemplate {
     public Long hdel(String key, String... fields) {
         long result = -1L;
         try (Jedis jedis = jedisPool.getResource()) {
+            jedis.select(database);
             result = jedis.hdel(key, fields);
         } catch (Exception e) {
             log.error("Jedis异常", e);
@@ -115,8 +116,9 @@ public class JedisTemplate {
      * @return 获取锁成功返回"OK"，失败返回null
      */
     public String getDistributedLock(String key, String value, int secondsToExpire) {
-        String ret = "";
+        String ret;
         try (Jedis jedis = jedisPool.getResource()) {
+            jedis.select(database);
             ret = jedis.set(key, value, new SetParams().nx().ex(secondsToExpire));
             return ret;
         } catch (Exception e) {
@@ -133,6 +135,7 @@ public class JedisTemplate {
      */
     public void subscribe(JedisPubSub jedisPubSub, String channel) {
         try (Jedis jedis = jedisPool.getResource()) {
+            jedis.select(database);
             jedis.subscribe(jedisPubSub, channel);
         }
     }
@@ -145,6 +148,7 @@ public class JedisTemplate {
      */
     public void publish(String channel, String message) {
         try (Jedis jedis = jedisPool.getResource()) {
+            jedis.select(database);
             jedis.publish(channel, message);
         }
     }
