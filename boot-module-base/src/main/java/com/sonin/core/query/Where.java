@@ -56,9 +56,4 @@ public class Where extends Base {
         return this;
     }
 
-    @Override
-    public Base and(Field leftField, Field rightField) {
-        return this;
-    }
-
 }

@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sonin.api.vo.Result;
 import com.sonin.core.query.BaseFactory;
 import com.sonin.modules.quartz.dto.QuartzJobDTO;
+import com.sonin.modules.quartz.entity.QrtzCronTriggers;
+import com.sonin.modules.quartz.entity.QrtzJobDetails;
 import com.sonin.modules.quartz.entity.QrtzTriggers;
 import com.sonin.modules.quartz.entity.QuartzJob;
 import com.sonin.utils.BeanExtUtils;
@@ -36,9 +38,13 @@ public class QuartzJobController {
         Result<Object> result = new Result<>();
         IPage<Map<String, Object>> mapIPage = null;
         try {
-            mapIPage = BaseFactory.join()
-                    .from(QrtzTriggers.class)
+            mapIPage = BaseFactory.where()
+                    .from(QrtzTriggers.class, QrtzCronTriggers.class, QrtzJobDetails.class)
                     .where()
+                    .eq(true, QrtzTriggers.class.getDeclaredField("triggerGroup"), QrtzCronTriggers.class.getDeclaredField("triggerGroup"))
+                    .eq(true, QrtzTriggers.class.getDeclaredField("triggerName"), QrtzCronTriggers.class.getDeclaredField("triggerName"))
+                    .eq(true, QrtzTriggers.class.getDeclaredField("jobGroup"), QrtzJobDetails.class.getDeclaredField("jobGroup"))
+                    .eq(true, QrtzTriggers.class.getDeclaredField("jobName"), QrtzJobDetails.class.getDeclaredField("jobName"))
                     .selectMapsPage(new Page<>(quartzJobDTO.getCurrentPage(), quartzJobDTO.getPageSize()));
         } catch (Exception e) {
             e.printStackTrace();

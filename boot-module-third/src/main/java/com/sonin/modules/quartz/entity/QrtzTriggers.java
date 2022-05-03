@@ -14,20 +14,35 @@ import lombok.Data;
 public class QrtzTriggers {
 
     private String schedName;
+
     private String triggerName;
+
     private String triggerGroup;
+
     private String jobName;
+
     private String jobGroup;
+
     private String description;
-    private String nextFireTime;
-    private String prevFireTime;
-    private String priority;
+
+    private Integer nextFireTime;
+
+    private Integer prevFireTime;
+
+    private Integer priority;
+
     private String triggerState;
+
     private String triggerType;
-    private String startTime;
-    private String endTime;
+
+    private Integer startTime;
+
+    private Integer endTime;
+
     private String calendarName;
-    private String misfireInstr;
+
+    private Integer misfireInstr;
+
     private String jobData;
 
 }

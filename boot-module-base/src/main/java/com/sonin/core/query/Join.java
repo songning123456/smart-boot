@@ -63,8 +63,15 @@ public class Join extends Base {
         if (this.conditions == null) {
             this.conditions = new LinkedHashSet<>();
         }
-        this.classes.add(leftField.getDeclaringClass());
-        this.classes.add(rightField.getDeclaringClass());
+        if (!this.classes.contains(clazz)) {
+            this.classes.add(clazz);
+        }
+        if (!this.classes.contains(leftField.getDeclaringClass())) {
+            this.classes.add(leftField.getDeclaringClass());
+        }
+        if (!this.classes.contains(rightField.getDeclaringClass())) {
+            this.classes.add(rightField.getDeclaringClass());
+        }
         // e.g: demo_b
         String fromTableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, clazz.getSimpleName());
         // e.g: demo_b
@@ -77,11 +84,6 @@ public class Join extends Base {
         String rightColumn = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, rightField.getName());
         // e.g: inner/left/right join demo_b on demo_b.a_id = demo_a.id
         this.conditions.add(direction + SPACE + fromTableName + SPACE + ON + SPACE + leftTableName + DOT + leftColumn + SPACE + EQUAL + SPACE + rightTableName + DOT + rightColumn);
-    }
-
-    @Override
-    public Base and(Field leftField, Field rightField) {
-        return this;
     }
 
 }

@@ -68,6 +68,9 @@ spring:
 
 mybatis-plus:
   mapper-locations: classpath*:com/sonin/modules/**/xml/*Mapper.xml
+  # 是否打印控制台
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 boot:
   jwt:

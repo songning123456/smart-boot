@@ -151,8 +151,6 @@ public abstract class Base implements IBase {
 
     public abstract Base rightJoin(Class clazz, Field leftField, Field rightField);
 
-    public abstract Base and(Field leftField, Field rightField);
-
     /**
      * 准备构造查询条件
      *
@@ -177,7 +175,7 @@ public abstract class Base implements IBase {
         String rightTableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, rightClassName);
         String rightFieldName = rightField.getName();
         String rightColumn = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, rightFieldName);
-        this.queryWrapper.eq(condition, leftTableName + DOT + leftColumn, rightTableName + DOT + rightColumn);
+        this.queryWrapper.apply(condition, (leftTableName + DOT + leftColumn) + " = " + (rightTableName + DOT + rightColumn));
         return this;
     }
 
