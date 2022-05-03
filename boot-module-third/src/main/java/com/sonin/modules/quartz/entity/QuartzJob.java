@@ -13,15 +13,15 @@ import lombok.Data;
 @Data
 public class QuartzJob {
 
-    private String jobClassName;
+    private String jobGroup;
 
     private String jobName;
 
-    private String jobGroup;
-
-    private String triggerName;
+    private String jobClassName;
 
     private String triggerGroup;
+
+    private String triggerName;
 
     private String cronExpression;
 
