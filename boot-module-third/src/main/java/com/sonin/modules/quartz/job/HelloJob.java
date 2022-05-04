@@ -6,8 +6,12 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 
 /**
- * @Author: CJ
- * @Date: 2021-11-2 11:33
+ * <pre>
+ * 测试Job
+ * </pre>
+ *
+ * @author sonin
+ * @version 1.0 2022/5/3 14:56
  */
 @Slf4j
 public class HelloJob implements Job {

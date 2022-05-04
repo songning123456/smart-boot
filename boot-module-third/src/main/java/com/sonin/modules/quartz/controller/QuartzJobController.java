@@ -11,6 +11,7 @@ import com.sonin.modules.quartz.entity.QrtzTriggers;
 import com.sonin.modules.quartz.entity.QuartzJob;
 import com.sonin.utils.BeanExtUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +46,12 @@ public class QuartzJobController {
                     .eq(true, QrtzTriggers.class.getDeclaredField("triggerName"), QrtzCronTriggers.class.getDeclaredField("triggerName"))
                     .eq(true, QrtzTriggers.class.getDeclaredField("jobGroup"), QrtzJobDetails.class.getDeclaredField("jobGroup"))
                     .eq(true, QrtzTriggers.class.getDeclaredField("jobName"), QrtzJobDetails.class.getDeclaredField("jobName"))
+                    .like(StringUtils.isNotEmpty(quartzJobDTO.getJobGroup()), "qrtz_triggers.job_group", quartzJobDTO.getJobGroup())
+                    .like(StringUtils.isNotEmpty(quartzJobDTO.getJobName()), "qrtz_triggers.job_name", quartzJobDTO.getJobName())
+                    .like(StringUtils.isNotEmpty(quartzJobDTO.getJobClassName()), "qrtz_job_details.job_class_name", quartzJobDTO.getJobClassName())
+                    .like(StringUtils.isNotEmpty(quartzJobDTO.getTriggerGroup()), "qrtz_triggers.trigger_group", quartzJobDTO.getTriggerGroup())
+                    .like(StringUtils.isNotEmpty(quartzJobDTO.getTriggerName()), "qrtz_triggers.trigger_name", quartzJobDTO.getTriggerName())
+                    .like(StringUtils.isNotEmpty(quartzJobDTO.getCronExpression()), "qrtz_cron_triggers.cron_expression", quartzJobDTO.getCronExpression())
                     .selectMapsPage(new Page<>(quartzJobDTO.getCurrentPage(), quartzJobDTO.getPageSize()));
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,7 +116,7 @@ public class QuartzJobController {
     @GetMapping("/reschedule")
     public Result rescheduleCtrl(QuartzJobDTO quartzJobDTO) {
         try {
-            TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobDTO.getJobName(), quartzJobDTO.getJobGroup());
+            TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobDTO.getTriggerName(), quartzJobDTO.getTriggerGroup());
             // 表达式调度构建器
             CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(quartzJobDTO.getCronExpression());
             CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
