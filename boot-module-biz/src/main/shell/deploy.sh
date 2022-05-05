@@ -16,13 +16,23 @@ BOOT_JAR_DIR=${SHELL_DIR%/bin*}
 BOOT_JAR=$BOOT_JAR_DIR/*.jar
 # 日志文件所在位置
 JAR_LOG_DIR=$BOOT_JAR_DIR/logs
+# 使用config文件夹下的logback-spring.xml文件
+LOGGING_CONFIG=$BOOT_JAR_DIR/config/logback-spring.xml
 
 # 启动时要先进入到目录中，否则读取不到config文件夹下的配置文件
 cd $BOOT_JAR_DIR
 # 创建日志文件夹及堆内存溢出文件夹
-mkdir -p $JAR_LOG_DIR/HeapDumpOnOutOfMemoryError
+if [ ! -d "$JAR_LOG_DIR/HeapDumpOnOutOfMemoryError" ]; then
+ mkdir -p $JAR_LOG_DIR/HeapDumpOnOutOfMemoryError
+fi
 # 创建Tomcat临时缓存目录
-mkdir -p $JAR_LOG_DIR/tmp
+if [ ! -d "$JAR_LOG_DIR/tmp" ]; then
+ mkdir -p $JAR_LOG_DIR/tmp
+fi
+# 创建日志文件夹及GC日志文件夹
+if [ ! -d "$JAR_LOG_DIR/gc" ]; then
+ mkdir -p $JAR_LOG_DIR/gc
+fi
 
 # ***java虚拟机启动参数
 # 仅支持IP4
@@ -44,7 +54,7 @@ JAVA_OPTS="$JAVA_OPTS -D64"
 # 使用G1垃圾回收器
 JAVA_OPTS="$JAVA_OPTS -XX:+UseG1GC"
 # 打印GC日志信息
-JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCApplicationConcurrentTime -XX:+PrintHeapAtGC -XX:+UseGCLogFileRotation -Xloggc:$JAR_LOG_DIR/gc.log"
+JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCApplicationConcurrentTime -XX:+PrintHeapAtGC -XX:+UseGCLogFileRotation -Xloggc:$JAR_LOG_DIR/gc/gc.log"
 # 打印堆溢出日志信息
 JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$JAR_LOG_DIR/HeapDumpOnOutOfMemoryError/"
 # 强制JVM始终抛出含堆栈的异常
@@ -57,6 +67,8 @@ JAVA_OPTS="$JAVA_OPTS -Dserver.tomcat.basedir=$JAR_LOG_DIR/tmp"
 if [ 'trueX' == "${JAVA_DEBUG_ENABLE}X" ]; then
   JAVA_OPTS="${JAVA_OPTS} -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=${JAVA_DEBUG_PORT}"
 fi
+# 使用指定位置config的日志配置文件
+JAVA_OPTS="$JAVA_OPTS -Dlogging.config=$LOGGING_CONFIG"
 
 # 初始化psid
 psid=0
