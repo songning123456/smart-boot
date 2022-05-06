@@ -28,8 +28,8 @@ public class LogbackConsumer implements ILogback, Runnable {
             try {
                 // 每次取出的数据存放到sysLogList里
                 sysLogList = new ArrayList<>();
-                // 每次到1000条数据才进行入库，等待30s，没达到1000条也继续入库
-                Queues.drain(sysLogQueue, sysLogList, 1000, 30, TimeUnit.SECONDS);
+                // 每次到1000条数据才进行入库，等待10s，没达到1000条也继续入库
+                Queues.drain(sysLogQueue, sysLogList, 1000, 10, TimeUnit.SECONDS);
                 SysLogService sysLogService = SpringContext.getBean(SysLogService.class);
                 sysLogService.saveBatch(sysLogList);
             } catch (Exception e) {
