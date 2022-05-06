@@ -30,12 +30,12 @@ public class SysLog implements Serializable {
     /**
      * 日志打印级别
      */
-    private String loggerLevel;
+    private String logLevel;
 
     /**
      * 类的全路径名称
      */
-    private String loggerName;
+    private String logName;
 
     /**
      * 打印的消息
@@ -45,16 +45,16 @@ public class SysLog implements Serializable {
     /**
      * 日志类型: 1:logback,2:log4j2
      */
-    private Integer loggerType;
+    private Integer logType;
 
     /**
      * IP地址
      */
-    private String loggerIp;
+    private String logIp;
 
     /**
      * 端口号
      */
-    private Integer loggerPort;
+    private Integer logPort;
 
 }

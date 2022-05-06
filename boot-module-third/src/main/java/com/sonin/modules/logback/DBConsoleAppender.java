@@ -19,6 +19,8 @@ public class DBConsoleAppender extends ConsoleAppender<ILoggingEvent> implements
 
     private InetAddress inetAddress;
 
+    private int logPort = 8082;
+
     public DBConsoleAppender() {
         try {
             inetAddress = InetAddress.getLocalHost();
@@ -30,14 +32,14 @@ public class DBConsoleAppender extends ConsoleAppender<ILoggingEvent> implements
     @Override
     protected void append(ILoggingEvent eventObject) {
         SysLog sysLog = new SysLog();
-        sysLog.setLoggerName(eventObject.getLoggerName());
+        sysLog.setLogName(eventObject.getLoggerName());
         sysLog.setMessage(eventObject.getMessage());
         sysLog.setThreadName(eventObject.getThreadName());
         sysLog.setTimeStamp(simpleDateFormat.format(new Date(eventObject.getTimeStamp())));
-        sysLog.setLoggerLevel(eventObject.getLevel().toString());
-        sysLog.setLoggerType(1);
-        sysLog.setLoggerIp(inetAddress.getHostAddress());
-        sysLog.setLoggerPort(8082);
+        sysLog.setLogLevel(eventObject.getLevel().toString());
+        sysLog.setLogType(1);
+        sysLog.setLogIp(inetAddress.getHostAddress());
+        sysLog.setLogPort(logPort);
         // 添加到阻塞队列
         sysLogQueue.add(sysLog);
     }
