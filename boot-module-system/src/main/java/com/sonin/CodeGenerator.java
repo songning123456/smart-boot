@@ -16,12 +16,12 @@ public class CodeGenerator {
         // 项目模块
         put("globalModuleName", "boot-module-system");
         // 数据源配置
-        put("url", "jdbc:mysql://192.168.2.126:3306/smart-boot?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai");
+        put("url", "jdbc:mysql://192.168.2.126:3306/smart-boot-third?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai");
         put("driverName", "com.mysql.cj.jdbc.Driver");
         put("username", "root");
         put("password", "123456");
         // todo 表名:修改
-        put("tableName", "sys_user_role");
+        put("tableName", "sys_log");
         // 包配置
         // todo 业务模块:修改
         put("moduleName", "sys");
