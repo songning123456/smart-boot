@@ -33,6 +33,12 @@ fi
 if [ ! -d "$JAR_LOG_DIR/gc" ]; then
  mkdir -p $JAR_LOG_DIR/gc
 fi
+# config文件夹授权
+if [ -d "$BOOT_JAR_DIR/config" ]; then
+ chmod -R 755 $BOOT_JAR_DIR/config
+fi
+# jar包授权
+chmod -R 755 $BOOT_JAR
 
 # ***java虚拟机启动参数
 # 仅支持IP4
@@ -68,7 +74,9 @@ if [ 'trueX' == "${JAVA_DEBUG_ENABLE}X" ]; then
   JAVA_OPTS="${JAVA_OPTS} -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=${JAVA_DEBUG_PORT}"
 fi
 # 使用指定位置config的日志配置文件
-JAVA_OPTS="$JAVA_OPTS -Dlogging.config=$LOGGING_CONFIG"
+if [ -f "$LOGGING_CONFIG" ]; then
+  JAVA_OPTS="$JAVA_OPTS -Dlogging.config=$LOGGING_CONFIG"
+fi
 
 # 初始化psid
 psid=0
