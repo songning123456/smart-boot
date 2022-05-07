@@ -13,7 +13,7 @@ SHELL_DIR=$(cd $(dirname "${BASH_SOURCE[0]}");pwd)
 # 部署路径，删除执行脚本绝对路径的'/bin'
 BOOT_JAR_DIR=${SHELL_DIR%/bin*}
 # 启动的jar包全路径/*.jar，此路径下只能存在一个jar包
-BOOT_JAR=$BOOT_JAR_DIR/*.jar
+BOOT_JAR=`echo "${BOOT_JAR_DIR}"/*.jar`
 # 日志文件所在位置
 JAR_LOG_DIR=$BOOT_JAR_DIR/logs
 # 使用config文件夹下的logback-spring.xml文件
