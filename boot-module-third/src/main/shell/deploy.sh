@@ -60,7 +60,7 @@ JAVA_OPTS="$JAVA_OPTS -D64"
 # 使用G1垃圾回收器
 JAVA_OPTS="$JAVA_OPTS -XX:+UseG1GC"
 # 打印GC日志信息
-JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCApplicationConcurrentTime -XX:+PrintHeapAtGC -XX:+UseGCLogFileRotation -Xloggc:$JAR_LOG_DIR/gc/gc.log"
+JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCApplicationConcurrentTime -XX:+PrintHeapAtGC -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=5M -Xloggc:$JAR_LOG_DIR/gc/gc.log"
 # 打印堆溢出日志信息
 JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$JAR_LOG_DIR/HeapDumpOnOutOfMemoryError/"
 # 强制JVM始终抛出含堆栈的异常
@@ -132,6 +132,16 @@ stop() {
   fi
 }
 
+# 查看运行状态
+status() {
+  checkpid
+  if [ $psid -ne 0 ]; then
+    echo "info: $BOOT_JAR is running: pid=$psid"
+  else
+    echo "info: $BOOT_JAR is not running!"
+  fi
+}
+
 case "$1" in
   'start')
     start
@@ -143,8 +153,11 @@ case "$1" in
     stop
     start
     ;;
+  'status')
+    status
+    ;;
   *)
-echo "例子: sh deploy.sh {start|stop|restart}"
+   echo "例子: sh deploy.sh {start|stop|restart|status}"
 exit 1
 esac
 exit 0
