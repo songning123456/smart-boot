@@ -33,7 +33,7 @@ public class DBConsoleAppender extends ConsoleAppender<ILoggingEvent> implements
     protected void append(ILoggingEvent eventObject) {
         SysLog sysLog = new SysLog();
         sysLog.setLogName(eventObject.getLoggerName());
-        sysLog.setMessage(eventObject.getMessage());
+        sysLog.setMessage(eventObject.getFormattedMessage());
         sysLog.setThreadName(eventObject.getThreadName());
         sysLog.setTimeStamp(simpleDateFormat.format(new Date(eventObject.getTimeStamp())));
         sysLog.setLogLevel(eventObject.getLevel().toString());

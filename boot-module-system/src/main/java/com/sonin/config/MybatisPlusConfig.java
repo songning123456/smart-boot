@@ -20,8 +20,8 @@ public class MybatisPlusConfig {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         // 分页插件
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
-        // 防止全表更新插件
-        interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
+        // 防止全表更新插件(要全表删除sys_log表, 所以关闭此插件功能)
+        // interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
         return interceptor;
     }
 

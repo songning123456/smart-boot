@@ -4,17 +4,15 @@ package com.sonin.modules.sys.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sonin.api.vo.Result;
+import com.sonin.modules.base.service.IBaseService;
 import com.sonin.modules.sys.dto.SysLogDTO;
 import com.sonin.modules.sys.entity.SysLog;
 import com.sonin.modules.sys.service.SysLogService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -31,7 +29,7 @@ public class SysLogController {
     @Autowired
     private SysLogService sysLogService;
     @Autowired
-    private TransactionTemplate transactionTemplate;
+    private IBaseService baseService;
 
     @GetMapping("/page")
     public Result<Page<SysLog>> pageCtrl(SysLogDTO sysLogDTO) {
@@ -55,11 +53,7 @@ public class SysLogController {
     @DeleteMapping("/delete")
     public Result deleteCtrl(@RequestParam(name = "ids") String ids) {
         if (StringUtils.isEmpty(ids)) {
-            transactionTemplate.execute((transactionStatus -> {
-                List<SysLog> sysLogList = sysLogService.list();
-                sysLogService.removeByIds(sysLogList.stream().map(SysLog::getId).collect(Collectors.toList()));
-                return 1;
-            }));
+            baseService.delete("sys_log", new QueryWrapper<>());
         } else {
             sysLogService.removeByIds(Arrays.asList(ids.split(",")));
         }
