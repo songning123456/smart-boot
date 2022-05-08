@@ -40,7 +40,7 @@ public class SysDictItemController {
                 .eq("sys_dict_id", sysDictItemDTO.getSysDictId())
                 .like(StringUtils.isNotEmpty(sysDictItemDTO.getItemText()), "item_text", sysDictItemDTO.getItemText())
                 .like(StringUtils.isNotEmpty(sysDictItemDTO.getItemValue()), "item_value", sysDictItemDTO.getItemValue())
-                .orderByDesc("order_num");
+                .orderByAsc("order_num");
         Page<SysDictItem> sysDictItemPage = sysDictItemService.page(new Page<>(sysDictItemDTO.getCurrentPage(), sysDictItemDTO.getPageSize()), queryWrapper);
         result.setResult(sysDictItemPage);
         return result;
