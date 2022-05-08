@@ -204,4 +204,25 @@ public class SysUserController {
         return Result.ok();
     }
 
+    @GetMapping("/win2linux")
+    public Result win2linuxCtrl() {
+        List<SysUser> sysUserList = sysUserService.list();
+        String avatarStr;
+        String[] avatars;
+        StringBuilder stringBuilder;
+        for (SysUser sysUser : sysUserList) {
+            avatarStr = sysUser.getAvatar();
+            if (!avatarStr.startsWith("http://") && !avatarStr.startsWith("https://") && avatarStr.contains("\\")) {
+                avatars = avatarStr.split("\\\\");
+                stringBuilder = new StringBuilder();
+                for (String avatar : avatars) {
+                    stringBuilder.append("/").append(avatar);
+                }
+                sysUser.setAvatar(stringBuilder.toString().replaceFirst("/", ""));
+            }
+        }
+        sysUserService.saveOrUpdateBatch(sysUserList);
+        return Result.ok();
+    }
+
 }
