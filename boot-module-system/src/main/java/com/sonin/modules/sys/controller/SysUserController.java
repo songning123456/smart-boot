@@ -14,7 +14,6 @@ import com.sonin.modules.sys.vo.SysUserVO;
 import com.sonin.utils.BeanExtUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -66,14 +65,14 @@ public class SysUserController {
         Result<SysUserVO> result = new Result<>();
         SysUserVO sysUserVO = new SysUserVO();
         try {
-            List<Map<String, Object>> mapList = BaseFactory.join()
+            List<Map<String, Object>> mapList = BaseFactory.JOIN()
                     .from(SysUser.class)
                     .innerJoin(SysUserRole.class, SysUserRole.class.getDeclaredField("userId"), SysUser.class.getDeclaredField("id"))
                     .innerJoin(SysRole.class, SysRole.class.getDeclaredField("id"), SysUserRole.class.getDeclaredField("roleId"))
                     .where()
                     .eq(true, "sys_user.id", id)
                     .selectMaps();
-            List<SysRole> sysRoleList = BaseFactory.result().maps2Beans(mapList, SysRole.class);
+            List<SysRole> sysRoleList = BaseFactory.RESULT().maps2Beans(mapList, SysRole.class);
             List<String> roleIds = sysRoleList.stream().map(SysRole::getId).collect(Collectors.toList());
             sysUserVO.setRoleIds(roleIds);
         } catch (Exception e) {

@@ -51,14 +51,14 @@ public class SysDictItemController {
         Result<List<SysDictItem>> result = new Result<>();
         List<SysDictItem> sysDictItemList = new ArrayList<>();
         try {
-            List<Map<String, Object>> mapList = BaseFactory.join()
+            List<Map<String, Object>> mapList = BaseFactory.JOIN()
                     .from(SysDict.class)
                     .innerJoin(SysDictItem.class, SysDictItem.class.getDeclaredField("sysDictId"), SysDict.class.getDeclaredField("id"))
                     .where()
                     .eq(true, "sys_dict.dict_code", dictCode)
                     .orderBy(true, true, "sys_dict_item.order_num")
                     .selectMaps();
-            sysDictItemList = BaseFactory.result().maps2Beans(mapList, SysDictItem.class);
+            sysDictItemList = BaseFactory.RESULT().maps2Beans(mapList, SysDictItem.class);
         } catch (Exception e) {
             e.printStackTrace();
             result.error500(e.getMessage());

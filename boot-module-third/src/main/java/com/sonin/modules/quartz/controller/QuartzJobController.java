@@ -39,7 +39,7 @@ public class QuartzJobController {
         Result<Object> result = new Result<>();
         IPage<Map<String, Object>> mapIPage = null;
         try {
-            mapIPage = BaseFactory.where()
+            mapIPage = BaseFactory.WHERE()
                     .from(QrtzTriggers.class, QrtzCronTriggers.class, QrtzJobDetails.class)
                     .where()
                     .eq(true, QrtzTriggers.class.getDeclaredField("triggerGroup"), QrtzCronTriggers.class.getDeclaredField("triggerGroup"))

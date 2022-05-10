@@ -7,15 +7,15 @@ package com.sonin.core.query;
  */
 public class BaseFactory {
 
-    public static Join join() {
+    public static Join JOIN() {
         return new Join();
     }
 
-    public static Where where() {
+    public static Where WHERE() {
         return new Where();
     }
 
-    public static Result result() {
+    public static Result RESULT() {
         return new Result();
     }
 

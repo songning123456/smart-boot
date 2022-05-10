@@ -48,7 +48,7 @@ public class SysMenuController {
         Result<List<SysMenuVO>> result = new Result<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         try {
-            List<Map<String, Object>> mapList = BaseFactory.join()
+            List<Map<String, Object>> mapList = BaseFactory.JOIN()
                     .from(SysUser.class)
                     .innerJoin(SysUserRole.class, SysUserRole.class.getDeclaredField("userId"), SysUser.class.getDeclaredField("id"))
                     .innerJoin(SysRole.class, SysRole.class.getDeclaredField("id"), SysUserRole.class.getDeclaredField("roleId"))
@@ -59,7 +59,7 @@ public class SysMenuController {
                     .orderBy(true, true, "order_num")
                     .groupBy(true, "sys_menu.id")
                     .selectMaps();
-            List<SysMenu> sysMenuList = BaseFactory.result().maps2Beans(mapList, SysMenu.class);
+            List<SysMenu> sysMenuList = BaseFactory.RESULT().maps2Beans(mapList, SysMenu.class);
             List<SysMenuVO> sysMenuVOList = new SysMenuDFS().buildTree(sysMenuList);
             result.setResult(sysMenuVOList);
         } catch (Exception e) {
