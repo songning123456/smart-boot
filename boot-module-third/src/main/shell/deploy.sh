@@ -6,6 +6,8 @@ HEAP_MAX=1024m
 JAVA_DEBUG_ENABLE=false
 # 远程调试端口
 JAVA_DEBUG_PORT=8787
+# 是否每次启动迁移out日志(默认迁移)
+OUT_ENABLE=true
 
 
 # 执行脚本的绝对路径
@@ -78,6 +80,18 @@ if [ -f "$LOGGING_CONFIG" ]; then
   JAVA_OPTS="$JAVA_OPTS -Dlogging.config=$LOGGING_CONFIG"
 fi
 
+# 每次项目重启，迁移out.log日志
+out() {
+  if [ 'trueX' == "${OUT_ENABLE}X" ]; then
+    if [ ! -d "$JAR_LOG_DIR/out" ]; then
+      mkdir -p $JAR_LOG_DIR/out
+    fi
+    if [ -f "$JAR_LOG_DIR/out.log" ]; then
+      mv $JAR_LOG_DIR/out.log $JAR_LOG_DIR/out/out.log$(date +"%Y%m%d%H%M%S")
+    fi
+  fi  
+}
+
 # 初始化psid
 psid=0
 
@@ -99,6 +113,7 @@ start() {
     echo "info: $BOOT_JAR already started! pid=$psid"
     echo "================================================"
   else
+    out
     echo -n "Starting $BOOT_JAR ..."
     `nohup java $JAVA_OPTS -jar $BOOT_JAR > $JAR_LOG_DIR/out.log 2>&1 &`
     checkpid
