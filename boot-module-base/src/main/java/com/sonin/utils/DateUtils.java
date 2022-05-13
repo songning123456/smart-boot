@@ -50,21 +50,21 @@ public class DateUtils extends PropertyEditorSupport {
     }
 
     /**
-     * 根据(开始时间, 结束时间)获取每一天
+     * 根据(开始时间, 结束时间)获取每一个时间间隔的数据, 主要用于eCharts图标xData
      *
      * @param startTime
      * @param endTime
      * @param format
      * @return
      */
-    public static List<String> getEveryday(String startTime, String endTime, String format) {
-        List<String> dayList = new ArrayList<>();
+    public static List<String> interval(String startTime, String endTime, String format, int field, int amount) {
+        List<String> intervalList = new ArrayList<>();
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat(format);
-            Date startDate = sdf.parse(startTime);
-            Date endDate = sdf.parse(endTime);
-            List<Date> lDate = new ArrayList<>();
-            lDate.add(startDate);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+            Date startDate = simpleDateFormat.parse(startTime);
+            Date endDate = simpleDateFormat.parse(endTime);
+            List<Date> dateList = new ArrayList<>();
+            dateList.add(startDate);
             Calendar calendarOfStart = Calendar.getInstance();
             // 使用给定的 Date 设置此 Calendar 的时间
             calendarOfStart.setTime(startDate);
@@ -74,16 +74,34 @@ public class DateUtils extends PropertyEditorSupport {
             // 测试此日期是否在指定日期之后
             while (endDate.after(calendarOfStart.getTime())) {
                 // 根据日历的规则，为给定的日历字段添加或减去指定的时间量
-                calendarOfStart.add(Calendar.DAY_OF_MONTH, 1);
-                lDate.add(calendarOfStart.getTime());
+                calendarOfStart.add(field, amount);
+                if (endDate.after(calendarOfStart.getTime())) {
+                    dateList.add(calendarOfStart.getTime());
+                }
             }
-            for (Date item : lDate) {
-                dayList.add(sdf.format(item));
+            for (Date item : dateList) {
+                intervalList.add(simpleDateFormat.format(item));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return dayList;
+        return intervalList;
+    }
+
+    public static List<String> intervalByHour(String startTime, String endTime, String format) {
+        return interval(startTime, endTime, format, Calendar.HOUR_OF_DAY, 1);
+    }
+
+    public static List<String> intervalByDay(String startTime, String endTime, String format) {
+        return interval(startTime, endTime, format, Calendar.DAY_OF_MONTH, 1);
+    }
+
+    public static List<String> intervalByMonth(String startTime, String endTime, String format) {
+        return interval(startTime, endTime, format, Calendar.MONTH, 1);
+    }
+
+    public static List<String> intervalByYear(String startTime, String endTime, String format) {
+        return interval(startTime, endTime, format, Calendar.YEAR, 1);
     }
 
     /**
