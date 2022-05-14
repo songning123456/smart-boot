@@ -1,9 +1,10 @@
-package com.sonin.modules.file.controller;
+package com.sonin.modules.excel.controller;
 
 import cn.hutool.json.JSONUtil;
 import com.sonin.api.vo.Result;
 import com.sonin.core.context.SpringContext;
-import com.sonin.modules.file.service.ExcelService;
+import com.sonin.modules.excel.service.ExcelService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ import java.nio.charset.StandardCharsets;
  * @author sonin
  * @version 1.0 2022/4/27 9:59
  */
+@Slf4j
 @RestController
 @RequestMapping("/file/excel")
 public class ExcelController {
@@ -41,6 +43,8 @@ public class ExcelController {
                 result = excelService.importHandle(request);
             }
         } catch (Exception e) {
+            e.printStackTrace();
+            log.error("import Excel error: {}", e.getMessage());
             result = Result.error(e.getMessage());
         } finally {
             outputStream.write(JSONUtil.toJsonStr(result).getBytes(StandardCharsets.UTF_8));
@@ -64,6 +68,8 @@ public class ExcelController {
                 workbook.write(outputStream);
             }
         } catch (Exception e) {
+            e.printStackTrace();
+            log.error("export Excel error: {}", e.getMessage());
             result = Result.error(e.getMessage());
             outputStream.write(JSONUtil.toJsonStr(result).getBytes(StandardCharsets.UTF_8));
         } finally {
@@ -87,6 +93,8 @@ public class ExcelController {
                 workbook.write(outputStream);
             }
         } catch (Exception e) {
+            e.printStackTrace();
+            log.error("template Excel error: {}", e.getMessage());
             result = Result.error(e.getMessage());
             outputStream.write(JSONUtil.toJsonStr(result).getBytes(StandardCharsets.UTF_8));
         } finally {
