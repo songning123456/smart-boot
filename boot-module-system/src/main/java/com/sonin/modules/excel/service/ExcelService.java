@@ -45,6 +45,16 @@ public abstract class ExcelService {
     public abstract Workbook exportHandle(HttpServletRequest request) throws Exception;
 
     /**
+    * <pre>
+    * 获取子类的excelMap
+    * </pre>
+     * @param
+    * @author sonin
+    * @Description: TODO(这里描述这个方法的需求变更情况)
+    */
+    public abstract Map<String, String> getExcelMap();
+
+    /**
      * <pre>
      * 导出模板操作
      * </pre>
@@ -53,7 +63,11 @@ public abstract class ExcelService {
      * @author sonin
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
-    public abstract Workbook templateHandle(HttpServletRequest request) throws Exception;
+    public Workbook templateHandle(HttpServletRequest request) throws Exception {
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        this.initTitle(workbook, new ArrayList<>(getExcelMap().keySet()));
+        return workbook;
+    }
 
     /**
      * <pre>

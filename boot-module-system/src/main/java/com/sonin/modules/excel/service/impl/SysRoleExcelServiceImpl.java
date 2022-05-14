@@ -53,10 +53,8 @@ public class SysRoleExcelServiceImpl extends ExcelService {
     }
 
     @Override
-    public Workbook templateHandle(HttpServletRequest request) {
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        this.initTitle(workbook, new ArrayList<>(excelMap.keySet()));
-        return workbook;
+    public Map<String, String> getExcelMap() {
+        return this.excelMap;
     }
 
 }
