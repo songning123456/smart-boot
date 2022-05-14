@@ -52,7 +52,7 @@ public abstract class ExcelService {
     * @author sonin
     * @Description: TODO(这里描述这个方法的需求变更情况)
     */
-    public abstract Map<String, String> getExcelMap();
+    protected abstract Map<String, String> getExcelMap();
 
     /**
      * <pre>
