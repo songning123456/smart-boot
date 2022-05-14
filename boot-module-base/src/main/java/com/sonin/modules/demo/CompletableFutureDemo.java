@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -91,11 +92,32 @@ public class CompletableFutureDemo {
         CompletableFuture.allOf(Stream.of("1", "2", "3").map(item -> CompletableFuture.runAsync(() -> System.out.println(item))).toArray(CompletableFuture[]::new)).join();
     }
 
+    private void testCompletableFuture5() throws Exception {
+        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> 100).thenApply(number -> number * 3);
+        System.out.println(future.get());
+    }
+
+    private void testCompletableFuture6() throws Exception {
+        CompletableFuture<Integer> future1 = CompletableFuture.supplyAsync(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return 100;
+        });
+        CompletableFuture<String> future2 = CompletableFuture.supplyAsync(() -> "200");
+        CompletableFuture<Object> future3 = CompletableFuture.anyOf(future1, future2);
+        System.out.println(future3.get());
+    }
+
     public static void main(String[] args) throws Exception {
         CompletableFutureDemo demo = new CompletableFutureDemo();
         // demo.testCompletableFuture1();
         // demo.testCompletableFuture2();
         // demo.testCompletableFuture3();
-        demo.testCompletableFuture4();
+        // demo.testCompletableFuture4();
+        // demo.testCompletableFuture5();
+        demo.testCompletableFuture6();
     }
 }
