@@ -5,6 +5,7 @@ import org.springframework.util.StringUtils;
 import java.beans.PropertyEditorSupport;
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -102,6 +103,48 @@ public class DateUtils extends PropertyEditorSupport {
 
     public static List<String> intervalByYear(String startTime, String endTime, String format) {
         return interval(startTime, endTime, format, Calendar.YEAR, 1);
+    }
+
+    /**
+     * 根据某个时间获取前多少天，或者后多少天
+     *
+     * @param dateTime yyyy-MM-dd
+     * @param limit    天数
+     * @return
+     */
+    public static List<String> increaseDay(String dateTime, int limit) {
+        return stepDay(dateTime, limit, true);
+    }
+
+    /**
+     * 根据某个时间获取前多少天，或者后多少天
+     *
+     * @param dateTime yyyy-MM-dd
+     * @param limit    天数
+     * @return
+     */
+    public static List<String> decreaseDay(String dateTime, int limit) {
+        return stepDay(dateTime, limit, false);
+    }
+
+    private static List<String> stepDay(String dateTime, int limit, boolean flag) {
+        List<String> dateList = new ArrayList<>();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar calendar = Calendar.getInstance();
+        int factor = 1;
+        if (!flag) {
+            factor = -1;
+        }
+        for (int i = 0; i < limit; i++) {
+            Date date = simpleDateFormat.parse(dateTime, new ParsePosition(0));
+            calendar.setTime(date);
+            calendar.add(Calendar.DATE, factor * i);
+            dateList.add(simpleDateFormat.format(calendar.getTime()));
+        }
+        if (!flag) {
+            dateList.sort(Comparator.reverseOrder());
+        }
+        return dateList;
     }
 
     /**
