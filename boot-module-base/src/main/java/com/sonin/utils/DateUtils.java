@@ -128,7 +128,7 @@ public class DateUtils extends PropertyEditorSupport {
     }
 
     private static List<String> stepDay(String dateTime, int limit, boolean flag) {
-        List<String> dateList = new ArrayList<>();
+        LinkedList<String> dateList = new LinkedList<>();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
         int factor = 1;
@@ -139,10 +139,11 @@ public class DateUtils extends PropertyEditorSupport {
             Date date = simpleDateFormat.parse(dateTime, new ParsePosition(0));
             calendar.setTime(date);
             calendar.add(Calendar.DATE, factor * i);
-            dateList.add(simpleDateFormat.format(calendar.getTime()));
-        }
-        if (!flag) {
-            dateList.sort(Comparator.reverseOrder());
+            if (flag) {
+                dateList.addLast(simpleDateFormat.format(calendar.getTime()));
+            } else {
+                dateList.addFirst(simpleDateFormat.format(calendar.getTime()));
+            }
         }
         return dateList;
     }
