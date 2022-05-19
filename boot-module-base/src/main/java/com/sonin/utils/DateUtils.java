@@ -73,10 +73,10 @@ public class DateUtils extends PropertyEditorSupport {
             // 使用给定的 Date 设置此 Calendar 的时间
             calendarOfEnd.setTime(endDate);
             // 测试此日期是否在指定日期之后
-            while (endDate.after(calendarOfStart.getTime())) {
+            while (endDate.compareTo(calendarOfStart.getTime()) >= 0) {
                 // 根据日历的规则，为给定的日历字段添加或减去指定的时间量
                 calendarOfStart.add(field, amount);
-                if (endDate.after(calendarOfStart.getTime())) {
+                if (endDate.compareTo(calendarOfStart.getTime()) >= 0 && !dateList.contains(calendarOfStart.getTime())) {
                     dateList.add(calendarOfStart.getTime());
                 }
             }
