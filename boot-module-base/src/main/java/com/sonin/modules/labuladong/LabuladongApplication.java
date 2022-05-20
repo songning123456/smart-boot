@@ -31,7 +31,9 @@ public class LabuladongApplication {
         // 下一个更大元素II
         // className = initClassName("shujujiegou", "dandiaozhan", "NextGreaterElementsII");
         // 每日温度
-        className = initClassName("shujujiegou", "dandiaozhan", "DailyTemperatures");
+        // className = initClassName("shujujiegou", "dandiaozhan", "DailyTemperatures");
+        // LRU
+        className = initClassName("shujujiegou", "lru", "LRUCache");
         execute(className);
     }
 
