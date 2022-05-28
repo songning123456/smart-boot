@@ -19,21 +19,13 @@ import java.util.*;
  */
 public class DateUtils extends PropertyEditorSupport {
 
-    // 各种时间格式
-    public static final SimpleDateFormat date_sdf = new SimpleDateFormat("yyyy-MM-dd");
-    public static final SimpleDateFormat yyyyMM = new SimpleDateFormat("yyyy-MM");
-    // 各种时间格式
-    public static final SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyyMMdd");
-    // 各种时间格式
-    public static final SimpleDateFormat date_sdf_wz = new SimpleDateFormat("yyyy年MM月dd日");
-    public static final SimpleDateFormat time_sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    public static final SimpleDateFormat yyyymmddhhmmss = new SimpleDateFormat("yyyyMMddHHmmss");
-    public static final SimpleDateFormat short_time_sdf = new SimpleDateFormat("HH:mm");
-    public static final SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    // 以毫秒表示的时间
+    // 以ms表示的时间
     private static final long DAY_IN_MILLIS = 24 * 3600 * 1000;
+    // 以hour表示的时间
     private static final long HOUR_IN_MILLIS = 3600 * 1000;
+    // 以minute表示的时间
     private static final long MINUTE_IN_MILLIS = 60 * 1000;
+    // 以second表示的时间
     private static final long SECOND_IN_MILLIS = 1000;
 
     // 指定模式的时间格式
@@ -187,7 +179,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return
      */
     public static Timestamp str2Timestamp(String str) {
-        Date date = str2Date(str, date_sdf);
+        Date date = str2Date(str, new SimpleDateFormat("yyyy-MM-dd"));
         return new Timestamp(date.getTime());
     }
 
@@ -195,16 +187,16 @@ public class DateUtils extends PropertyEditorSupport {
      * 字符串转换成日期
      *
      * @param str
-     * @param sdf
+     * @param simpleDateFormat
      * @return
      */
-    public static Date str2Date(String str, SimpleDateFormat sdf) {
+    public static Date str2Date(String str, SimpleDateFormat simpleDateFormat) {
         if (null == str || "".equals(str)) {
             return null;
         }
         Date date;
         try {
-            date = sdf.parse(str);
+            date = simpleDateFormat.parse(str);
             return date;
         } catch (ParseException e) {
             e.printStackTrace();
@@ -215,12 +207,12 @@ public class DateUtils extends PropertyEditorSupport {
     /**
      * 日期转换为字符串
      *
-     * @param date_sdf 日期格式
+     * @param simpleDateFormat 日期格式
      * @return 字符串
      */
-    public static String date2Str(SimpleDateFormat date_sdf) {
+    public static String date2Str(SimpleDateFormat simpleDateFormat) {
         Date date = getDate();
-        return date_sdf.format(date);
+        return simpleDateFormat.format(date);
     }
 
     /**
@@ -245,15 +237,15 @@ public class DateUtils extends PropertyEditorSupport {
     /**
      * 日期转换为字符串
      *
-     * @param date     日期
-     * @param date_sdf 日期格式
+     * @param date             日期
+     * @param simpleDateFormat 日期格式
      * @return 字符串
      */
-    public static String date2Str(Date date, SimpleDateFormat date_sdf) {
+    public static String date2Str(Date date, SimpleDateFormat simpleDateFormat) {
         if (null == date) {
             return null;
         }
-        return date_sdf.format(date);
+        return simpleDateFormat.format(date);
     }
 
     /**
@@ -264,8 +256,8 @@ public class DateUtils extends PropertyEditorSupport {
      */
     public static String getDate(String format) {
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-        return sdf.format(date);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+        return simpleDateFormat.format(date);
     }
 
     /**
@@ -303,7 +295,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 当前时间的标准形式字符串
      */
     public static String now() {
-        return datetimeFormat.format(getCalendar().getTime());
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(getCalendar().getTime());
     }
 
     /**
@@ -319,11 +311,11 @@ public class DateUtils extends PropertyEditorSupport {
     /**
      * 指定日历的时间戳
      *
-     * @param cal 指定日历
+     * @param calendar 指定日历
      * @return 指定日历的时间戳
      */
-    public static Timestamp getCalendarTimestamp(Calendar cal) {
-        return new Timestamp(cal.getTime().getTime());
+    public static Timestamp getCalendarTimestamp(Calendar calendar) {
+        return new Timestamp(calendar.getTime().getTime());
     }
 
     /**
@@ -338,11 +330,11 @@ public class DateUtils extends PropertyEditorSupport {
     /**
      * 指定日历的毫秒数
      *
-     * @param cal 指定日历
+     * @param calendar 指定日历
      * @return 指定日历的毫秒数
      */
-    public static long getMillis(Calendar cal) {
-        return cal.getTime().getTime();
+    public static long getMillis(Calendar calendar) {
+        return calendar.getTime().getTime();
     }
 
     /**
@@ -358,11 +350,11 @@ public class DateUtils extends PropertyEditorSupport {
     /**
      * 指定时间戳的毫秒数
      *
-     * @param ts 指定时间戳
+     * @param timestamp 指定时间戳
      * @return 指定时间戳的毫秒数
      */
-    public static long getMillis(Timestamp ts) {
-        return ts.getTime();
+    public static long getMillis(Timestamp timestamp) {
+        return timestamp.getTime();
     }
 
 
@@ -379,7 +371,7 @@ public class DateUtils extends PropertyEditorSupport {
         Calendar calendar = new GregorianCalendar();
         Date date1 = null;
         try {
-            date1 = yyyyMM.parse(yearMonth);
+            date1 = new SimpleDateFormat("yyyy-MM").parse(yearMonth);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -398,9 +390,9 @@ public class DateUtils extends PropertyEditorSupport {
      */
     public static String getTodayOrMonthDate(String type) {
         if (type.equals("day")) {
-            return date_sdf.format(getCalendar().getTime());
+            return new SimpleDateFormat("yyyy-MM-dd").format(getCalendar().getTime());
         } else {
-            return yyyyMM.format(getCalendar().getTime());
+            return new SimpleDateFormat("yyyy-MM").format(getCalendar().getTime());
         }
     }
 
@@ -435,10 +427,10 @@ public class DateUtils extends PropertyEditorSupport {
      * @throws ParseException
      */
     public static String formatAddTime(String src, String pattern, int calendarType, int amount) throws ParseException {
-        Calendar cal;
-        cal = parseCalendar(src, pattern);
-        cal.add(calendarType, amount);
-        return formatDate(cal, pattern);
+        Calendar calendar;
+        calendar = parseCalendar(src, pattern);
+        calendar.add(calendarType, amount);
+        return formatDate(calendar, pattern);
     }
 
     /**
@@ -450,8 +442,8 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 日期字符串
      */
     public static String format(Date date, String pattern) {
-        SimpleDateFormat sd = new SimpleDateFormat(pattern);
-        return sd.format(date);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        return simpleDateFormat.format(date);
     }
 
     /**
@@ -464,10 +456,9 @@ public class DateUtils extends PropertyEditorSupport {
      * @throws ParseException 解析异常
      */
     public static Date parse(String date, String pattern) throws ParseException {
-        SimpleDateFormat sd = new SimpleDateFormat(pattern);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         try {
-            Date date1 = sd.parse(date);
-            return date1;
+            return simpleDateFormat.parse(date);
         } catch (ParseException e) {
             throw e;
         }
@@ -477,71 +468,70 @@ public class DateUtils extends PropertyEditorSupport {
 
         String format;
         Date date;
-        Calendar ca = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         if ("year".equals(type)) {
             date = parse(dateStr, "yyyy");
-            ca.setTime(date);
-            ca.set(Calendar.MONTH, 0);
-            ca.set(Calendar.DAY_OF_MONTH, 1);
-            ca.set(Calendar.HOUR_OF_DAY, 0);
-            ca.set(Calendar.MINUTE, 0);
-            ca.set(Calendar.SECOND, 0);
+            calendar.setTime(date);
+            calendar.set(Calendar.MONTH, 0);
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
         } else if ("month".equals(type)) {
             date = parse(dateStr, "yyyy-MM");
-            ca.setTime(date);
-            ca.set(Calendar.DAY_OF_MONTH, 1);
-            ca.set(Calendar.HOUR_OF_DAY, 0);
-            ca.set(Calendar.MINUTE, 0);
-            ca.set(Calendar.SECOND, 0);
+            calendar.setTime(date);
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
         } else if ("day".equals(type)) {
             date = parse(dateStr, "yyyy-MM-dd");
-            ca.setTime(date);
-            ca.set(Calendar.HOUR_OF_DAY, 0);
-            ca.set(Calendar.MINUTE, 0);
-            ca.set(Calendar.SECOND, 0);
+            calendar.setTime(date);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
         } else if ("hour".equals(type)) {
             date = parse(dateStr, "yyyy-MM-dd HH");
-            ca.setTime(date);
-            ca.set(Calendar.MINUTE, 0);
-            ca.set(Calendar.SECOND, 0);
+            calendar.setTime(date);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
         }
-        format = format(ca.getTime(), "yyyy-MM-dd HH:mm:ss");
+        format = format(calendar.getTime(), "yyyy-MM-dd HH:mm:ss");
         return format;
     }
 
     public static String getDateLastTime(String dateStr, String type) throws ParseException {
-
         String format;
         Date date;
-        Calendar ca = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         if ("year".equals(type)) {
             date = parse(dateStr, "yyyy");
-            ca.setTime(date);
-            ca.set(Calendar.MONTH, ca.getActualMaximum(Calendar.MONTH));
-            ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));
-            ca.set(Calendar.HOUR_OF_DAY, ca.getActualMaximum(Calendar.HOUR_OF_DAY));
-            ca.set(Calendar.MINUTE, ca.getActualMaximum(Calendar.MINUTE));
-            ca.set(Calendar.SECOND, ca.getActualMaximum(Calendar.SECOND));
+            calendar.setTime(date);
+            calendar.set(Calendar.MONTH, calendar.getActualMaximum(Calendar.MONTH));
+            calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+            calendar.set(Calendar.HOUR_OF_DAY, calendar.getActualMaximum(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, calendar.getActualMaximum(Calendar.MINUTE));
+            calendar.set(Calendar.SECOND, calendar.getActualMaximum(Calendar.SECOND));
         } else if ("month".equals(type)) {
             date = parse(dateStr, "yyyy-MM");
-            ca.setTime(date);
-            ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));
-            ca.set(Calendar.HOUR_OF_DAY, ca.getActualMaximum(Calendar.HOUR_OF_DAY));
-            ca.set(Calendar.MINUTE, ca.getActualMaximum(Calendar.MINUTE));
-            ca.set(Calendar.SECOND, ca.getActualMaximum(Calendar.SECOND));
+            calendar.setTime(date);
+            calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+            calendar.set(Calendar.HOUR_OF_DAY, calendar.getActualMaximum(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, calendar.getActualMaximum(Calendar.MINUTE));
+            calendar.set(Calendar.SECOND, calendar.getActualMaximum(Calendar.SECOND));
         } else if ("day".equals(type)) {
             date = parse(dateStr, "yyyy-MM-dd");
-            ca.setTime(date);
-            ca.set(Calendar.HOUR_OF_DAY, ca.getActualMaximum(Calendar.HOUR_OF_DAY));
-            ca.set(Calendar.MINUTE, ca.getActualMaximum(Calendar.MINUTE));
-            ca.set(Calendar.SECOND, ca.getActualMaximum(Calendar.SECOND));
+            calendar.setTime(date);
+            calendar.set(Calendar.HOUR_OF_DAY, calendar.getActualMaximum(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, calendar.getActualMaximum(Calendar.MINUTE));
+            calendar.set(Calendar.SECOND, calendar.getActualMaximum(Calendar.SECOND));
         } else if ("hour".equals(type)) {
             date = parse(dateStr, "yyyy-MM-dd HH");
-            ca.setTime(date);
-            ca.set(Calendar.MINUTE, ca.getActualMaximum(Calendar.MINUTE));
-            ca.set(Calendar.SECOND, ca.getActualMaximum(Calendar.SECOND));
+            calendar.setTime(date);
+            calendar.set(Calendar.MINUTE, calendar.getActualMaximum(Calendar.MINUTE));
+            calendar.set(Calendar.SECOND, calendar.getActualMaximum(Calendar.SECOND));
         }
-        format = format(ca.getTime(), "yyyy-MM-dd HH:mm:ss");
+        format = format(calendar.getTime(), "yyyy-MM-dd HH:mm:ss");
         return format;
     }
 
@@ -602,8 +592,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @author xiechao
      */
     public static boolean isEffectiveDate(Date nowTime, Date startTime, Date endTime) {
-        if (nowTime.getTime() == startTime.getTime()
-                || nowTime.getTime() == endTime.getTime()) {
+        if (nowTime.getTime() == startTime.getTime() || nowTime.getTime() == endTime.getTime()) {
             return true;
         }
         Calendar date = Calendar.getInstance();
@@ -619,7 +608,7 @@ public class DateUtils extends PropertyEditorSupport {
     }
 
     public static String formatDate() {
-        return date_sdf.format(getCalendar().getTime());
+        return new SimpleDateFormat("yyyy-MM-dd").format(getCalendar().getTime());
     }
 
     /**
@@ -628,7 +617,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 默认日期按“yyyy-MM-dd HH:mm:ss“格式显示
      */
     public static String formatDateTime() {
-        return datetimeFormat.format(getCalendar().getTime());
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(getCalendar().getTime());
     }
 
     /**
@@ -645,7 +634,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 指定日期按“年-月-日“格式显示
      */
     public static String formatDate(Calendar cal) {
-        return date_sdf.format(cal.getTime());
+        return new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
     }
 
     /**
@@ -655,7 +644,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 指定日期按“年-月-日“格式显示
      */
     public static String formatDate(Date date) {
-        return date_sdf.format(date);
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
 
     /**
@@ -665,7 +654,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 指定毫秒数表示日期按“年-月-日“格式显示
      */
     public static String formatDate(long millis) {
-        return date_sdf.format(new Date(millis));
+        return new SimpleDateFormat("yyyy-MM-dd").format(new Date(millis));
     }
 
     /**
@@ -706,7 +695,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 默认日期按“年-月-日 时：分“格式显示
      */
     public static String formatTime() {
-        return time_sdf.format(getCalendar().getTime());
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(getCalendar().getTime());
     }
 
     /**
@@ -716,7 +705,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 指定毫秒数表示日期按“年-月-日 时：分“格式显示
      */
     public static String formatTime(long millis) {
-        return time_sdf.format(new Date(millis));
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(millis));
     }
 
     /**
@@ -726,7 +715,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return
      */
     public static String formatSecondTime(long millis) {
-        return datetimeFormat.format(new Date(millis));
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(millis));
     }
 
     /**
@@ -736,7 +725,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 指定日期按“年-月-日 时：分“格式显示
      */
     public static String formatTime(Calendar cal) {
-        return time_sdf.format(cal.getTime());
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(cal.getTime());
     }
 
     /**
@@ -746,7 +735,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 指定日期按“年-月-日 时：分“格式显示
      */
     public static String formatTime(Date date) {
-        return time_sdf.format(date);
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date);
     }
 
     /**
@@ -755,7 +744,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 默认日期按“时：分“格式显示
      */
     public static String formatShortTime() {
-        return short_time_sdf.format(getCalendar().getTime());
+        return new SimpleDateFormat("HH:mm").format(getCalendar().getTime());
     }
 
     /**
@@ -765,7 +754,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 指定毫秒数表示日期按“时：分“格式显示
      */
     public static String formatShortTime(long millis) {
-        return short_time_sdf.format(new Date(millis));
+        return new SimpleDateFormat("HH:mm").format(new Date(millis));
     }
 
     /**
@@ -775,7 +764,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 指定日期按“时：分“格式显示
      */
     public static String formatShortTime(Calendar cal) {
-        return short_time_sdf.format(cal.getTime());
+        return new SimpleDateFormat("HH:mm").format(cal.getTime());
     }
 
     /**
@@ -785,7 +774,7 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 指定日期按“时：分“格式显示
      */
     public static String formatShortTime(Date date) {
-        return short_time_sdf.format(date);
+        return new SimpleDateFormat("HH:mm").format(date);
     }
 
     /**
@@ -811,16 +800,16 @@ public class DateUtils extends PropertyEditorSupport {
      */
     public static Calendar parseCalendar(String src, String pattern) throws ParseException {
         Date date = parseDate(src, pattern);
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return cal;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
     }
 
     public static String formatAddDate(String src, String pattern, int amount) throws ParseException {
-        Calendar cal;
-        cal = parseCalendar(src, pattern);
-        cal.add(Calendar.DATE, amount);
-        return formatDate(cal);
+        Calendar calendar;
+        calendar = parseCalendar(src, pattern);
+        calendar.add(Calendar.DATE, amount);
+        return formatDate(calendar);
     }
 
     /**
@@ -873,9 +862,9 @@ public class DateUtils extends PropertyEditorSupport {
         if (StringUtils.hasText(text)) {
             try {
                 if (!text.contains(":") && text.length() == 10) {
-                    setValue(date_sdf.parse(text));
+                    setValue(new SimpleDateFormat("yyyy-MM-dd").parse(text));
                 } else if (text.indexOf(":") > 0 && text.length() == 19) {
-                    setValue(datetimeFormat.parse(text));
+                    setValue(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(text));
                 } else {
                     throw new IllegalArgumentException("Could not parse date, date format is error ");
                 }
@@ -902,15 +891,15 @@ public class DateUtils extends PropertyEditorSupport {
     public static String getLastDayOfMonth(String yearMonth) {
         int year = Integer.parseInt(yearMonth.split("-")[0]);  //年
         int month = Integer.parseInt(yearMonth.split("-")[1]); //月
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, year);// 设置年份
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);// 设置年份
         // 设置月份
-        cal.set(Calendar.MONTH, month); //设置当前月的上一个月
+        calendar.set(Calendar.MONTH, month); //设置当前月的上一个月
         // 获取某月最大天数
-        int lastDay = cal.getMinimum(Calendar.DATE); //获取月份中的最小值，即第一天
+        int lastDay = calendar.getMinimum(Calendar.DATE); //获取月份中的最小值，即第一天
         // 设置日历中月份的最大天数
-        cal.set(Calendar.DAY_OF_MONTH, lastDay - 1); //上月的第一天减去1就是当月的最后一天
-        return date_sdf.format(cal.getTime());
+        calendar.set(Calendar.DAY_OF_MONTH, lastDay - 1); //上月的第一天减去1就是当月的最后一天
+        return new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
     }
 
     /**
@@ -923,8 +912,8 @@ public class DateUtils extends PropertyEditorSupport {
     public static long dayDiff(String start, String end) {
         long diff;
         try {
-            long d1 = date_sdf.parse(start).getTime();
-            long d2 = date_sdf.parse(end).getTime();
+            long d1 = new SimpleDateFormat("yyyy-MM-dd").parse(start).getTime();
+            long d2 = new SimpleDateFormat("yyyy-MM-dd").parse(end).getTime();
             diff = (d2 - d1) / (1000 * 60 * 60 * 24);
         } catch (Exception e) {
             return 0L;
@@ -942,8 +931,9 @@ public class DateUtils extends PropertyEditorSupport {
     public synchronized static long secondDiff(String start, String end) {
         long diff;
         try {
-            long d1 = datetimeFormat.parse(start).getTime();
-            long d2 = datetimeFormat.parse(end).getTime();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            long d1 = simpleDateFormat.parse(start).getTime();
+            long d2 = simpleDateFormat.parse(end).getTime();
             diff = (d2 - d1) / 1000;
         } catch (Exception e) {
             return 0L;
@@ -972,11 +962,11 @@ public class DateUtils extends PropertyEditorSupport {
      */
     public static String getLastMonthOfMonth(String yearMonth) {
         try {
-            Date currDate = yyyyMM.parse(yearMonth);
+            Date currDate = new SimpleDateFormat("yyyy-MM").parse(yearMonth);
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(currDate);
             calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 1);
-            return yyyyMM.format(calendar.getTime());
+            return new SimpleDateFormat("yyyy-MM").format(calendar.getTime());
         } catch (ParseException e) {
             return "";
         }
@@ -995,7 +985,7 @@ public class DateUtils extends PropertyEditorSupport {
         cal.set(Calendar.YEAR, year - 1); // 设置年份上一年
         // 设置月份
         cal.set(Calendar.MONTH, month - 1); //设置当前月
-        return yyyyMM.format(cal.getTime());
+        return new SimpleDateFormat("yyyy-MM").format(cal.getTime());
     }
 
     /**
@@ -1008,7 +998,7 @@ public class DateUtils extends PropertyEditorSupport {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
         cal.add(Calendar.DATE, -1);
-        return date_sdf.format(cal.getTime());
+        return new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
     }
 
     /**
@@ -1023,7 +1013,7 @@ public class DateUtils extends PropertyEditorSupport {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
         cal.add(Calendar.DATE, -1);
-        return date_sdf.format(cal.getTime());
+        return new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
     }
 
     /**
