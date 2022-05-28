@@ -76,7 +76,7 @@ boot:
     expire: 604800
     secret: ji8n3439n439n43ld9ne9343fdfer49h
   path:
-    fileUpload: E:\\Downloads\\test
+    fileUpload: E:\\images\\smart
   encryption:
     sm2:
       # 对称加密公钥
