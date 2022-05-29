@@ -33,7 +33,15 @@ public class LabuladongApplication {
         // 每日温度
         // className = initClassName("shujujiegou", "dandiaozhan", "DailyTemperatures");
         // LRU
-        className = initClassName("shujujiegou", "lru", "LRUCache");
+        // className = initClassName("shujujiegou", "lru", "LRUCache");
+        // 最小覆盖子串
+        // className = initClassName("shuzu", "huadongchuangkou", "MinWindow");
+        // 字符串的排列
+        // className = initClassName("shuzu", "huadongchuangkou", "CheckInclusion");
+        // 找到字符串中所有字母异位词
+        // className = initClassName("shuzu", "huadongchuangkou", "FindAnagrams");
+        // 无重复字符的最长子串
+        className = initClassName("shuzu", "huadongchuangkou", "LengthOfLongestSubstring");
         execute(className);
     }
 
