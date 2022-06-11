@@ -1,5 +1,6 @@
 package com.sonin.core.query;
 
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.google.common.base.CaseFormat;
 
 import java.lang.reflect.Field;
@@ -48,14 +49,32 @@ public class Join extends Base {
     }
 
     @Override
+    public <L, R> Base innerJoin(Class clazz, SFunction<L, ?> leftFunc, SFunction<R, ?> rightFunc) {
+        directionJoin(clazz, lambdaField(leftFunc), lambdaField(rightFunc), INNER_JOIN);
+        return this;
+    }
+
+    @Override
     public Base leftJoin(Class clazz, Field leftField, Field rightField) {
         directionJoin(clazz, leftField, rightField, LEFT_JOIN);
         return this;
     }
 
     @Override
+    public <L, R> Base leftJoin(Class clazz, SFunction<L, ?> leftFunc, SFunction<R, ?> rightFunc) {
+        directionJoin(clazz, lambdaField(leftFunc), lambdaField(rightFunc), LEFT_JOIN);
+        return this;
+    }
+
+    @Override
     public Base rightJoin(Class clazz, Field leftField, Field rightField) {
         directionJoin(clazz, leftField, rightField, RIGHT_JOIN);
+        return this;
+    }
+
+    @Override
+    public <L, R> Base rightJoin(Class clazz, SFunction<L, ?> leftFunc, SFunction<R, ?> rightFunc) {
+        directionJoin(clazz, lambdaField(leftFunc), lambdaField(rightFunc), RIGHT_JOIN);
         return this;
     }
 

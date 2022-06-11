@@ -3,9 +3,14 @@ package com.sonin.core.query;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.ClassUtils;
+import com.baomidou.mybatisplus.core.toolkit.LambdaUtils;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.baomidou.mybatisplus.core.toolkit.support.SerializedLambda;
 import com.google.common.base.CaseFormat;
 import com.sonin.modules.base.service.IBaseService;
 import com.sonin.core.context.SpringContext;
+import org.apache.ibatis.reflection.property.PropertyNamer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -87,11 +92,11 @@ public abstract class Base implements IBase {
         Object value;
         for (Map.Entry<String, Object> item : paramNameValuePairs.entrySet()) {
             value = item.getValue();
-            sqlInject("" + value);
+            sqlInject(EMPTY + value);
             if (value instanceof String) {
-                value = "'" + value + "'";
+                value = SINGLE_QUOTES + value + SINGLE_QUOTES;
             }
-            suffixSql = suffixSql.replaceFirst("#\\{ew\\.paramNameValuePairs\\." + item.getKey() + "}", "" + value);
+            suffixSql = suffixSql.replaceFirst("#\\{ew\\.paramNameValuePairs\\." + item.getKey() + "}", EMPTY + value);
         }
         return prefixSql + SPACE + suffixSql;
     }
@@ -147,9 +152,15 @@ public abstract class Base implements IBase {
 
     public abstract Base innerJoin(Class clazz, Field leftField, Field rightField);
 
+    public abstract <L, R> Base innerJoin(Class clazz, SFunction<L, ?> leftFunc, SFunction<R, ?> rightFunc);
+
     public abstract Base leftJoin(Class clazz, Field leftField, Field rightField);
 
+    public abstract <L, R> Base leftJoin(Class clazz, SFunction<L, ?> leftFunc, SFunction<R, ?> rightFunc);
+
     public abstract Base rightJoin(Class clazz, Field leftField, Field rightField);
+
+    public abstract <L, R> Base rightJoin(Class clazz, SFunction<L, ?> leftFunc, SFunction<R, ?> rightFunc);
 
     /**
      * 准备构造查询条件
@@ -175,12 +186,21 @@ public abstract class Base implements IBase {
         String rightTableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, rightClassName);
         String rightFieldName = rightField.getName();
         String rightColumn = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, rightFieldName);
-        this.queryWrapper.apply(condition, (leftTableName + DOT + leftColumn) + " = " + (rightTableName + DOT + rightColumn));
+        this.queryWrapper.apply(condition, (leftTableName + DOT + leftColumn) + SPACE + EQUAL + SPACE + (rightTableName + DOT + rightColumn));
         return this;
+    }
+
+    public <L, R> Base eq(boolean condition, SFunction<L, ?> leftFunc, SFunction<R, ?> rightFunc) {
+        return this.eq(condition, lambdaField(leftFunc), lambdaField(rightFunc));
     }
 
     public Base eq(boolean condition, String column, Object val) {
         this.queryWrapper.eq(condition, column, val);
+        return this;
+    }
+
+    public <T> Base eq(boolean condition, SFunction<T, ?> sFunc, Object val) {
+        this.queryWrapper.eq(condition, lambdaColumn(sFunc), val);
         return this;
     }
 
@@ -189,8 +209,18 @@ public abstract class Base implements IBase {
         return this;
     }
 
+    public <T> Base ne(boolean condition, SFunction<T, ?> sFunc, Object val) {
+        this.queryWrapper.ne(condition, lambdaColumn(sFunc), val);
+        return this;
+    }
+
     public Base gt(boolean condition, String column, Object val) {
         this.queryWrapper.gt(condition, column, val);
+        return this;
+    }
+
+    public <T> Base gt(boolean condition, SFunction<T, ?> sFunc, Object val) {
+        this.queryWrapper.gt(condition, lambdaColumn(sFunc), val);
         return this;
     }
 
@@ -199,8 +229,18 @@ public abstract class Base implements IBase {
         return this;
     }
 
+    public <T> Base ge(boolean condition, SFunction<T, ?> sFunc, Object val) {
+        this.queryWrapper.ge(condition, lambdaColumn(sFunc), val);
+        return this;
+    }
+
     public Base lt(boolean condition, String column, Object val) {
         this.queryWrapper.lt(condition, column, val);
+        return this;
+    }
+
+    public <T> Base lt(boolean condition, SFunction<T, ?> sFunc, Object val) {
+        this.queryWrapper.lt(condition, lambdaColumn(sFunc), val);
         return this;
     }
 
@@ -209,8 +249,18 @@ public abstract class Base implements IBase {
         return this;
     }
 
+    public <T> Base le(boolean condition, SFunction<T, ?> sFunc, Object val) {
+        this.queryWrapper.le(condition, lambdaColumn(sFunc), val);
+        return this;
+    }
+
     public Base between(boolean condition, String column, Object val1, Object val2) {
         this.queryWrapper.between(condition, column, val1, val2);
+        return this;
+    }
+
+    public <T> Base between(boolean condition, SFunction<T, ?> sFunc, Object val1, Object val2) {
+        this.queryWrapper.between(condition, lambdaColumn(sFunc), val1, val2);
         return this;
     }
 
@@ -219,8 +269,18 @@ public abstract class Base implements IBase {
         return this;
     }
 
+    public <T> Base notBetween(boolean condition, SFunction<T, ?> sFunc, Object val1, Object val2) {
+        this.queryWrapper.notBetween(condition, lambdaColumn(sFunc), val1, val2);
+        return this;
+    }
+
     public Base like(boolean condition, String column, Object val) {
         this.queryWrapper.like(condition, column, val);
+        return this;
+    }
+
+    public <T> Base like(boolean condition, SFunction<T, ?> sFunc, Object val) {
+        this.queryWrapper.like(condition, lambdaColumn(sFunc), val);
         return this;
     }
 
@@ -229,8 +289,18 @@ public abstract class Base implements IBase {
         return this;
     }
 
+    public <T> Base notLike(boolean condition, SFunction<T, ?> sFunc, Object val) {
+        this.queryWrapper.notLike(condition, lambdaColumn(sFunc), val);
+        return this;
+    }
+
     public Base likeLeft(boolean condition, String column, Object val) {
         this.queryWrapper.likeLeft(condition, column, val);
+        return this;
+    }
+
+    public <T> Base likeLeft(boolean condition, SFunction<T, ?> sFunc, Object val) {
+        this.queryWrapper.likeLeft(condition, lambdaColumn(sFunc), val);
         return this;
     }
 
@@ -239,8 +309,18 @@ public abstract class Base implements IBase {
         return this;
     }
 
+    public <T> Base likeRight(boolean condition, SFunction<T, ?> sFunc, Object val) {
+        this.queryWrapper.likeRight(condition, lambdaColumn(sFunc), val);
+        return this;
+    }
+
     public Base isNull(boolean condition, String column) {
         this.queryWrapper.isNull(condition, column);
+        return this;
+    }
+
+    public <T> Base isNull(boolean condition, SFunction<T, ?> sFunc) {
+        this.queryWrapper.isNull(condition, lambdaColumn(sFunc));
         return this;
     }
 
@@ -249,8 +329,18 @@ public abstract class Base implements IBase {
         return this;
     }
 
+    public <T> Base isNotNull(boolean condition, SFunction<T, ?> sFunc) {
+        this.queryWrapper.isNotNull(condition, lambdaColumn(sFunc));
+        return this;
+    }
+
     public Base in(boolean condition, String column, Collection<?> coll) {
         this.queryWrapper.in(condition, column, coll);
+        return this;
+    }
+
+    public <T> Base in(boolean condition, SFunction<T, ?> sFunc, Collection<?> coll) {
+        this.queryWrapper.in(condition, lambdaColumn(sFunc), coll);
         return this;
     }
 
@@ -259,13 +349,28 @@ public abstract class Base implements IBase {
         return this;
     }
 
+    public <T> Base notIn(boolean condition, SFunction<T, ?> sFunc, Collection<?> coll) {
+        this.queryWrapper.notIn(condition, lambdaColumn(sFunc), coll);
+        return this;
+    }
+
     public Base inSql(boolean condition, String column, String inValue) {
         this.queryWrapper.inSql(condition, column, inValue);
         return this;
     }
 
+    public <T> Base inSql(boolean condition, SFunction<T, ?> sFunc, String inValue) {
+        this.queryWrapper.inSql(condition, lambdaColumn(sFunc), inValue);
+        return this;
+    }
+
     public Base notInSql(boolean condition, String column, String inValue) {
         this.queryWrapper.notInSql(condition, column, inValue);
+        return this;
+    }
+
+    public <T> Base notInSql(boolean condition, SFunction<T, ?> sFunc, String inValue) {
+        this.queryWrapper.notInSql(condition, lambdaColumn(sFunc), inValue);
         return this;
     }
 
@@ -359,6 +464,29 @@ public abstract class Base implements IBase {
     public List<Map<String, Object>> selectMaps(String DBName) throws Exception {
         JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringContext.getBean(DBName);
         return jdbcTemplate.queryForList(initSql());
+    }
+
+    /**
+     * === 以下lambda转换方法 ===
+     */
+
+    <T> Field lambdaField(SFunction<T, ?> func) {
+        SerializedLambda serializedLambda = LambdaUtils.resolve(func);
+        Field targetField;
+        try {
+            targetField = ClassUtils.toClassConfident(serializedLambda.getImplClass().getName()).getDeclaredField(PropertyNamer.methodToProperty(serializedLambda.getImplMethodName()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            targetField = null;
+        }
+        return targetField;
+    }
+
+    <T> String lambdaColumn(SFunction<T, ?> func) {
+        SerializedLambda serializedLambda = LambdaUtils.resolve(func);
+        String tableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, serializedLambda.getImplClass().getSimpleName());
+        String columnName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, PropertyNamer.methodToProperty(serializedLambda.getImplMethodName()));
+        return tableName + DOT + columnName;
     }
 
 }

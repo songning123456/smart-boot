@@ -49,4 +49,6 @@ public interface IBase {
 
     String DOUBLE_QUOTES = "\"";
 
+    String SINGLE_QUOTES = "'";
+
 }
