@@ -447,7 +447,7 @@ public abstract class Base implements IBase {
         JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringContext.getBean(DBName);
         TransactionTemplate transactionTemplate = SpringContext.getBean(TransactionTemplate.class);
         String countSql = SELECT + SPACE + COUNT_ALL + SPACE + FROM + SPACE + LEFT_BRACKET + initSql() + RIGHT_BRACKET + SPACE + AS + SPACE + "tmp";
-        if (customPageSql == null || "".equals(customPageSql)) {
+        if (customPageSql == null || EMPTY.equals(customPageSql)) {
             queryWrapper.last(LIMIT + SPACE + (page.getCurrent() - 1) * page.getSize() + COMMA + SPACE + page.getCurrent() * page.getSize());
         } else {
             queryWrapper.last(customPageSql);
