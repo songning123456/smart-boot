@@ -28,6 +28,8 @@ public class BootApplicationTest {
     @Test
     public void testLambda() {
         List<Map<String, Object>> mapList = BaseFactory.JOIN()
+                .select(SysRole::getId)
+                .select(SysUserRole::getRoleId)
                 .from(SysRole.class)
                 .innerJoin(SysUserRole.class, SysUserRole::getRoleId, SysRole::getId)
                 .where()

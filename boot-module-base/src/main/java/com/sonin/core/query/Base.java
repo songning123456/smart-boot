@@ -138,6 +138,17 @@ public abstract class Base implements IBase {
     }
 
     /**
+     * 选择查询字段，格式lambda
+     *
+     * @param sFunc
+     * @return
+     */
+    public <T> Base select(SFunction<T, ?> sFunc) {
+        this.select(lambdaField(sFunc));
+        return this;
+    }
+
+    /**
      * === 以下抽象方法 ===
      */
 
