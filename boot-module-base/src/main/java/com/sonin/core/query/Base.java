@@ -187,6 +187,32 @@ public abstract class Base implements IBase {
         return this;
     }
 
+    @SafeVarargs
+    public final <T> Base select(SFunction<T, ?>... sFuncs) {
+        for (SFunction<T, ?> sFunc : sFuncs) {
+            this.select(lambdaField(sFunc));
+        }
+        return this;
+    }
+
+    @SafeVarargs
+    public final <T> Base select(boolean condition, SFunction<T, ?>... sFuncs) {
+        for (SFunction<T, ?> sFunc : sFuncs) {
+            this.select(condition, lambdaField(sFunc));
+        }
+        return this;
+    }
+
+    public <T> Base select(T entity) {
+        this.select(entity.getClass().getDeclaredFields());
+        return this;
+    }
+
+    public <T> Base select(boolean condition, T entity) {
+        this.select(condition, entity.getClass().getDeclaredFields());
+        return this;
+    }
+
     /**
      * === 以下抽象方法 ===
      */
