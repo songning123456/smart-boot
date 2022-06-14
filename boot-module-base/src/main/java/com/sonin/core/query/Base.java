@@ -124,6 +124,33 @@ public abstract class Base implements IBase {
     }
 
     /**
+     * 选择查询字段，格式: DemoA_aName
+     *
+     * @param condition 是否as别名
+     * @param fields
+     * @return
+     */
+    public Base select(boolean condition, Field... fields) {
+        if (this.selectedColumns == null) {
+            this.selectedColumns = new LinkedHashSet<>();
+        }
+        String className, tableName, fieldName, column, alias;
+        for (Field field : fields) {
+            className = field.getDeclaringClass().getSimpleName();
+            tableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, className);
+            fieldName = field.getName();
+            column = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName);
+            if (!condition) {
+                alias = tableName + DOT + column + SPACE + AS + SPACE + DOUBLE_QUOTES + fieldName + DOUBLE_QUOTES;
+            } else {
+                alias = tableName + DOT + column + SPACE + AS + SPACE + DOUBLE_QUOTES + className + UNDERLINE + fieldName + DOUBLE_QUOTES;
+            }
+            this.selectedColumns.add(alias);
+        }
+        return this;
+    }
+
+    /**
      * 选择查询字段，格式自定义
      *
      * @param fields
@@ -145,6 +172,18 @@ public abstract class Base implements IBase {
      */
     public <T> Base select(SFunction<T, ?> sFunc) {
         this.select(lambdaField(sFunc));
+        return this;
+    }
+
+    /**
+     * 选择查询字段，格式lambda
+     *
+     * @param condition false去掉表前缀
+     * @param sFunc
+     * @return
+     */
+    public <T> Base select(boolean condition, SFunction<T, ?> sFunc) {
+        this.select(condition, lambdaField(sFunc));
         return this;
     }
 
