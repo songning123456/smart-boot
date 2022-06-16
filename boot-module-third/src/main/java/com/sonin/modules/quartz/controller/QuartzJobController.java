@@ -3,7 +3,7 @@ package com.sonin.modules.quartz.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sonin.api.vo.Result;
-import com.sonin.core.query.BaseFactory;
+import com.sonin.core.mpp.BaseFactory;
 import com.sonin.modules.quartz.dto.QuartzJobDTO;
 import com.sonin.modules.quartz.entity.QrtzCronTriggers;
 import com.sonin.modules.quartz.entity.QrtzJobDetails;

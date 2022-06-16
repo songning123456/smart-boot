@@ -1,16 +1,20 @@
-package com.sonin.core.query;
+package com.sonin.core.mpp;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.ClassUtils;
 import com.baomidou.mybatisplus.core.toolkit.LambdaUtils;
+import com.baomidou.mybatisplus.core.toolkit.sql.SqlUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.core.toolkit.support.SerializedLambda;
 import com.google.common.base.CaseFormat;
 import com.sonin.modules.base.service.IBaseService;
+import com.sonin.core.callback.IBeanConvertCallback;
 import com.sonin.core.context.SpringContext;
 import org.apache.ibatis.reflection.property.PropertyNamer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -18,12 +22,15 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author sonin
  * @date 2021/12/4 19:27
  */
 public abstract class Base implements IBase {
+
+    private static final Logger logger = LoggerFactory.getLogger(Base.class);
 
     /**
      * SQL拼接语句
@@ -37,6 +44,26 @@ public abstract class Base implements IBase {
     private String prefixSql;
 
     private QueryWrapper<?> queryWrapper;
+
+    /**
+     * 查询结果
+     */
+    private List<Map<String, Object>> queryResult;
+
+    /**
+     * 是否需要转换结果
+     */
+    private Result result;
+
+    /**
+     * 是否打印日志，默认不打印
+     */
+    private Boolean log = false;
+
+    /**
+     * 打印日志，前缀默认mpp
+     */
+    private String logPrefix = "mpp";
 
     /**
      * 构造返回字段
@@ -102,34 +129,9 @@ public abstract class Base implements IBase {
     }
 
     /**
-     * 选择查询字段，格式: DemoA_aName
-     *
-     * @param fields
-     * @return
+     * === 以下select方法 ===
      */
-    public Base select(Field... fields) {
-        if (this.selectedColumns == null) {
-            this.selectedColumns = new LinkedHashSet<>();
-        }
-        String className, tableName, fieldName, column, alias;
-        for (Field field : fields) {
-            className = field.getDeclaringClass().getSimpleName();
-            tableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, className);
-            fieldName = field.getName();
-            column = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName);
-            alias = tableName + DOT + column + SPACE + AS + SPACE + DOUBLE_QUOTES + className + UNDERLINE + fieldName + DOUBLE_QUOTES;
-            this.selectedColumns.add(alias);
-        }
-        return this;
-    }
 
-    /**
-     * 选择查询字段，格式: DemoA_aName
-     *
-     * @param condition 是否as别名
-     * @param fields
-     * @return
-     */
     public Base select(boolean condition, Field... fields) {
         if (this.selectedColumns == null) {
             this.selectedColumns = new LinkedHashSet<>();
@@ -150,12 +152,24 @@ public abstract class Base implements IBase {
         return this;
     }
 
-    /**
-     * 选择查询字段，格式自定义
-     *
-     * @param fields
-     * @return
-     */
+    public Base select(Field... fields) {
+        this.select(true, fields);
+        return this;
+    }
+
+    public Base select(Field field) {
+        this.select(new Field[]{field});
+        return this;
+    }
+
+    public Base select(String field) {
+        if (this.selectedColumns == null) {
+            this.selectedColumns = new LinkedHashSet<>();
+        }
+        this.selectedColumns.add(field);
+        return this;
+    }
+
     public Base select(String... fields) {
         if (this.selectedColumns == null) {
             this.selectedColumns = new LinkedHashSet<>();
@@ -164,42 +178,38 @@ public abstract class Base implements IBase {
         return this;
     }
 
-    /**
-     * 选择查询字段，格式lambda
-     *
-     * @param sFunc
-     * @return
-     */
     public <T> Base select(SFunction<T, ?> sFunc) {
-        this.select(lambdaField(sFunc));
+        this.select(new Field[]{lambdaField(sFunc)});
         return this;
     }
 
-    /**
-     * 选择查询字段，格式lambda
-     *
-     * @param condition false去掉表前缀
-     * @param sFunc
-     * @return
-     */
+    public <T> Base select(SFunction<T, ?> sFunc, String alias) {
+        if (this.selectedColumns == null) {
+            this.selectedColumns = new LinkedHashSet<>();
+        }
+        Field field = lambdaField(sFunc);
+        String className = field.getDeclaringClass().getSimpleName();
+        String tableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, className);
+        String fieldName = field.getName();
+        String column = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName);
+        this.selectedColumns.add(tableName + DOT + column + SPACE + AS + SPACE + DOUBLE_QUOTES + alias + DOUBLE_QUOTES);
+        return this;
+    }
+
     public <T> Base select(boolean condition, SFunction<T, ?> sFunc) {
-        this.select(condition, lambdaField(sFunc));
+        this.select(condition, new Field[]{lambdaField(sFunc)});
         return this;
     }
 
     @SafeVarargs
     public final <T> Base select(SFunction<T, ?>... sFuncs) {
-        for (SFunction<T, ?> sFunc : sFuncs) {
-            this.select(lambdaField(sFunc));
-        }
+        this.select(Arrays.stream(sFuncs).map(this::lambdaField).collect(Collectors.toList()).toArray(new Field[]{}));
         return this;
     }
 
     @SafeVarargs
     public final <T> Base select(boolean condition, SFunction<T, ?>... sFuncs) {
-        for (SFunction<T, ?> sFunc : sFuncs) {
-            this.select(condition, lambdaField(sFunc));
-        }
+        this.select(condition, Arrays.stream(sFuncs).map(this::lambdaField).collect(Collectors.toList()).toArray(new Field[]{}));
         return this;
     }
 
@@ -496,27 +506,87 @@ public abstract class Base implements IBase {
     }
 
     /**
+     * === 以下是否打印日志 ===
+     */
+
+    public Base log() {
+        this.log = true;
+        return this;
+    }
+
+    public Base log(String logPrefix) {
+        this.logPrefix = logPrefix;
+        this.log = true;
+        return this;
+    }
+
+    private void printLog() {
+        if (this.log) {
+            try {
+                logger.info(logPrefix + ": {}", SqlUtils.sqlFormat(initSql(), true));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void printLog(String initSql) {
+        if (this.log) {
+            logger.info(logPrefix + ": {}", SqlUtils.sqlFormat(initSql, true));
+        }
+    }
+
+    /**
      * === 以下方式获取请求结果 ===
      */
 
     public Map<String, Object> selectMap() {
+        printLog();
         IBaseService baseService = SpringContext.getBean(IBaseService.class);
         return baseService.selectMap(this.prefixSql, this.queryWrapper);
     }
 
+    public Base selectMapResult() {
+        this.queryResult = Collections.singletonList(this.selectMap());
+        this.result = BaseFactory.RESULT();
+        return this;
+    }
+
     public IPage<Map<String, Object>> selectMapsPage(IPage<?> page) {
+        printLog();
         IBaseService baseService = SpringContext.getBean(IBaseService.class);
         return baseService.selectMapsPage(page, this.prefixSql, this.queryWrapper);
     }
 
+    public Base selectMapsPageResult(IPage<?> page) {
+        this.queryResult = this.selectMapsPage(page).getRecords();
+        this.result = BaseFactory.RESULT();
+        return this;
+    }
+
     public List<Map<String, Object>> selectMaps() {
+        printLog();
         IBaseService baseService = SpringContext.getBean(IBaseService.class);
         return baseService.selectMaps(this.prefixSql, this.queryWrapper);
     }
 
+    public Base selectMapsResult() {
+        this.queryResult = this.selectMaps();
+        this.result = BaseFactory.RESULT();
+        return this;
+    }
+
     public Map<String, Object> selectMap(String DBName) throws Exception {
+        String initSql = initSql();
+        printLog(initSql);
         JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringContext.getBean(DBName);
-        return jdbcTemplate.queryForMap(initSql());
+        return jdbcTemplate.queryForMap(initSql);
+    }
+
+    public Base selectMapResult(String DBName) throws Exception {
+        this.queryResult = Collections.singletonList(this.selectMap(DBName));
+        this.result = BaseFactory.RESULT();
+        return this;
     }
 
     public IPage<Map<String, Object>> selectMapsPage(IPage<Map<String, Object>> page, String DBName, String customPageSql) throws Exception {
@@ -528,18 +598,33 @@ public abstract class Base implements IBase {
         } else {
             queryWrapper.last(customPageSql);
         }
-        String pageSql = initSql();
+        String initSql = initSql();
+        printLog(initSql);
         transactionTemplate.execute((transactionStatus -> {
             page.setTotal(Long.parseLong("" + jdbcTemplate.queryForMap(countSql).get(COUNT_ALL)));
-            page.setRecords(jdbcTemplate.queryForList(pageSql));
+            page.setRecords(jdbcTemplate.queryForList(initSql));
             return 1;
         }));
         return page;
     }
 
+    public Base selectMapsPageResult(IPage<Map<String, Object>> page, String DBName, String customPageSql) throws Exception {
+        this.queryResult = this.selectMapsPage(page, DBName, customPageSql).getRecords();
+        this.result = BaseFactory.RESULT();
+        return this;
+    }
+
     public List<Map<String, Object>> selectMaps(String DBName) throws Exception {
+        String initSql = initSql();
+        printLog(initSql);
         JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringContext.getBean(DBName);
-        return jdbcTemplate.queryForList(initSql());
+        return jdbcTemplate.queryForList(initSql);
+    }
+
+    public Base selectMapsResult(String DBName) throws Exception {
+        this.queryResult = this.selectMaps(DBName);
+        this.result = BaseFactory.RESULT();
+        return this;
     }
 
     /**
@@ -563,6 +648,60 @@ public abstract class Base implements IBase {
         String tableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, serializedLambda.getImplClass().getSimpleName());
         String columnName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, PropertyNamer.methodToProperty(serializedLambda.getImplMethodName()));
         return tableName + DOT + columnName;
+    }
+
+    /**
+     * === 以下result 字段回调 ===
+     */
+
+    public Base addCallback(String srcField, String targetField) {
+        this.result.addCallback(srcField, targetField);
+        return this;
+    }
+
+    public <T> Base addCallback(SFunction<T, ?> func, String targetField) {
+        this.result.addCallback(lambdaField(func), targetField);
+        return this;
+    }
+
+    /**
+     * === 以下result callback方法 ===
+     */
+
+    public Map<String, Object> map2MapWithPrefix(IBeanConvertCallback iBeanConvertCallback) {
+        return this.result.map2MapWithPrefix(this.queryResult.get(0), iBeanConvertCallback);
+    }
+
+    public List<Map<String, Object>> maps2MapsWithPrefix(IBeanConvertCallback iBeanConvertCallback) {
+        return this.result.maps2MapsWithPrefix(this.queryResult, iBeanConvertCallback);
+    }
+
+    public Map<String, Object> map2MapWithoutPrefix() {
+        return this.result.map2MapWithoutPrefix(this.queryResult.get(0));
+    }
+
+    public List<Map<String, Object>> maps2MapsWithoutPrefix() {
+        return this.result.maps2MapsWithoutPrefix(this.queryResult);
+    }
+
+    public Map<String, Object> map2MapWithoutPrefix(IBeanConvertCallback iBeanConvertCallback) {
+        return this.result.map2MapWithoutPrefix(this.queryResult.get(0), iBeanConvertCallback);
+    }
+
+    public List<Map<String, Object>> maps2MapsWithoutPrefix(IBeanConvertCallback iBeanConvertCallback) {
+        return this.result.maps2MapsWithoutPrefix(this.queryResult, iBeanConvertCallback);
+    }
+
+    public <T> List<T> maps2Beans(Class<T> targetClass) throws Exception {
+        return this.result.maps2Beans(this.queryResult, targetClass);
+    }
+
+    public <T> List<T> maps2Beans(Class<T> targetClass, IBeanConvertCallback iBeanConvertCallback) throws Exception {
+        return this.result.maps2Beans(this.queryResult, targetClass, iBeanConvertCallback);
+    }
+
+    public void map2MultiBean(Object... classObjs) {
+        this.result.map2MultiBean(this.queryResult.get(0), classObjs);
     }
 
 }

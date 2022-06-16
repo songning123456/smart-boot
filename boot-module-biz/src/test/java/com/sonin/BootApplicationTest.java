@@ -1,6 +1,6 @@
 package com.sonin;
 
-import com.sonin.core.query.BaseFactory;
+import com.sonin.core.mpp.BaseFactory;
 import com.sonin.modules.sys.entity.SysRole;
 import com.sonin.modules.sys.entity.SysUserRole;
 import lombok.extern.slf4j.Slf4j;

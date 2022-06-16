@@ -1,4 +1,4 @@
-package com.sonin.core.query;
+package com.sonin.core.mpp;
 
 import com.sonin.core.callback.IBeanConvertCallback;
 
@@ -16,17 +16,9 @@ public class Result implements IBase {
 
     private Map<String, String> callbackMap;
 
-    private Collection<String> selectedColumns;
-
-    public Result select(Field... fields) {
-        if (this.selectedColumns == null) {
-            this.selectedColumns = new LinkedHashSet<>();
-        }
-        for (Field field : fields) {
-            this.selectedColumns.add(field.getDeclaringClass().getSimpleName() + UNDERLINE + field.getName());
-        }
-        return this;
-    }
+    /**
+     * === 以下字段回调 ===
+     */
 
     public Result addCallback(Field srcField, Field targetField) {
         if (this.callbackMap == null) {
@@ -71,9 +63,6 @@ public class Result implements IBase {
         Object srcFieldVal, callbackFieldVal;
         for (Map.Entry<String, Object> item : srcMap.entrySet()) {
             srcFieldName = item.getKey();
-            if (this.selectedColumns != null && !this.selectedColumns.contains(srcFieldName)) {
-                continue;
-            }
             srcFieldVal = item.getValue();
             if (srcFieldVal instanceof Date) {
                 srcFieldVal = dateFormat(EMPTY + srcFieldVal, "yyyy-MM-dd HH:mm:ss");
@@ -114,9 +103,6 @@ public class Result implements IBase {
         Object srcFieldVal;
         for (Map.Entry<String, Object> item : srcMap.entrySet()) {
             srcFieldName = item.getKey();
-            if (this.selectedColumns != null && !this.selectedColumns.contains(srcFieldName)) {
-                continue;
-            }
             srcFieldVal = item.getValue();
             if (srcFieldVal instanceof Date) {
                 srcFieldVal = dateFormat(EMPTY + srcFieldVal, "yyyy-MM-dd HH:mm:ss");
@@ -153,9 +139,6 @@ public class Result implements IBase {
         Object srcFieldVal, callbackFieldVal;
         for (Map.Entry<String, Object> item : srcMap.entrySet()) {
             srcFieldName = item.getKey();
-            if (this.selectedColumns != null && !this.selectedColumns.contains(srcFieldName)) {
-                continue;
-            }
             srcFieldVal = item.getValue();
             if (srcFieldVal instanceof Date) {
                 srcFieldVal = dateFormat(EMPTY + srcFieldVal, "yyyy-MM-dd HH:mm:ss");

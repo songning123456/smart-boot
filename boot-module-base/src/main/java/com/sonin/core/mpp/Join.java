@@ -1,4 +1,4 @@
-package com.sonin.core.query;
+package com.sonin.core.mpp;
 
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.google.common.base.CaseFormat;

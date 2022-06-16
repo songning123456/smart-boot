@@ -1,4 +1,4 @@
-package com.sonin.core.query;
+package com.sonin.core.mpp;
 
 /**
  * @author sonin
