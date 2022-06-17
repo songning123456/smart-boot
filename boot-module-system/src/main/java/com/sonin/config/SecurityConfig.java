@@ -48,6 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String[] WEB_WHITELIST = {
             "/auth/captcha",
             "/websocket/app",
+            // todo 以下后续待删除
+            "/scheduleTask/**"
     };
 
 
