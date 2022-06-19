@@ -21,7 +21,7 @@ public class SearchRange implements Solution {
         return new int[]{leftBound(nums, target), rightBound(nums, target)};
     }
 
-    int leftBound(int[] nums, int target) {
+    private int leftBound(int[] nums, int target) {
         int left = 0, right = nums.length - 1;
         while (left <= right) {
             int mid = left + (right - left) / 2;
@@ -39,7 +39,7 @@ public class SearchRange implements Solution {
         return left;
     }
 
-    int rightBound(int[] nums, int target) {
+    private int rightBound(int[] nums, int target) {
         int left = 0, right = nums.length - 1;
         while (left <= right) {
             int mid = left + (right - left) / 2;
@@ -56,4 +56,5 @@ public class SearchRange implements Solution {
         }
         return right;
     }
+
 }
