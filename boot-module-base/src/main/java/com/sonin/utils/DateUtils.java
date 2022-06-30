@@ -1029,4 +1029,100 @@ public class DateUtils extends PropertyEditorSupport {
         return formatAddTime(getYesterday(), "yyyy-MM-dd", Calendar.DATE, -1);
     }
 
+    /**
+     * <pre>
+     * 根据某个日期获取指定时间
+     * </pre>
+     *
+     * @param currentDate
+     * @param field:      Calendar.DATE、Calendar.MONTH ...
+     * @param step:       step>0获取往后某一天，step<0获取之前某一天
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static Date someDate(Date currentDate, Integer field, Integer step) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.set(field, calendar.get(field) + step);
+        return calendar.getTime();
+    }
+
+    /**
+     * <pre>
+     * 昨天此刻
+     * </pre>
+     *
+     * @param currentDate
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static Date prevDay(Date currentDate) {
+        return someDate(currentDate, Calendar.DATE, -1);
+    }
+
+    /**
+     * <pre>
+     * 上个月此刻
+     * </pre>
+     *
+     * @param currentDate
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static Date prevMonth(Date currentDate) {
+        return someDate(currentDate, Calendar.MONTH, -1);
+    }
+
+    /**
+     * <pre>
+     * 去年此刻
+     * </pre>
+     *
+     * @param currentDate
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static Date prevYear(Date currentDate) {
+        return someDate(currentDate, Calendar.YEAR, -1);
+    }
+
+    /**
+     * <pre>
+     * 明天此刻
+     * </pre>
+     *
+     * @param currentDate
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static Date nextDay(Date currentDate) {
+        return someDate(currentDate, Calendar.DATE, 1);
+    }
+
+    /**
+     * <pre>
+     * 下个月此刻
+     * </pre>
+     *
+     * @param currentDate
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static Date nextMonth(Date currentDate) {
+        return someDate(currentDate, Calendar.MONTH, 1);
+    }
+
+    /**
+     * <pre>
+     * 明年此刻
+     * </pre>
+     *
+     * @param currentDate
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static Date nextYear(Date currentDate) {
+        return someDate(currentDate, Calendar.YEAR, 1);
+    }
+
 }
