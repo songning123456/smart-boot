@@ -609,7 +609,12 @@ public abstract class Base implements IBase {
     }
 
     public Base selectMapsPageResult(IPage<Map<String, Object>> page, String DBName, String customPageSql) throws Exception {
-        this.queryResult = this.selectMapsPage(page, DBName, customPageSql).getRecords();
+        this.queryResult = this.selectMapsPage(page).getRecords();
+        IPage<Map<String, Object>> tmpPage = this.selectMapsPage(page);
+        page.setPages(tmpPage.getPages());
+        page.setTotal(tmpPage.getTotal());
+        page.setRecords((List) tmpPage.getRecords());
+        this.queryResult = tmpPage.getRecords();
         this.result = BaseFactory.RESULT();
         return this;
     }
