@@ -218,8 +218,18 @@ public abstract class Base implements IBase {
         return this;
     }
 
+    public <T> Base select(Class<T> clazz) {
+        this.select(clazz.getDeclaredFields());
+        return this;
+    }
+
     public <T> Base select(boolean condition, T entity) {
         this.select(condition, entity.getClass().getDeclaredFields());
+        return this;
+    }
+
+    public <T> Base select(boolean condition, Class<T> clazz) {
+        this.select(condition, clazz.getDeclaredFields());
         return this;
     }
 
