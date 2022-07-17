@@ -49,7 +49,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/auth/captcha",
             "/websocket/app",
             // todo 以下后续待删除
-            "/scheduleTask/**"
+            "/scheduleTask/**",
+            "/test/**"
     };
 
 

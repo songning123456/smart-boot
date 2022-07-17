@@ -47,6 +47,11 @@ spring:
           url: jdbc:mysql://192.168.2.126:3306/smart-boot-third?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
           username: root
           password: 123456
+        suzhou:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://123.56.9.196:6003/sk-se-suzhou?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+          username: root
+          password: jkauto@123
   redis:
     database: 3
     # 服务器地址
