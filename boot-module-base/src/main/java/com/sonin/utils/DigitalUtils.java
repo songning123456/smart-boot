@@ -21,7 +21,9 @@ public class DigitalUtils {
      * @return
      */
     public static String nPoint(Object src, int n) {
-        if (src instanceof Double) {
+        if (src == null) {
+            return String.format("%." + n + "f", 0D);
+        } else if (src instanceof Double) {
             return String.format("%." + n + "f", src);
         } else if (src instanceof String) {
             if (isNumeric(src.toString())) {
