@@ -21,11 +21,10 @@ public class ExpressionUtils {
      * @param expression
      * @return
      */
-    private static List<String> toInfixList(String expression, Map<String, Double> expressionMap) throws Exception {
+    private static List<String> toInfixList(String expression) {
         List<String> infixList = new ArrayList<>();
         int i = 0;
         StringBuilder stringBuilder = new StringBuilder();
-        String var0, val0;
         while (i < expression.length()) {
             if ('{' == expression.charAt(i)) {
                 // 保存遍历过程中产生的数字，{...}格式拼接成一个数
@@ -35,17 +34,7 @@ public class ExpressionUtils {
                     stringBuilder.append(expression.charAt(i));
                     i++;
                 }
-                var0 = stringBuilder.toString();
-                if (!expressionMap.containsKey(var0)) {
-                    throw new Exception("请输入" + var0 + "值!");
-                } else {
-                    val0 = "" + expressionMap.get(var0);
-                    if (val0.matches("[+\\-]?[0-9]+[.]?[\\d]*")) {
-                        infixList.add(val0);
-                    } else {
-                        throw new Exception(var0 + "请输入合法数字!");
-                    }
-                }
+                infixList.add(stringBuilder.toString());
             } else if (Character.isDigit(expression.charAt(i))) {
                 // 如果遇到数字，拼接成一个浮点类型的字符串
                 stringBuilder.delete(0, stringBuilder.length());
@@ -53,9 +42,8 @@ public class ExpressionUtils {
                     stringBuilder.append(expression.charAt(i));
                     i++;
                 }
-                var0 = stringBuilder.toString();
-                infixList.add(var0);
-            } else if (Arrays.asList('+', '-', '*', '/', '(', ')').contains(expression.charAt(i))) {
+                infixList.add(stringBuilder.toString());
+            } else if ('+' == expression.charAt(i) || '-' == expression.charAt(i) || '*' == expression.charAt(i) || '/' == expression.charAt(i) || '(' == expression.charAt(i) || ')' == expression.charAt(i)) {
                 // 如果当前字符是 +-*/()，直接加入结果
                 infixList.add(expression.charAt(i) + "");
                 i++;
@@ -74,16 +62,13 @@ public class ExpressionUtils {
      * @param infixList
      * @return
      */
-    private static List<String> toSuffixList(List<String> infixList) {
+    public static List<String> toSuffixList(List<String> infixList) {
         // 符号栈
         Stack<String> operatorStack = new Stack<>();
         // 在整个转换过程中，没有pop操作，在后面还要逆序输出，所以用list代替栈
         List<String> suffixList = new ArrayList<>();
         for (String item : infixList) {
-            // 如果是数字，加入suffixList
-            if (item.matches("[+\\-]?[0-9]+[.]?[\\d]*")) {
-                suffixList.add(item);
-            } else if ("(".equals(item)) {
+            if ("(".equals(item)) {
                 // 如果是左括号，入栈operatorStack
                 operatorStack.push(item);
             } else if (")".equals(item)) {
@@ -93,13 +78,15 @@ public class ExpressionUtils {
                 }
                 // 丢弃左括号，继续循环，也就消除了一对括号
                 operatorStack.pop();
-            } else {
+            } else if ("+".equals(item) || "-".equals(item) || "*".equals(item) || "/".equals(item)) {
                 // 此时，遇到的是加减乘除运算符
                 // 当前操作符优先级<=operatorStack的栈顶运算符的优先级，则将operatorStack的运算符弹出，并加入到suffixList中
                 while (!operatorStack.empty() && priority(operatorStack.peek()) >= priority(item)) {
                     suffixList.add(operatorStack.pop());
                 }
                 operatorStack.push(item);
+            } else {
+                suffixList.add(item);
             }
         }
         // 将operatorStack中剩余的运算符依次弹出，并加入suffixList
@@ -110,12 +97,25 @@ public class ExpressionUtils {
     }
 
     /**
+     * <pre>
+     * 直接将表达式转成后缀表达式字符串列表
+     * </pre>
+     *
+     * @param expression
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static List<String> toSuffixList(String expression) {
+        return toInfixList(expression);
+    }
+
+    /**
      * 对后缀表达式字符串列表进行计算
      *
      * @param suffixList
      * @return
      */
-    private static double calculateSuffix(List<String> suffixList) {
+    public static double calculateSuffix(List<String> suffixList, Map<String, Double> expressionMap) {
         Stack<Double> stack = new Stack<>();
         for (String suffix : suffixList) {
             double n1, n2;
@@ -141,7 +141,11 @@ public class ExpressionUtils {
                     stack.push(n2 - n1);
                     break;
                 default:
-                    stack.push(Double.parseDouble(suffix));
+                    if (expressionMap.containsKey(suffix)) {
+                        stack.push(expressionMap.get(suffix));
+                    } else {
+                        stack.push(Double.parseDouble(suffix));
+                    }
                     break;
             }
         }
@@ -166,6 +170,17 @@ public class ExpressionUtils {
     }
 
     /**
+     * 表达式结果
+     *
+     * @param expression
+     * @param expressionMap
+     * @return
+     */
+    public static Double expressionResult(String expression, Map<String, Double> expressionMap) {
+        return calculateSuffix(toSuffixList(toInfixList(expression)), expressionMap);
+    }
+
+    /**
      * 解析表达式指标
      *
      * @param expression
@@ -174,7 +189,7 @@ public class ExpressionUtils {
     public static List<String> parseExpression(String expression) {
         List<String> codeList = new ArrayList<>();
         int i = 0;
-        // 保存遍历过程中产生的数字，{...}格式拼接成一个数
+        // 保存遍历过程中产生的{...}，{...}格式拼接成一个指标
         StringBuilder stringBuilder = new StringBuilder();
         while (i < expression.length()) {
             if ('{' == expression.charAt(i)) {
@@ -193,39 +208,18 @@ public class ExpressionUtils {
         return codeList;
     }
 
-    /**
-     * 表达式结果
-     *
-     * @param expression
-     * @param expressionMap
-     * @return
-     * @throws Exception
-     */
-    public static Double expressionResult(String expression, Map<String, Double> expressionMap) throws Exception {
-        // 第1步
-        List<String> infixList = ExpressionUtils.toInfixList(expression, expressionMap);
-        log.info("表达式:{} =>中缀字符串列表: {}", expression, infixList);
-        // 第2步
-        List<String> suffixList = ExpressionUtils.toSuffixList(infixList);
-        log.info("表达式:{} =>后缀字符串列表: {}", expression, suffixList);
-        // 第3步
-        double calculateRes = ExpressionUtils.calculateSuffix(suffixList);
-        log.info("表达式:{} =>计算结果: {}", expression, calculateRes);
-        return calculateRes;
-    }
-
     public static void main(String[] args) throws Exception {
         String expression = "({a} + (( {b} + {c} ) * {d} ) - {e}) / 2.0";
         Map<String, Double> expressionMap = new HashMap<String, Double>(5) {{
-            put("a", 1D);
+            put("a", 2D);
             put("b", 1D);
             put("c", 1D);
             put("d", 1D);
             put("e", 1D);
         }};
-        List<String> codeList = ExpressionUtils.parseExpression(expression);
+        List<String> codeList = parseExpression(expression);
         System.out.println(codeList);
-        double expressionResult = ExpressionUtils.expressionResult(expression, expressionMap);
+        double expressionResult = expressionResult(expression, expressionMap);
         System.out.println(expressionResult);
     }
 
