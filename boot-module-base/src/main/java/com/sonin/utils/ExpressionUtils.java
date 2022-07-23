@@ -21,14 +21,14 @@ public class ExpressionUtils {
      * @param expression
      * @return
      */
-    private static List<String> toInfixList(String expression, Map<String, String> expressionMap) throws Exception {
+    private static List<String> toInfixList(String expression, Map<String, Double> expressionMap) throws Exception {
         List<String> infixList = new ArrayList<>();
         int i = 0;
-        // 保存遍历过程中产生的数字，{...}格式拼接成一个数
         StringBuilder stringBuilder = new StringBuilder();
-        String var0;
+        String var0, val0;
         while (i < expression.length()) {
             if ('{' == expression.charAt(i)) {
+                // 保存遍历过程中产生的数字，{...}格式拼接成一个数
                 stringBuilder.delete(0, stringBuilder.length());
                 i++;
                 while (i < expression.length() && '}' != expression.charAt(i)) {
@@ -39,18 +39,28 @@ public class ExpressionUtils {
                 if (!expressionMap.containsKey(var0)) {
                     throw new Exception("请输入" + var0 + "值!");
                 } else {
-                    if (expressionMap.get(var0).matches("[+\\-]?[0-9]+[.]?[\\d]*")) {
-                        infixList.add(expressionMap.get(var0));
+                    val0 = "" + expressionMap.get(var0);
+                    if (val0.matches("[+\\-]?[0-9]+[.]?[\\d]*")) {
+                        infixList.add(val0);
                     } else {
                         throw new Exception(var0 + "请输入合法数字!");
                     }
                 }
+            } else if (Character.isDigit(expression.charAt(i))) {
+                // 如果遇到数字，拼接成一个浮点类型的字符串
+                stringBuilder.delete(0, stringBuilder.length());
+                while (i < expression.length() && (Character.isDigit(expression.charAt(i)) || '.' == expression.charAt(i))) {
+                    stringBuilder.append(expression.charAt(i));
+                    i++;
+                }
+                var0 = stringBuilder.toString();
+                infixList.add(var0);
             } else if (Arrays.asList('+', '-', '*', '/', '(', ')').contains(expression.charAt(i))) {
-                // 如果当前字符不是数字，直接加入结果
+                // 如果当前字符是 +-*/()，直接加入结果
                 infixList.add(expression.charAt(i) + "");
                 i++;
             } else {
-                // 直接跳过, e.g: ' '
+                // 直接跳过，e.g: ' '
                 i++;
             }
         }
@@ -67,7 +77,6 @@ public class ExpressionUtils {
     private static List<String> toSuffixList(List<String> infixList) {
         // 符号栈
         Stack<String> operatorStack = new Stack<>();
-        // 存储中间结果
         // 在整个转换过程中，没有pop操作，在后面还要逆序输出，所以用list代替栈
         List<String> suffixList = new ArrayList<>();
         for (String item : infixList) {
@@ -162,7 +171,7 @@ public class ExpressionUtils {
      * @param expression
      * @return
      */
-    public static List<String> decodeExpression(String expression) {
+    public static List<String> parseExpression(String expression) {
         List<String> codeList = new ArrayList<>();
         int i = 0;
         // 保存遍历过程中产生的数字，{...}格式拼接成一个数
@@ -192,7 +201,7 @@ public class ExpressionUtils {
      * @return
      * @throws Exception
      */
-    public static Double expressionResult(String expression, Map<String, String> expressionMap) throws Exception {
+    public static Double expressionResult(String expression, Map<String, Double> expressionMap) throws Exception {
         // 第1步
         List<String> infixList = ExpressionUtils.toInfixList(expression, expressionMap);
         log.info("表达式:{} =>中缀字符串列表: {}", expression, infixList);
@@ -206,15 +215,15 @@ public class ExpressionUtils {
     }
 
     public static void main(String[] args) throws Exception {
-        String expression = "{a} + (( {b} + {c} ) * {d} ) - {e}";
-        Map<String, String> expressionMap = new HashMap<String, String>(5) {{
-            put("a", "-12.5");
-            put("b", "22.2");
-            put("c", "31");
-            put("d", "4");
-            put("e", "5");
+        String expression = "({a} + (( {b} + {c} ) * {d} ) - {e}) / 2.0";
+        Map<String, Double> expressionMap = new HashMap<String, Double>(5) {{
+            put("a", 1D);
+            put("b", 1D);
+            put("c", 1D);
+            put("d", 1D);
+            put("e", 1D);
         }};
-        List<String> codeList = ExpressionUtils.decodeExpression(expression);
+        List<String> codeList = ExpressionUtils.parseExpression(expression);
         System.out.println(codeList);
         double expressionResult = ExpressionUtils.expressionResult(expression, expressionMap);
         System.out.println(expressionResult);
