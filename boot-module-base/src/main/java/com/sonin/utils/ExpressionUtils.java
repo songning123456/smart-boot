@@ -106,7 +106,7 @@ public class ExpressionUtils {
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
     public static List<String> toSuffixList(String expression) {
-        return toInfixList(expression);
+        return toSuffixList(toInfixList(expression));
     }
 
     /**
