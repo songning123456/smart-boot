@@ -42,7 +42,7 @@ public class DigitalUtils {
      * @return
      */
     public static boolean isNumeric(String str) {
-        Pattern pattern = Pattern.compile("^-?\\d+(\\.\\d+)?$");
+        Pattern pattern = Pattern.compile("^[+-]?\\d+\\.?\\d*[Ee][+-]?\\d+$");
         if (StringUtils.isEmpty(str)) {
             return false;
         } else {
