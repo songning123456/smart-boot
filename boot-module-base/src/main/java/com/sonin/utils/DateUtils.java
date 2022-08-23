@@ -258,6 +258,28 @@ public class DateUtils {
     }
 
     /**
+     * <pre>
+     * 获取指定某一个月: 0:这个月; -1:上一月; 1:下一月;
+     * </pre>
+     *
+     * @param currentDate
+     * @param n
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static List<String> someMonth(Date currentDate, int n) {
+        Date date = someDate(currentDate, Calendar.MONTH, n);
+        Calendar calendar = Calendar.getInstance(Locale.CHINA);
+        calendar.setTime(date);
+        int year = calendar.get(Calendar.YEAR); //年份
+        int month = calendar.get(Calendar.MONTH) + 1; //月份
+        int day = calendar.getActualMaximum(Calendar.DATE); // 天数
+        String startTime = year + "-" + (month < 10 ? ("0" + month) : month) + "-01";
+        String endTime = year + "-" + (month < 10 ? ("0" + month) : month) + "-" + day;
+        return intervalByDay(startTime, endTime, "yyyy-MM-dd");
+    }
+
+    /**
      * String => java.util.Date
      *
      * @param str        表示日期的字符串
