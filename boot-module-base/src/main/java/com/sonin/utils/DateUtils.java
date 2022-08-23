@@ -312,6 +312,37 @@ public class DateUtils {
         return simpleDateFormat.format(date);
     }
 
+    /**
+     * <pre>
+     * 获取最近月份集合
+     * </pre>
+     *
+     * @param
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static List<String> recentMonthList(int n) {
+        List<String> yearMonthList = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        // 1号就从上个月开始算
+        int num = 1;
+        // 判断今天是否是1号
+        calendar.setTime(new Date());
+        calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) + 1);
+        if (calendar.get(Calendar.DAY_OF_MONTH) == 2) {
+            num = 0;
+        }
+        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + num);
+        for (int i = n - 1; i >= 0; i--) {
+            // 1个月前
+            calendar.add(Calendar.MONTH, -1);
+            int month = calendar.get(Calendar.MONTH) + 1;
+            String yearMonth = calendar.get(Calendar.YEAR) + "-" + (month < 10 ? ("0" + month) : ("" + month));
+            yearMonthList.add(yearMonth);
+        }
+        return yearMonthList;
+    }
+
     public static void main(String[] args) {
         // System.out.println(someWeek(-1));
         System.out.println(someMonth(1));
