@@ -46,19 +46,25 @@ public class PgExcelServiceImpl extends ExcelService {
     @Override
     public Workbook exportHandle(HttpServletRequest request) throws Exception {
         JdbcTemplate mysqlDB = (JdbcTemplate) SpringContext.getBean("master");
-        JdbcTemplate pgDB = (JdbcTemplate) SpringContext.getBean("zt-pg");
+        // todo 可以修改
+//        JdbcTemplate pgDB = (JdbcTemplate) SpringContext.getBean("zt-pg");
+        JdbcTemplate pgDB = (JdbcTemplate) SpringContext.getBean("zt-xr");
         Map<String, String> excelMap = new LinkedHashMap<>();
         // 初始化
         if ("1".equals(request.getParameter("init"))) {
             mysqlDB.update("update sys_monitor_metric_info set column32 = '0'");
         }
+        // todo 可以修改
         Map<String, String> factoryId2TableMap = new HashMap<String, String>() {{
             put("d49416cc5b304b21839dbc2bfc1c3f23", "masjd_count");
             put("263ff89fb61849be954acf2088f70ee1", "gdjk_count");
+            put("ed1b9c928f3c431f9e58759e06352fa1", "xrxaeweq_count");
         }};
+        // todo 可以修改
         Map<String, String> factoryId2NameMap = new HashMap<String, String>() {{
             put("d49416cc5b304b21839dbc2bfc1c3f23", "马鞍山江东中铁水务");
             put("263ff89fb61849be954acf2088f70ee1", "广德中铁经开水务");
+            put("ed1b9c928f3c431f9e58759e06352fa1", "西安市第二污水处理厂二期");
         }};
         // todo 可以修改
         String factoryId;
@@ -69,6 +75,8 @@ public class PgExcelServiceImpl extends ExcelService {
         }
         String table = factoryId2TableMap.getOrDefault(factoryId, "masjd_count");
         String factoryName = factoryId2NameMap.getOrDefault(factoryId, "未知");
+        // todo 可以修改
+        String filePath = "xr";
         String sqlOne = "select id, metric_name from sys_monitor_metric_info where fac_code = '{0}' and column32 != '1'";
         sqlOne = sqlOne.replaceFirst("\\{0}", factoryId);
         List<Map<String, Object>> mapList = mysqlDB.queryForList(sqlOne);
@@ -95,7 +103,7 @@ public class PgExcelServiceImpl extends ExcelService {
             mapList = pgDB.queryForList(sqlPg);
             //创建一个文件
             try {
-                File file = new File(fileUploadPath + File.separator + "zt2" + File.separator + factoryName + "_" + key + ".xls");
+                File file = new File(fileUploadPath + File.separator + filePath + File.separator + factoryName + "_" + key + ".xls");
                 file.createNewFile();
                 FileOutputStream fileOutputStream = FileUtils.openOutputStream(file);
                 HSSFWorkbook workbook = new HSSFWorkbook();

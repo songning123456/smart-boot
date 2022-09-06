@@ -52,6 +52,11 @@ spring:
           url: jdbc:postgresql://36.103.205.199:10086/postgres?useUnicode=true&characterEncoding=UTF8
           username: postgres
           password: jkauto@123zt
+        zt-xr:
+          driver-class-name: org.postgresql.Driver
+          url: jdbc:postgresql://120.24.205.69:10086/postgres?useUnicode=true&characterEncoding=UTF8
+          username: postgres
+          password: server_2021_%Jksc
   redis:
     database: 3
     # 服务器地址
