@@ -61,34 +61,21 @@ public class PgExcelServiceImpl extends ExcelService {
             put("263ff89fb61849be954acf2088f70ee1", "广德中铁经开水务");
         }};
         // todo 可以修改
-        String factoryId = "d49416cc5b304b21839dbc2bfc1c3f23";
+        String factoryId;
         if (StringUtils.isNotEmpty(request.getParameter("factoryId"))) {
             factoryId = request.getParameter("factoryId");
+        } else {
+            factoryId = "d49416cc5b304b21839dbc2bfc1c3f23";
         }
         String table = factoryId2TableMap.getOrDefault(factoryId, "masjd_count");
         String factoryName = factoryId2NameMap.getOrDefault(factoryId, "未知");
-        // 进出厂的水质、水量
-        String sqlOne = "select id, metric_name from sys_monitor_metric_info where fac_code = '{0}' and metric_uid_tag is not null and column32 != '1'";
+        String sqlOne = "select id, metric_name from sys_monitor_metric_info where fac_code = '{0}' and column32 != '1'";
         sqlOne = sqlOne.replaceFirst("\\{0}", factoryId);
         List<Map<String, Object>> mapList = mysqlDB.queryForList(sqlOne);
         for (Map<String, Object> item : mapList) {
             String id = "" + item.get("id");
             String metricName = "" + item.get("metric_name");
             excelMap.put(metricName, id);
-        }
-        // 生化池的所有仪表数据，风机的所有数据、加药间的所有数据、回流泵的所有数据
-        String sqlTwo = "select id, metric_name from sys_monitor_metric_info where fac_code = '{0}' and metric_name like '%{1}%' and column32 != '1'";
-        sqlTwo = sqlTwo.replaceFirst("\\{0}", factoryId);
-        List<String> metricNameLikeList = Arrays.asList("生化池", "风机", "加药", "回流泵");
-        for (String metricNameLike : metricNameLikeList) {
-            String sqlTwoCopy = sqlTwo;
-            sqlTwoCopy = sqlTwoCopy.replaceFirst("\\{1}", metricNameLike);
-            mapList = mysqlDB.queryForList(sqlTwoCopy);
-            for (Map<String, Object> item : mapList) {
-                String id = "" + item.get("id");
-                String metricName = "" + item.get("metric_name");
-                excelMap.put(metricName, id);
-            }
         }
         // * 查询pg数据
         String format = "yyyy-MM-dd HH:mm:ss";
@@ -97,7 +84,7 @@ public class PgExcelServiceImpl extends ExcelService {
         Date currentDate = DateUtils.strToDate(endTime, format);
         String tsEnd = "" + currentDate.getTime() / 1000;
         // 去年时间
-        String startTime = "2021-09-01 00:00:00";
+        String startTime = "2020-09-01 00:00:00";
         Date prevDate = DateUtils.strToDate(startTime, format);
         String tsStart = "" + prevDate.getTime() / 1000;
         for (Map.Entry<String, String> entry : excelMap.entrySet()) {
@@ -108,7 +95,7 @@ public class PgExcelServiceImpl extends ExcelService {
             mapList = pgDB.queryForList(sqlPg);
             //创建一个文件
             try {
-                File file = new File(fileUploadPath + File.separator + "zt" + File.separator + factoryName + "_" + key + ".xls");
+                File file = new File(fileUploadPath + File.separator + "zt2" + File.separator + factoryName + "_" + key + ".xls");
                 file.createNewFile();
                 FileOutputStream fileOutputStream = FileUtils.openOutputStream(file);
                 HSSFWorkbook workbook = new HSSFWorkbook();
