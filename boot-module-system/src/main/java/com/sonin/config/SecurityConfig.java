@@ -50,7 +50,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/websocket/app",
             // todo 以下后续待删除
             "/scheduleTask/**",
-            "/test/**"
+            "/test/**",
+            "/file/excel/**"
     };
 
 

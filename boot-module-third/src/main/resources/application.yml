@@ -2,4 +2,4 @@ spring:
   application:
     name: smart-boot-third
   profiles:
-    active: dev
+    active: sskj
