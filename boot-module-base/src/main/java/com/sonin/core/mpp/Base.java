@@ -546,6 +546,15 @@ public abstract class Base implements IBase {
         }
     }
 
+    public String printSql() {
+        try {
+            return initSql();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     /**
      * === 以下方式获取请求结果 ===
      */
