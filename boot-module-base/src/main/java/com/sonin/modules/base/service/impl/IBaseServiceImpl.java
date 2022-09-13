@@ -2,11 +2,15 @@ package com.sonin.modules.base.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.google.common.base.CaseFormat;
 import com.sonin.modules.base.mapper.BaseMapper;
 import com.sonin.modules.base.service.IBaseService;
+import com.sonin.utils.UniqIdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +47,32 @@ public class IBaseServiceImpl implements IBaseService {
     @Override
     public Integer delete(String tableName, Wrapper<?> wrapper) {
         return baseMapper.delete(tableName, wrapper);
+    }
+
+    @Override
+    public <S> Integer insert(String tableName, S entity) {
+        Map<String, Object> ew = new HashMap<>();
+        // entity => map
+        try {
+            Class clazz = entity.getClass();
+            Field[] fields;
+            while (!"java.lang.Object".equals(clazz.getName())) {
+                fields = clazz.getDeclaredFields();
+                for (Field field : fields) {
+                    field.setAccessible(true);
+                    ew.put(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName()), field.get(entity));
+                    field.setAccessible(false);
+                }
+                clazz = clazz.getSuperclass();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 设置主键ID
+        if (ew.get("id") == null || "".equals(ew.get("id"))) {
+            ew.put("id", UniqIdUtils.getInstance().getUniqID());
+        }
+        return baseMapper.insert(tableName, ew);
     }
 
 }

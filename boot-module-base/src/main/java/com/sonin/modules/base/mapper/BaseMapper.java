@@ -24,4 +24,6 @@ public interface BaseMapper {
 
     int delete(@Param("tableName") String tableName, @Param(Constants.WRAPPER) Wrapper<?> wrapper);
 
+    int insert(@Param("tableName") String tableName, @Param(Constants.WRAPPER) Map ew);
+
 }

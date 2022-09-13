@@ -22,4 +22,6 @@ public interface IBaseService {
 
     Integer delete(String tableName, Wrapper<?> wrapper);
 
+    <S> Integer insert(String tableName, S entity);
+
 }

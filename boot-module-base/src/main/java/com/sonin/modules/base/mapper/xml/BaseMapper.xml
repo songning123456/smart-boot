@@ -22,4 +22,15 @@
          delete from ${tableName} ${ew.customSqlSegment}
     </delete>
 
+    <insert id="insert">
+        insert into ${tableName}
+        <foreach collection="ew.keys" item="key" open="(" close=")" separator=",">
+            ${key}
+        </foreach>
+        values
+        <foreach collection="ew.values" item="value" open="(" close=")" separator=",">
+            #{value}
+        </foreach>
+    </insert>
+
 </mapper>
