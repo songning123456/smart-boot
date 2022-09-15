@@ -60,7 +60,10 @@ public class IBaseServiceImpl implements IBaseService {
                 fields = clazz.getDeclaredFields();
                 for (Field field : fields) {
                     field.setAccessible(true);
-                    ew.put(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName()), field.get(entity));
+                    // 过滤null
+                    if (field.get(entity) != null) {
+                        ew.put(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName()), field.get(entity));
+                    }
                     field.setAccessible(false);
                 }
                 clazz = clazz.getSuperclass();
@@ -69,7 +72,7 @@ public class IBaseServiceImpl implements IBaseService {
             e.printStackTrace();
         }
         // 设置主键ID
-        if (ew.get("id") == null || "".equals(ew.get("id"))) {
+        if (ew.get("id") == null) {
             ew.put("id", UniqIdUtils.getInstance().getUniqID());
         }
         return baseMapper.insert(tableName, ew);
