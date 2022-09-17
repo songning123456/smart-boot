@@ -5,8 +5,6 @@ import com.sonin.core.context.SpringContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,8 +17,6 @@ import java.util.Map;
  * @date 2021/12/6 14:58
  */
 @Lazy(false)
-@ConditionalOnClass({DataSourceConfig.class})
-@AutoConfigureOrder(101)
 public class JdbcTemplateConfig {
 
     private static final Logger log = LoggerFactory.getLogger(JdbcTemplateConfig.class);
