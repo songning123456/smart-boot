@@ -25,7 +25,7 @@ import java.util.Map;
 public class BootApplicationTest {
 
     @Test
-    public void testOne() {
+    public void test() {
         String sql = "select * from sys_user limit 0, 1";
         JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
         List<Map<String, Object>> mapList = masterDB.queryForList(sql);
