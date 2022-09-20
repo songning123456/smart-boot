@@ -533,7 +533,7 @@ public abstract class Base implements IBase {
     private void printLog() {
         if (this.log) {
             try {
-                logger.info(logPrefix + ": {}", SqlUtils.sqlFormat(initSql(), true));
+                logger.info(logPrefix + ": {}", initSql());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -542,7 +542,7 @@ public abstract class Base implements IBase {
 
     private void printLog(String initSql) {
         if (this.log) {
-            logger.info(logPrefix + ": {}", SqlUtils.sqlFormat(initSql, true));
+            logger.info(logPrefix + ": {}", initSql);
         }
     }
 
