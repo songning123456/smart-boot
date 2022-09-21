@@ -78,4 +78,13 @@ public class IBaseServiceImpl implements IBaseService {
         return baseMapper.insert(tableName, ew);
     }
 
+    @Override
+    public Integer insert(String tableName, Map<String, Object> ew) {
+        // 设置主键ID
+        if (ew.get("id") == null) {
+            ew.put("id", UniqIdUtils.getInstance().getUniqID());
+        }
+        return baseMapper.insert(tableName, ew);
+    }
+
 }

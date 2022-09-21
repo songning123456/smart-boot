@@ -24,4 +24,6 @@ public interface IBaseService {
 
     <S> Integer insert(String tableName, S entity);
 
+    Integer insert(String tableName, Map<String, Object> ew);
+
 }
