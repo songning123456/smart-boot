@@ -5,12 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.ClassUtils;
 import com.baomidou.mybatisplus.core.toolkit.LambdaUtils;
-import com.baomidou.mybatisplus.core.toolkit.sql.SqlUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.core.toolkit.support.SerializedLambda;
 import com.google.common.base.CaseFormat;
 import com.sonin.modules.base.service.IBaseService;
-import com.sonin.core.callback.IBeanConvertCallback;
 import com.sonin.core.context.SpringContext;
 import org.apache.ibatis.reflection.property.PropertyNamer;
 import org.slf4j.Logger;
@@ -44,16 +42,6 @@ public abstract class Base implements IBase {
     private String prefixSql;
 
     private QueryWrapper<?> queryWrapper;
-
-    /**
-     * 查询结果
-     */
-    private List<Map<String, Object>> queryResult;
-
-    /**
-     * 是否需要转换结果
-     */
-    private Result result;
 
     /**
      * 是否打印日志，默认不打印
@@ -565,22 +553,10 @@ public abstract class Base implements IBase {
         return baseService.selectMap(this.prefixSql, this.queryWrapper);
     }
 
-    public Base selectMapResult() {
-        this.queryResult = Collections.singletonList(this.selectMap());
-        this.result = BaseFactory.RESULT();
-        return this;
-    }
-
     public IPage<Map<String, Object>> selectMapsPage(IPage<?> page) {
         printLog();
         IBaseService baseService = SpringContext.getBean(IBaseService.class);
         return baseService.selectMapsPage(page, this.prefixSql, this.queryWrapper);
-    }
-
-    public Base selectMapsPageResult(IPage<?> page) {
-        this.queryResult = this.selectMapsPage(page).getRecords();
-        this.result = BaseFactory.RESULT();
-        return this;
     }
 
     public List<Map<String, Object>> selectMaps() {
@@ -589,23 +565,11 @@ public abstract class Base implements IBase {
         return baseService.selectMaps(this.prefixSql, this.queryWrapper);
     }
 
-    public Base selectMapsResult() {
-        this.queryResult = this.selectMaps();
-        this.result = BaseFactory.RESULT();
-        return this;
-    }
-
     public Map<String, Object> selectMap(String DBName) throws Exception {
         String initSql = initSql();
         printLog(initSql);
         JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringContext.getBean(DBName);
         return jdbcTemplate.queryForMap(initSql);
-    }
-
-    public Base selectMapResult(String DBName) throws Exception {
-        this.queryResult = Collections.singletonList(this.selectMap(DBName));
-        this.result = BaseFactory.RESULT();
-        return this;
     }
 
     public IPage<Map<String, Object>> selectMapsPage(IPage<Map<String, Object>> page, String DBName, String customPageSql) throws Exception {
@@ -627,28 +591,11 @@ public abstract class Base implements IBase {
         return page;
     }
 
-    public Base selectMapsPageResult(IPage<Map<String, Object>> page, String DBName, String customPageSql) throws Exception {
-        this.queryResult = this.selectMapsPage(page).getRecords();
-        IPage<Map<String, Object>> tmpPage = this.selectMapsPage(page);
-        page.setPages(tmpPage.getPages());
-        page.setTotal(tmpPage.getTotal());
-        page.setRecords((List) tmpPage.getRecords());
-        this.queryResult = tmpPage.getRecords();
-        this.result = BaseFactory.RESULT();
-        return this;
-    }
-
     public List<Map<String, Object>> selectMaps(String DBName) throws Exception {
         String initSql = initSql();
         printLog(initSql);
         JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringContext.getBean(DBName);
         return jdbcTemplate.queryForList(initSql);
-    }
-
-    public Base selectMapsResult(String DBName) throws Exception {
-        this.queryResult = this.selectMaps(DBName);
-        this.result = BaseFactory.RESULT();
-        return this;
     }
 
     /**
@@ -672,60 +619,6 @@ public abstract class Base implements IBase {
         String tableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, serializedLambda.getImplClass().getSimpleName());
         String columnName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, PropertyNamer.methodToProperty(serializedLambda.getImplMethodName()));
         return tableName + DOT + columnName;
-    }
-
-    /**
-     * === 以下result 字段回调 ===
-     */
-
-    public Base addCallback(String srcField, String targetField) {
-        this.result.addCallback(srcField, targetField);
-        return this;
-    }
-
-    public <T> Base addCallback(SFunction<T, ?> func, String targetField) {
-        this.result.addCallback(lambdaField(func), targetField);
-        return this;
-    }
-
-    /**
-     * === 以下result callback方法 ===
-     */
-
-    public Map<String, Object> map2MapWithPrefix(IBeanConvertCallback iBeanConvertCallback) {
-        return this.result.map2MapWithPrefix(this.queryResult.get(0), iBeanConvertCallback);
-    }
-
-    public List<Map<String, Object>> maps2MapsWithPrefix(IBeanConvertCallback iBeanConvertCallback) {
-        return this.result.maps2MapsWithPrefix(this.queryResult, iBeanConvertCallback);
-    }
-
-    public Map<String, Object> map2MapWithoutPrefix() {
-        return this.result.map2MapWithoutPrefix(this.queryResult.get(0));
-    }
-
-    public List<Map<String, Object>> maps2MapsWithoutPrefix() {
-        return this.result.maps2MapsWithoutPrefix(this.queryResult);
-    }
-
-    public Map<String, Object> map2MapWithoutPrefix(IBeanConvertCallback iBeanConvertCallback) {
-        return this.result.map2MapWithoutPrefix(this.queryResult.get(0), iBeanConvertCallback);
-    }
-
-    public List<Map<String, Object>> maps2MapsWithoutPrefix(IBeanConvertCallback iBeanConvertCallback) {
-        return this.result.maps2MapsWithoutPrefix(this.queryResult, iBeanConvertCallback);
-    }
-
-    public <T> List<T> maps2Beans(Class<T> targetClass) throws Exception {
-        return this.result.maps2Beans(this.queryResult, targetClass);
-    }
-
-    public <T> List<T> maps2Beans(Class<T> targetClass, IBeanConvertCallback iBeanConvertCallback) throws Exception {
-        return this.result.maps2Beans(this.queryResult, targetClass, iBeanConvertCallback);
-    }
-
-    public void map2MultiBean(Object... classObjs) {
-        this.result.map2MultiBean(this.queryResult.get(0), classObjs);
     }
 
 }
