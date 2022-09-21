@@ -182,5 +182,5 @@ public class BaseMeterInfo {
     /**
      * 水表类型(营销系统)
      */
-    private String categoryId;
+    private String categoryCode;
 }

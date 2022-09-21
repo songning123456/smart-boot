@@ -64,7 +64,6 @@ public class DemoController {
                         .from(BaseMeterInfo.class)
                         .where()
                         .last(true, lastSql)
-                        .log()
                         .selectMaps("master");
                 // 获取当前页的meterCode
                 List<String> meterCodeList = srcMapList.stream().map(item -> "" + item.get("meterCode")).collect(Collectors.toList());
@@ -74,7 +73,6 @@ public class DemoController {
                         .from(SyncMeterInfo.class)
                         .where()
                         .in(true, SyncMeterInfo::getMeterCode, meterCodeList)
-                        .log()
                         .selectMaps("sync");
                 // 更新状态
                 for (Map<String, Object> src : srcMapList) {
@@ -93,7 +91,7 @@ public class DemoController {
                                     // loc_classify => location_category
                                     .set("location_category", locClassify)
                                     // meter_category => category_id
-                                    .set("category_id", meterCategory)
+                                    .set("category_code", meterCategory)
                                     .eq("id", id);
                             baseService.update("base_meter_info", updateWrapper);
                             break;
