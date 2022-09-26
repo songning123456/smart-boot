@@ -223,7 +223,7 @@ public abstract class Base implements IBase {
 
     public <T> Base selectCaseWhen(String caseWhenCondition, String alias) {
         // MYSQL case when统计
-        this.select("ifnull(sum(case when (" + caseWhenCondition + ")  then 1 else 0 end), 0) as " + DOUBLE_QUOTES + alias + DOUBLE_QUOTES);
+        this.select("ifnull(sum(case when (" + caseWhenCondition + ") then 1 else 0 end), 0) as " + DOUBLE_QUOTES + alias + DOUBLE_QUOTES);
         return this;
     }
 
