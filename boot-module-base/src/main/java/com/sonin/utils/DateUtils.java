@@ -223,12 +223,13 @@ public class DateUtils {
      */
     public static List<String> someWeek(int n) {
         String format = "yyyy-MM-dd";
+        LocalDateTime now = LocalDateTime.now();
         // 获取本周
-        DayOfWeek dayOfWeek = LocalDateTime.now().getDayOfWeek();
+        DayOfWeek dayOfWeek = now.getDayOfWeek();
         // 本周周一
-        String startTime = LocalDateTime.now().minusDays(7 - dayOfWeek.getValue()).format(DateTimeFormatter.ofPattern(format));
+        String startTime = now.minusDays(dayOfWeek.getValue() - 1).format(DateTimeFormatter.ofPattern(format));
         // 本周周日
-        String endTime = LocalDateTime.now().plusDays(7 - dayOfWeek.getValue()).format(DateTimeFormatter.ofPattern(format));
+        String endTime = now.plusDays(7 - dayOfWeek.getValue()).format(DateTimeFormatter.ofPattern(format));
         if (n != 0) {
             startTime = date2Str(someDate(strToDate(startTime, format), Calendar.DATE, n * 7), format);
             endTime = date2Str(someDate(strToDate(endTime, format), Calendar.DATE, n * 7), format);
