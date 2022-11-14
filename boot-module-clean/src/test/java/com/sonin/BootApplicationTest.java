@@ -38,32 +38,23 @@ public class BootApplicationTest {
 
     @Test
     public void importDictTest() {
-        // 用水类型
+        // 自定义报表
         Map<String, String> dictMap = new HashMap<String, String>() {{
-            put("tableName", "tb_water_type");
-            put("srcText", "INFO");
-            put("srcValue", "CODE");
-            put("dictId", "188c078117eed1856ee3da4b1d0086bf");
-        }};
-        // 特殊处理类型
-        dictMap = new HashMap<String, String>() {{
-            put("tableName", "tb_special_handle_type");
-            put("srcText", "描述");
-            put("srcValue", "处理编码");
-            put("dictId", "d6f8277b096076d316df244d06718497");
+            put("tableName", "custom_report");
+            put("dictId", "f8750d09eeaca38d2863820fe3e72628");
         }};
         JdbcTemplate srcDB = (JdbcTemplate) SpringContext.getBean("ym-ssjk");
         List<Map<String, Object>> srcMapList = srcDB.queryForList("select * from " + dictMap.get("tableName"));
         List<Map<String, String>> targetMapList = new ArrayList<>();
         for (Map<String, Object> src : srcMapList) {
-            Map<String, String> finalDictMap = dictMap;
             targetMapList.add(new HashMap<String, String>() {{
-                put("item_text", "" + src.get(finalDictMap.get("srcText")));
-                put("item_value", ("" + src.get(finalDictMap.get("srcValue"))).split("\\.")[0]);
+                put("item_text", String.valueOf(src.get("item_text")));
+                put("item_value", String.valueOf(src.get("item_value")));
+                put("description", String.valueOf(src.get("description")));
             }});
         }
         // 排序
-        targetMapList.sort(Comparator.comparing(o -> o.get("item_text")));
+        // targetMapList.sort(Comparator.comparing(o -> o.get("item_text")));
 
         // 以下不做修改
         String dictId = dictMap.get("dictId");
@@ -73,7 +64,7 @@ public class BootApplicationTest {
                 put("dict_id", dictId);
                 put("item_text", targetMapList.get(finalI).get("item_text"));
                 put("item_value", targetMapList.get(finalI).get("item_value"));
-                put("description", targetMapList.get(finalI).get("item_text"));
+                put("description", targetMapList.get(finalI).get("description"));
                 put("sort_order", finalI + 1);
                 put("status", 1);
             }});
