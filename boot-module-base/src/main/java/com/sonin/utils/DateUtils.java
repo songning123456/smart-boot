@@ -356,9 +356,11 @@ public class DateUtils {
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
     public static String[] tbTimeFunc(String startTime, String endTime) {
-        String curYearStr = startTime.split("-")[0];
-        String prevYearStr = "" + (Integer.parseInt(curYearStr) - 1);
-        return new String[]{startTime.replaceFirst(curYearStr, prevYearStr), endTime.replaceFirst(curYearStr, prevYearStr)};
+        String yyyyOfStart = startTime.split("-")[0];
+        String yyyyOfEnd = endTime.split("-")[0];
+        String yyyyOfPrevStart = "" + (Integer.parseInt(yyyyOfStart) - 1);
+        String yyyyOfPrevEnd = "" + (Integer.parseInt(yyyyOfEnd) - 1);
+        return new String[]{startTime.replaceFirst(yyyyOfStart, yyyyOfPrevStart), endTime.replaceFirst(yyyyOfEnd, yyyyOfPrevEnd)};
     }
 
     /**
