@@ -344,6 +344,43 @@ public class DateUtils {
         return yearMonthList;
     }
 
+    /**
+     * <pre>
+     * 获取同比时间
+     * startTime与endTime不能超过一年
+     * </pre>
+     *
+     * @param startTime
+     * @param endTime
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static String[] tbTimeFunc(String startTime, String endTime) {
+        String curYearStr = startTime.split("-")[0];
+        String prevYearStr = "" + (Integer.parseInt(curYearStr) - 1);
+        return new String[]{startTime.replaceFirst(curYearStr, prevYearStr), endTime.replaceFirst(curYearStr, prevYearStr)};
+    }
+
+    /**
+     * <pre>
+     * 获取环比时间
+     * </pre>
+     *
+     * @param startTime
+     * @param endTime
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static String[] hbTimeFunc(String startTime, String endTime) {
+        String format = "yyyy-MM-dd HH:mm:ss";
+        String hbStartTime = DateUtils.date2Str(DateUtils.prevMonth(DateUtils.strToDate(startTime, format)), format);
+        String hbEndTime = DateUtils.date2Str(DateUtils.prevMonth(DateUtils.strToDate(endTime, format)), format);
+        while (!hbStartTime.split("-")[1].equals(hbEndTime.split("-")[1])) {
+            hbEndTime = DateUtils.date2Str(DateUtils.prevDay(DateUtils.strToDate(hbEndTime, format)), format);
+        }
+        return new String[]{hbStartTime, hbEndTime};
+    }
+
     public static void main(String[] args) {
         // System.out.println(someWeek(-1));
         System.out.println(someMonth(1));
