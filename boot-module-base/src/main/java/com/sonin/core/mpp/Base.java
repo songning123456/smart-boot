@@ -196,8 +196,8 @@ public abstract class Base implements IBase {
     }
 
     @SafeVarargs
-    public final <T> Base select(boolean condition, SFunction<T, ?>... sFuncs) {
-        this.select(condition, Arrays.stream(sFuncs).map(this::lambdaField).collect(Collectors.toList()).toArray(new Field[]{}));
+    public final <T> Base select(boolean camelCondition, SFunction<T, ?>... sFuncs) {
+        this.select(camelCondition, Arrays.stream(sFuncs).map(this::lambdaField).collect(Collectors.toList()).toArray(new Field[]{}));
         return this;
     }
 
@@ -211,13 +211,13 @@ public abstract class Base implements IBase {
         return this;
     }
 
-    public <T> Base select(boolean condition, T entity) {
-        this.select(condition, entity.getClass().getDeclaredFields());
+    public <T> Base select(boolean camelCondition, T entity) {
+        this.select(camelCondition, entity.getClass().getDeclaredFields());
         return this;
     }
 
-    public <T> Base select(boolean condition, Class<T> clazz) {
-        this.select(condition, clazz.getDeclaredFields());
+    public <T> Base select(boolean camelCondition, Class<T> clazz) {
+        this.select(camelCondition, clazz.getDeclaredFields());
         return this;
     }
 
