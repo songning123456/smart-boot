@@ -35,7 +35,7 @@ public class BootApplicationTest {
                 .where()
                 .eq(true, SysUserRole::getRoleId, "074fb9ddf4f24478bf06da0f5619dc78")
                 .eq(true, SysRole::getId, "074fb9ddf4f24478bf06da0f5619dc78")
-                .selectMaps();
+                .queryForList();
         System.out.println(mapList);
     }
 

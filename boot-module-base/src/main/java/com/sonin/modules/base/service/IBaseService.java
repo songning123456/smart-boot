@@ -12,11 +12,11 @@ import java.util.Map;
  */
 public interface IBaseService {
 
-    Map<String, Object> selectMap(String sqlSelect, Wrapper<?> queryWrapper);
+    Map<String, Object> queryForMap(String sqlSelect, Wrapper<?> queryWrapper);
 
-    IPage<Map<String, Object>> selectMapsPage(IPage<?> page, String sqlSelect, Wrapper<?> queryWrapper);
+    IPage<Map<String, Object>> queryForPage(IPage<?> page, String sqlSelect, Wrapper<?> queryWrapper);
 
-    List<Map<String, Object>> selectMaps(String sqlSelect, Wrapper<?> queryWrapper);
+    List<Map<String, Object>> queryForList(String sqlSelect, Wrapper<?> queryWrapper);
 
     Integer update(String tableName, Wrapper<?> updateWrapper);
 

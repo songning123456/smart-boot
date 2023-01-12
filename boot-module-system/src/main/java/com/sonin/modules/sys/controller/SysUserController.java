@@ -71,7 +71,7 @@ public class SysUserController {
                     .innerJoin(SysRole.class, SysRole.class.getDeclaredField("id"), SysUserRole.class.getDeclaredField("roleId"))
                     .where()
                     .eq(true, "sys_user.id", id)
-                    .selectMaps();
+                    .queryForList();
             List<SysRole> sysRoleList = BaseFactory.RESULT().maps2Beans(mapList, SysRole.class);
             List<String> roleIds = sysRoleList.stream().map(SysRole::getId).collect(Collectors.toList());
             sysUserVO.setRoleIds(roleIds);

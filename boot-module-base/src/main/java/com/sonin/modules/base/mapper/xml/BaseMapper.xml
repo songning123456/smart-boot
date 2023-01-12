@@ -2,15 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sonin.modules.base.mapper.BaseMapper">
 
-    <select id="selectMap" resultType="java.util.LinkedHashMap" parameterType="java.lang.String">
+    <select id="queryForMap" resultType="java.util.LinkedHashMap" parameterType="java.lang.String">
         ${sqlSelect} ${ew.customSqlSegment}
     </select>
 
-    <select id="selectMapsPage" resultType="java.util.LinkedHashMap" parameterType="java.lang.String">
+    <select id="queryForPage" resultType="java.util.LinkedHashMap" parameterType="java.lang.String">
         ${sqlSelect} ${ew.customSqlSegment}
     </select>
 
-    <select id="selectMaps" resultType="java.util.LinkedHashMap" parameterType="java.lang.String">
+    <select id="queryForList" resultType="java.util.LinkedHashMap" parameterType="java.lang.String">
        ${sqlSelect} ${ew.customSqlSegment}
     </select>
 

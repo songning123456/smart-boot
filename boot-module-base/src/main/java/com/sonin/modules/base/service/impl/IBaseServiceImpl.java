@@ -25,18 +25,18 @@ public class IBaseServiceImpl implements IBaseService {
     private BaseMapper baseMapper;
 
     @Override
-    public Map<String, Object> selectMap(String sqlSelect, Wrapper<?> queryWrapper) {
-        return baseMapper.selectMap(sqlSelect, queryWrapper);
+    public Map<String, Object> queryForMap(String sqlSelect, Wrapper<?> queryWrapper) {
+        return baseMapper.queryForMap(sqlSelect, queryWrapper);
     }
 
     @Override
-    public IPage<Map<String, Object>> selectMapsPage(IPage<?> page, String sqlSelect, Wrapper<?> queryWrapper) {
-        return baseMapper.selectMapsPage(page, sqlSelect, queryWrapper);
+    public IPage<Map<String, Object>> queryForPage(IPage<?> page, String sqlSelect, Wrapper<?> queryWrapper) {
+        return baseMapper.queryForPage(page, sqlSelect, queryWrapper);
     }
 
     @Override
-    public List<Map<String, Object>> selectMaps(String sqlSelect, Wrapper<?> queryWrapper) {
-        return baseMapper.selectMaps(sqlSelect, queryWrapper);
+    public List<Map<String, Object>> queryForList(String sqlSelect, Wrapper<?> queryWrapper) {
+        return baseMapper.queryForList(sqlSelect, queryWrapper);
     }
 
     @Override

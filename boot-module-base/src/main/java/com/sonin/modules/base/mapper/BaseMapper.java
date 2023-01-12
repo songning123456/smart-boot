@@ -14,11 +14,11 @@ import java.util.Map;
  */
 public interface BaseMapper {
 
-    Map<String, Object> selectMap(@Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> queryWrapper);
+    Map<String, Object> queryForMap(@Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> queryWrapper);
 
-    IPage<Map<String, Object>> selectMapsPage(IPage<?> page, @Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> queryWrapper);
+    IPage<Map<String, Object>> queryForPage(IPage<?> page, @Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> queryWrapper);
 
-    List<Map<String, Object>> selectMaps(@Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> queryWrapper);
+    List<Map<String, Object>> queryForList(@Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> queryWrapper);
 
     int update(@Param("tableName") String tableName, @Param(Constants.WRAPPER) Wrapper<?> updateWrapper);
 

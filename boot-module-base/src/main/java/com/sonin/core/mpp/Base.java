@@ -46,12 +46,12 @@ public abstract class Base implements IBase {
     /**
      * 是否打印日志，默认不打印
      */
-    private Boolean log = false;
+    private Boolean logFlag = false;
 
     /**
      * 打印日志，前缀默认mpp
      */
-    private String logPrefix = "mpp";
+    private String logPrefixName = "mpp";
 
     /**
      * 构造返回字段
@@ -120,7 +120,7 @@ public abstract class Base implements IBase {
      * === 以下select方法 ===
      */
 
-    public Base select(boolean condition, Field... fields) {
+    public Base select(boolean camelCondition, Field... fields) {
         if (this.selectedColumns == null) {
             this.selectedColumns = new LinkedHashSet<>();
         }
@@ -130,7 +130,7 @@ public abstract class Base implements IBase {
             tableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, className);
             fieldName = field.getName();
             column = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName);
-            if (!condition) {
+            if (!camelCondition) {
                 alias = tableName + DOT + column + SPACE + AS + SPACE + DOUBLE_QUOTES + fieldName + DOUBLE_QUOTES;
             } else {
                 alias = tableName + DOT + column + SPACE + AS + SPACE + DOUBLE_QUOTES + className + UNDERLINE + fieldName + DOUBLE_QUOTES;
@@ -184,8 +184,8 @@ public abstract class Base implements IBase {
         return this;
     }
 
-    public <T> Base select(boolean condition, SFunction<T, ?> sFunc) {
-        this.select(condition, new Field[]{lambdaField(sFunc)});
+    public <T> Base select(boolean camelCondition, SFunction<T, ?> sFunc) {
+        this.select(camelCondition, new Field[]{lambdaField(sFunc)});
         return this;
     }
 
@@ -232,6 +232,11 @@ public abstract class Base implements IBase {
 
     public <T> Base selectCaseWhen(String caseWhen, String alias) {
         this.selectCaseWhen(caseWhen, "1", "0", alias);
+        return this;
+    }
+
+    public <T> Base selectPercentage(String dividend, String divisor, int nPoint, String alias) {
+        this.select("concat(truncate(" + dividend + " / " + divisor + " * 100, " + nPoint + "), '%') as " + alias);
         return this;
     }
 
@@ -522,20 +527,20 @@ public abstract class Base implements IBase {
      */
 
     public Base log() {
-        this.log = true;
+        this.logFlag = true;
         return this;
     }
 
     public Base log(String logPrefix) {
-        this.logPrefix = logPrefix;
-        this.log = true;
+        this.logPrefixName = logPrefix;
+        this.logFlag = true;
         return this;
     }
 
     private void printLog() {
-        if (this.log) {
+        if (this.logFlag) {
             try {
-                logger.info(logPrefix + ": {}", initSql());
+                logger.info(logPrefixName + ": {}", initSql());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -543,8 +548,8 @@ public abstract class Base implements IBase {
     }
 
     private void printLog(String initSql) {
-        if (this.log) {
-            logger.info(logPrefix + ": {}", initSql);
+        if (this.logFlag) {
+            logger.info(logPrefixName + ": {}", initSql);
         }
     }
 
@@ -561,32 +566,32 @@ public abstract class Base implements IBase {
      * === 以下方式获取请求结果 ===
      */
 
-    public Map<String, Object> selectMap() {
+    public Map<String, Object> queryForMap() {
         printLog();
         IBaseService baseService = SpringContext.getBean(IBaseService.class);
-        return baseService.selectMap(this.prefixSql, this.queryWrapper);
+        return baseService.queryForMap(this.prefixSql, this.queryWrapper);
     }
 
-    public IPage<Map<String, Object>> selectMapsPage(IPage<?> page) {
+    public IPage<Map<String, Object>> queryForPage(IPage<?> page) {
         printLog();
         IBaseService baseService = SpringContext.getBean(IBaseService.class);
-        return baseService.selectMapsPage(page, this.prefixSql, this.queryWrapper);
+        return baseService.queryForPage(page, this.prefixSql, this.queryWrapper);
     }
 
-    public List<Map<String, Object>> selectMaps() {
+    public List<Map<String, Object>> queryForList() {
         printLog();
         IBaseService baseService = SpringContext.getBean(IBaseService.class);
-        return baseService.selectMaps(this.prefixSql, this.queryWrapper);
+        return baseService.queryForList(this.prefixSql, this.queryWrapper);
     }
 
-    public Map<String, Object> selectMap(String DBName) throws Exception {
+    public Map<String, Object> queryForMap(String DBName) throws Exception {
         String initSql = initSql();
         printLog(initSql);
         JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringContext.getBean(DBName);
         return jdbcTemplate.queryForMap(initSql);
     }
 
-    public IPage<Map<String, Object>> selectMapsPage(IPage<Map<String, Object>> page, String DBName, String customPageSql) throws Exception {
+    public IPage<Map<String, Object>> queryForPage(IPage<Map<String, Object>> page, String DBName, String customPageSql) throws Exception {
         JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringContext.getBean(DBName);
         TransactionTemplate transactionTemplate = SpringContext.getBean(TransactionTemplate.class);
         String countSql = SELECT + SPACE + COUNT_ALL + SPACE + FROM + SPACE + LEFT_BRACKET + initSql() + RIGHT_BRACKET + SPACE + AS + SPACE + "tmp";
@@ -605,7 +610,7 @@ public abstract class Base implements IBase {
         return page;
     }
 
-    public List<Map<String, Object>> selectMaps(String DBName) throws Exception {
+    public List<Map<String, Object>> queryForList(String DBName) throws Exception {
         String initSql = initSql();
         printLog(initSql);
         JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringContext.getBean(DBName);

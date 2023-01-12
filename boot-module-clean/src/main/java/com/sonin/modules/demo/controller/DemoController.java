@@ -50,7 +50,7 @@ public class DemoController {
                 .from(BaseMeterInfo.class)
                 .where()
                 .log()
-                .selectMap("master");
+                .queryForMap("master");
         long total = Long.parseLong(String.valueOf(totalMap.get("total")));
         int pageSize = 1000;
         long pageCount = (long) Math.ceil(1.0 * total / pageSize);
@@ -64,7 +64,7 @@ public class DemoController {
                         .from(BaseMeterInfo.class)
                         .where()
                         .last(true, lastSql)
-                        .selectMaps("master");
+                        .queryForList("master");
                 // 获取当前页的meterCode
                 List<String> meterCodeList = srcMapList.stream().map(item -> "" + item.get("meterCode")).collect(Collectors.toList());
                 // 查询中间库相关meterCode的信息
@@ -73,7 +73,7 @@ public class DemoController {
                         .from(SyncMeterInfo.class)
                         .where()
                         .in(true, SyncMeterInfo::getMeterCode, meterCodeList)
-                        .selectMaps("sync");
+                        .queryForList("sync");
                 // 更新状态
                 for (Map<String, Object> src : srcMapList) {
                     String id = "" + src.get("id");

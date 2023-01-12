@@ -57,7 +57,7 @@ public class SysDictItemController {
                     .where()
                     .eq(true, "sys_dict.dict_code", dictCode)
                     .orderBy(true, true, "sys_dict_item.order_num")
-                    .selectMaps();
+                    .queryForList();
             sysDictItemList = BaseFactory.RESULT().maps2Beans(mapList, SysDictItem.class);
         } catch (Exception e) {
             e.printStackTrace();

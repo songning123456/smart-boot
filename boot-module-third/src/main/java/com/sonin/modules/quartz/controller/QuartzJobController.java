@@ -52,7 +52,7 @@ public class QuartzJobController {
                     .like(StringUtils.isNotEmpty(quartzJobDTO.getTriggerGroup()), "qrtz_triggers.trigger_group", quartzJobDTO.getTriggerGroup())
                     .like(StringUtils.isNotEmpty(quartzJobDTO.getTriggerName()), "qrtz_triggers.trigger_name", quartzJobDTO.getTriggerName())
                     .like(StringUtils.isNotEmpty(quartzJobDTO.getCronExpression()), "qrtz_cron_triggers.cron_expression", quartzJobDTO.getCronExpression())
-                    .selectMapsPage(new Page<>(quartzJobDTO.getCurrentPage(), quartzJobDTO.getPageSize()));
+                    .queryForPage(new Page<>(quartzJobDTO.getCurrentPage(), quartzJobDTO.getPageSize()));
         } catch (Exception e) {
             e.printStackTrace();
             log.error("分页查询Job失败: {}", e.getMessage());

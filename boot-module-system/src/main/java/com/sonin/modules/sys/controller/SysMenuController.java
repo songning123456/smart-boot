@@ -58,7 +58,7 @@ public class SysMenuController {
                     .eq(true, "sys_user.username", authentication.getName())
                     .orderBy(true, true, "order_num")
                     .groupBy(true, "sys_menu.id")
-                    .selectMaps();
+                    .queryForList();
             List<SysMenu> sysMenuList = BaseFactory.RESULT().maps2Beans(mapList, SysMenu.class);
             List<SysMenuVO> sysMenuVOList = new SysMenuDFS().buildTree(sysMenuList);
             result.setResult(sysMenuVOList);
