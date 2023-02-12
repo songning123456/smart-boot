@@ -89,6 +89,13 @@ out() {
     if [ -f "$JAR_LOG_DIR/out.log" ]; then
       mv $JAR_LOG_DIR/out.log $JAR_LOG_DIR/out/out.log$(date +"%Y%m%d%H%M%S")
     fi
+  else
+    if [ -d "$JAR_LOG_DIR/out" ]; then
+      rm -rf $JAR_LOG_DIR/out
+    fi
+    if [ -f "$JAR_LOG_DIR/out.log" ]; then
+      cat /dev/null > $JAR_LOG_DIR/out.log
+    fi
   fi  
 }
 
