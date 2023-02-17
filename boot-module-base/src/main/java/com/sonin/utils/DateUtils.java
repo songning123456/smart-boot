@@ -130,7 +130,7 @@ public class DateUtils {
     public static Date someDate(Date currentDate, Integer field, Integer step) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(currentDate);
-        calendar.set(field, calendar.get(field) + step);
+        calendar.add(field, step);
         return calendar.getTime();
     }
 
