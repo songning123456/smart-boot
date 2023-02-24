@@ -5,14 +5,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.common.base.CaseFormat;
 import com.sonin.modules.base.mapper.BaseMapper;
 import com.sonin.modules.base.service.IBaseService;
-import com.sonin.utils.UniqIdUtils;
+import com.sonin.modules.sequence.service.impl.SequenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author sonin
@@ -23,6 +21,8 @@ public class IBaseServiceImpl implements IBaseService {
 
     @Autowired
     private BaseMapper baseMapper;
+    @Autowired
+    private SequenceService sequenceService;
 
     @Override
     public Map<String, Object> queryForMap(String sqlSelect, Wrapper<?> queryWrapper) {
@@ -73,7 +73,7 @@ public class IBaseServiceImpl implements IBaseService {
         }
         // 设置主键ID
         if (ew.get("id") == null) {
-            ew.put("id", UniqIdUtils.getInstance().getUniqID());
+            ew.put("id", sequenceService.nextId());
         }
         return baseMapper.insert(tableName, ew);
     }
@@ -82,9 +82,38 @@ public class IBaseServiceImpl implements IBaseService {
     public Integer insert(String tableName, Map<String, Object> ew) {
         // 设置主键ID
         if (ew.get("id") == null) {
-            ew.put("id", UniqIdUtils.getInstance().getUniqID());
+            ew.put("id", sequenceService.nextId());
         }
         return baseMapper.insert(tableName, ew);
+    }
+
+    @Override
+    public Integer insertBatch(String tableName, List<Map<String, Object>> dataList) {
+        if (dataList == null || dataList.isEmpty()) {
+            return 0;
+        }
+        // 获取第一条数据的keys
+        List<String> keys = new ArrayList<>(dataList.get(0).keySet());
+        // 添加主键id
+        if (!keys.contains("id")) {
+            keys.add("id");
+        }
+        // 排序
+        keys.sort(String::compareTo);
+        List<Map> ewList = new ArrayList<>();
+        Map ew;
+        for (Map<String, Object> data: dataList) {
+            ew = new LinkedHashMap();
+            for (String key: keys) {
+                ew.put(key, data.get(key));
+            }
+            // 设置主键ID
+            if (ew.get("id") == null) {
+                ew.put("id", sequenceService.nextId());
+            }
+            ewList.add(ew);
+        }
+        return baseMapper.insertBatch(tableName, keys, ewList);
     }
 
 }

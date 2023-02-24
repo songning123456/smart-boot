@@ -33,4 +33,17 @@
         </foreach>
     </insert>
 
+    <insert id="insertBatch">
+        insert into ${tableName}
+        <foreach collection="keys" item="key" open="(" close=")" separator=",">
+            ${key}
+        </foreach>
+        values
+        <foreach collection="ewList" item="ew" separator=",">
+            <foreach collection="ew.values" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+        </foreach>
+    </insert>
+
 </mapper>

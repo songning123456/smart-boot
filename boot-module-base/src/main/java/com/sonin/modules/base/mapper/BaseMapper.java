@@ -26,4 +26,6 @@ public interface BaseMapper {
 
     int insert(@Param("tableName") String tableName, @Param(Constants.WRAPPER) Map ew);
 
+    int insertBatch(@Param("tableName") String tableName, @Param("keys") List<String> keys, @Param("ewList") List<Map> ewList);
+
 }

@@ -26,4 +26,6 @@ public interface IBaseService {
 
     Integer insert(String tableName, Map<String, Object> ew);
 
+    Integer insertBatch(String tableName, List<Map<String, Object>> dataList);
+
 }
