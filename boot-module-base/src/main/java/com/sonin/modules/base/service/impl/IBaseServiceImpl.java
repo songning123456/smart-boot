@@ -116,4 +116,45 @@ public class IBaseServiceImpl implements IBaseService {
         return baseMapper.insertBatch(tableName, keys, ewList);
     }
 
+    @Override
+    public <S> Integer saveBatch(String tableName, List<S> dataList) {
+        if (dataList == null || dataList.isEmpty()) {
+            return 0;
+        }
+        List<String> keys = new ArrayList<>();
+        List<Map> ewList = new ArrayList<>();
+        Map ew;
+        Class clazz;
+        Field[] fields;
+        S entity;
+        try {
+            for (int i = 0; i < dataList.size(); i++) {
+                clazz = dataList.get(i).getClass();
+                entity = dataList.get(i);
+                ew = new LinkedHashMap();
+                while (!"java.lang.Object".equals(clazz.getName())) {
+                    fields = clazz.getDeclaredFields();
+                    for (Field field : fields) {
+                        field.setAccessible(true);
+                        // 第一条数据，获取key
+                        if (i == 0) {
+                            keys.add(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName()));
+                        }
+                        ew.put(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName()), field.get(entity));
+                        field.setAccessible(false);
+                    }
+                    clazz = clazz.getSuperclass();
+                }
+                // 设置主键ID
+                if (ew.get("id") == null) {
+                    ew.put("id", sequenceService.nextId());
+                }
+                ewList.add(ew);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return baseMapper.insertBatch(tableName, keys, ewList);
+    }
+
 }

@@ -28,4 +28,6 @@ public interface IBaseService {
 
     Integer insertBatch(String tableName, List<Map<String, Object>> dataList);
 
+    <S> Integer saveBatch(String tableName, List<S> dataList);
+
 }
