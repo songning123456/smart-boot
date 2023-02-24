@@ -120,7 +120,7 @@ public abstract class Base implements IBase {
      * === 以下select方法 ===
      */
 
-    public Base select(boolean camelCondition, Field... fields) {
+    public Base select(boolean prefixCondition, Field... fields) {
         if (this.selectedColumns == null) {
             this.selectedColumns = new LinkedHashSet<>();
         }
@@ -130,7 +130,7 @@ public abstract class Base implements IBase {
             tableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, className);
             fieldName = field.getName();
             column = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName);
-            if (!camelCondition) {
+            if (!prefixCondition) {
                 alias = tableName + DOT + column + SPACE + AS + SPACE + DOUBLE_QUOTES + fieldName + DOUBLE_QUOTES;
             } else {
                 alias = tableName + DOT + column + SPACE + AS + SPACE + DOUBLE_QUOTES + className + UNDERLINE + fieldName + DOUBLE_QUOTES;
@@ -184,8 +184,8 @@ public abstract class Base implements IBase {
         return this;
     }
 
-    public <T> Base select(boolean camelCondition, SFunction<T, ?> sFunc) {
-        this.select(camelCondition, new Field[]{lambdaField(sFunc)});
+    public <T> Base select(boolean prefixCondition, SFunction<T, ?> sFunc) {
+        this.select(prefixCondition, new Field[]{lambdaField(sFunc)});
         return this;
     }
 
@@ -196,8 +196,8 @@ public abstract class Base implements IBase {
     }
 
     @SafeVarargs
-    public final <T> Base select(boolean camelCondition, SFunction<T, ?>... sFuncs) {
-        this.select(camelCondition, Arrays.stream(sFuncs).map(this::lambdaField).collect(Collectors.toList()).toArray(new Field[]{}));
+    public final <T> Base select(boolean prefixCondition, SFunction<T, ?>... sFuncs) {
+        this.select(prefixCondition, Arrays.stream(sFuncs).map(this::lambdaField).collect(Collectors.toList()).toArray(new Field[]{}));
         return this;
     }
 
@@ -211,13 +211,13 @@ public abstract class Base implements IBase {
         return this;
     }
 
-    public <T> Base select(boolean camelCondition, T entity) {
-        this.select(camelCondition, entity.getClass().getDeclaredFields());
+    public <T> Base select(boolean prefixCondition, T entity) {
+        this.select(prefixCondition, entity.getClass().getDeclaredFields());
         return this;
     }
 
-    public <T> Base select(boolean camelCondition, Class<T> clazz) {
-        this.select(camelCondition, clazz.getDeclaredFields());
+    public <T> Base select(boolean prefixCondition, Class<T> clazz) {
+        this.select(prefixCondition, clazz.getDeclaredFields());
         return this;
     }
 
