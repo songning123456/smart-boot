@@ -50,7 +50,16 @@ public class IBaseServiceImpl implements IBaseService {
     }
 
     @Override
-    public <S> Integer insert(String tableName, S entity) {
+    public Integer insert(String tableName, Map<String, Object> ew) {
+        // 设置主键ID
+        if (ew.get("id") == null) {
+            ew.put("id", sequenceService.nextId());
+        }
+        return baseMapper.insert(tableName, ew);
+    }
+
+    @Override
+    public <S> Integer save(String tableName, S entity) {
         Map<String, Object> ew = new HashMap<>();
         // entity => map
         try {
@@ -71,15 +80,6 @@ public class IBaseServiceImpl implements IBaseService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // 设置主键ID
-        if (ew.get("id") == null) {
-            ew.put("id", sequenceService.nextId());
-        }
-        return baseMapper.insert(tableName, ew);
-    }
-
-    @Override
-    public Integer insert(String tableName, Map<String, Object> ew) {
         // 设置主键ID
         if (ew.get("id") == null) {
             ew.put("id", sequenceService.nextId());

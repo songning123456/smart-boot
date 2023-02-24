@@ -22,9 +22,9 @@ public interface IBaseService {
 
     Integer delete(String tableName, Wrapper<?> wrapper);
 
-    <S> Integer insert(String tableName, S entity);
-
     Integer insert(String tableName, Map<String, Object> ew);
+
+    <S> Integer save(String tableName, S entity);
 
     Integer insertBatch(String tableName, List<Map<String, Object>> dataList);
 
