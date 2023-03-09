@@ -47,16 +47,11 @@ spring:
           url: jdbc:mysql://192.168.208.170:3306/sskj?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
           username: root
           password: jkauto@123
-        sync:
-          driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://192.168.208.170:3306/sync-sskj?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-          username: root
-          password: jkauto@123
-        ym-ssjk:
-          driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://192.168.208.170:3306/ym-ssjk?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-          username: root
-          password: jkauto@123
+#        pg-ynlj:
+#          url: jdbc:postgresql://192.168.70.14:10086/postgres?useUnicode=true&characterEncoding=UTF8
+#          username: postgres
+#          password: jkauto@123lj
+#          driver-class-name: org.postgresql.Driver
 
 mybatis-plus:
   mapper-locations: classpath*:com/sonin/modules/**/xml/*Mapper.xml
