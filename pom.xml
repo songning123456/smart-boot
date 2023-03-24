@@ -18,9 +18,10 @@
     <modules>
         <module>boot-module-base</module>
         <module>boot-module-system</module>
+        <module>boot-module-clean</module>
         <module>boot-module-biz</module>
         <module>boot-module-third</module>
-        <module>boot-module-clean</module>
+        <module>boot-module-third-gwt</module>
     </modules>
 
     <properties>
