@@ -1,5 +1,5 @@
 spring:
   application:
-    name: smart-boot-third
+    name: smart-boot-third-gwt
   profiles:
     active: dev
