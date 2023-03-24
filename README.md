@@ -11,3 +11,7 @@ CREATE TABLE `table_name` (
   `del_flag` varchar(1) DEFAULT '0' COMMENT '删除状态(0正常;1已删除)',
    PRIMARY KEY (`id`) USING BTREE
 )  ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='table_name';
+
+## 登录信息
+username: admin
+password: 123456
