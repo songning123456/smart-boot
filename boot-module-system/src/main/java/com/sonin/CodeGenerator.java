@@ -12,19 +12,27 @@ import java.util.*;
 
 public class CodeGenerator {
 
+    /**
+    * <pre>
+    * 待修改参数信息
+    * </pre>
+     * @param null
+    * @author sonin  
+    * @Description: TODO(这里描述这个方法的需求变更情况)
+    */
     private static final Map<String, String> configMap = new HashMap<String, String>() {{
-        // 项目模块
-        put("globalModuleName", "boot-module-system");
-        // 数据源配置
-        put("url", "jdbc:mysql://192.168.2.126:3306/smart-boot-third?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai");
+        // todo 待修改：项目模块
+        put("globalModuleName", "boot-module-third-gwt");
+        // todo 待修改：数据源配置
+        put("url", "jdbc:mysql://192.168.2.126:3306/smart-boot-third-gwt?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai");
         put("driverName", "com.mysql.cj.jdbc.Driver");
         put("username", "root");
         put("password", "123456");
-        // todo 表名:修改
-        put("tableName", "sys_log");
+        // todo 待修改：表名
+        put("tableName", "data_log");
         // 包配置
-        // todo 业务模块:修改
-        put("moduleName", "sys");
+        // todo 待修改：业务模块
+        put("moduleName", "data");
         put("parent", "com.sonin.modules");
     }};
 
