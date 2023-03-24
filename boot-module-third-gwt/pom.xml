@@ -35,7 +35,7 @@
     </dependencies>
 
     <build>
-        <finalName>smart-boot-third</finalName>
+        <finalName>smart-boot-third-gwt</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
