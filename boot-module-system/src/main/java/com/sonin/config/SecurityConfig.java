@@ -48,10 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String[] WEB_WHITELIST = {
             "/auth/captcha",
             "/websocket/app",
-            // todo 以下后续待删除
-            "/scheduleTask/**",
-            "/test/**",
-            "/file/excel/**"
+            // todo 自定义security忽略
+            "/gwt/**", // 管网通
     };
 
 
