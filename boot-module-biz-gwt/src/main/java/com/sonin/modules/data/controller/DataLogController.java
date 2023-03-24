@@ -35,6 +35,10 @@ public class DataLogController {
         DataLog dataLog = BeanExtUtils.map2Bean(paramsMap, DataLog.class);
         dataLog.setDataSourceIp(String.join(",", IpUtils.getLocalIPList()));
         dataLogService.save(dataLog);
+        // todo url待修改
+        /*String queryResultStr = HttpUtils.doPost(thirdUrl + "/appinterface/api/external/uploadCopyData", null, new LinkedHashMap<String, Object>() {{
+            put("appId", appId);
+        }});*/
         return Result.ok();
     }
 
