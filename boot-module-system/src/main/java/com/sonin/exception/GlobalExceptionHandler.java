@@ -1,6 +1,6 @@
 package com.sonin.exception;
 
-import com.sonin.api.vo.Result;
+import com.sonin.core.vo.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;

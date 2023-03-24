@@ -1,6 +1,6 @@
 package com.sonin.modules.excel.service.impl;
 
-import com.sonin.api.vo.Result;
+import com.sonin.core.vo.Result;
 import com.sonin.modules.excel.service.ExcelService;
 import com.sonin.modules.sys.entity.SysRole;
 import com.sonin.modules.sys.service.SysRoleService;

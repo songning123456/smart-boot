@@ -1,7 +1,7 @@
 package com.sonin.security;
 
 import cn.hutool.json.JSONUtil;
-import com.sonin.api.vo.Result;
+import com.sonin.core.vo.Result;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;

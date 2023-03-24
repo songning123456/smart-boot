@@ -1,7 +1,7 @@
 package com.sonin.modules.websocket.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.sonin.api.vo.Result;
+import com.sonin.core.vo.Result;
 import com.sonin.jedis.template.JedisTemplate;
 import com.sonin.modules.websocket.dto.WebsocketDTO;
 import com.sonin.modules.websocket.entity.Websocket;

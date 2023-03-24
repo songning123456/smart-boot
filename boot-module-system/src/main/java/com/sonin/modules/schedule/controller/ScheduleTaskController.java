@@ -1,6 +1,6 @@
 package com.sonin.modules.schedule.controller;
 
-import com.sonin.api.vo.Result;
+import com.sonin.core.vo.Result;
 import com.sonin.modules.schedule.service.IScheduleTask;
 import com.sonin.modules.schedule.service.impl.SampleScheduleTask;
 import lombok.extern.slf4j.Slf4j;

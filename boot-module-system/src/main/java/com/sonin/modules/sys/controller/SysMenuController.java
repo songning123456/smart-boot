@@ -1,7 +1,7 @@
 package com.sonin.modules.sys.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.sonin.api.vo.Result;
+import com.sonin.core.vo.Result;
 import com.sonin.core.mpp.BaseFactory;
 import com.sonin.modules.sys.entity.*;
 import com.sonin.modules.sys.pojo.SysMenuDFS;

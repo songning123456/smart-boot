@@ -1,4 +1,4 @@
-package com.sonin.api.vo;
+package com.sonin.core.vo;
 
 import lombok.Data;
 

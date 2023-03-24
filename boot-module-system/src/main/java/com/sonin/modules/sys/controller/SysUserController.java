@@ -2,7 +2,7 @@ package com.sonin.modules.sys.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.sonin.api.vo.Result;
+import com.sonin.core.vo.Result;
 import com.sonin.core.mpp.BaseFactory;
 import com.sonin.modules.sys.dto.SysUserDTO;
 import com.sonin.modules.sys.entity.SysRole;

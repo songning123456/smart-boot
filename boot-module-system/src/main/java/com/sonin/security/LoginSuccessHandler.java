@@ -1,7 +1,7 @@
 package com.sonin.security;
 
 import cn.hutool.json.JSONUtil;
-import com.sonin.api.vo.Result;
+import com.sonin.core.vo.Result;
 import com.sonin.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

@@ -1,7 +1,7 @@
 package com.sonin.security;
 
 import cn.hutool.json.JSONUtil;
-import com.sonin.api.vo.Result;
+import com.sonin.core.vo.Result;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;

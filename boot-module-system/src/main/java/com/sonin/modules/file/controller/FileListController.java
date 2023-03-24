@@ -1,7 +1,7 @@
 package com.sonin.modules.file.controller;
 
 import cn.hutool.core.util.StrUtil;
-import com.sonin.api.vo.Result;
+import com.sonin.core.vo.Result;
 import com.sonin.encryption.sm2.utils.ByteUtils;
 import com.sonin.encryption.sm2.utils.SM2Utils;
 import com.sonin.modules.file.dto.FileListDTO;

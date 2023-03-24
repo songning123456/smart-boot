@@ -2,7 +2,7 @@ package com.sonin.modules.sys.controller;
 
 import cn.hutool.core.lang.UUID;
 import com.google.code.kaptcha.Producer;
-import com.sonin.api.vo.Result;
+import com.sonin.core.vo.Result;
 import com.sonin.jedis.template.JedisTemplate;
 import com.sonin.modules.sys.vo.CaptchaVO;
 import org.springframework.beans.factory.annotation.Autowired;

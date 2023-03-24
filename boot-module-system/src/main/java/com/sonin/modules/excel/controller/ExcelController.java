@@ -1,7 +1,7 @@
 package com.sonin.modules.excel.controller;
 
 import cn.hutool.json.JSONUtil;
-import com.sonin.api.vo.Result;
+import com.sonin.core.vo.Result;
 import com.sonin.core.context.SpringContext;
 import com.sonin.modules.excel.service.ExcelService;
 import lombok.extern.slf4j.Slf4j;

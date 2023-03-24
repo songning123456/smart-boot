@@ -1,6 +1,6 @@
 package com.sonin.modules.file.controller;
 
-import com.sonin.api.vo.Result;
+import com.sonin.core.vo.Result;
 import com.sonin.modules.file.dto.FileUploadDTO;
 import com.sonin.utils.FileUtils;
 import org.apache.commons.lang3.StringUtils;

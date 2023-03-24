@@ -1,6 +1,6 @@
 package com.sonin.modules.excel.service;
 
-import com.sonin.api.vo.Result;
+import com.sonin.core.vo.Result;
 import com.sonin.modules.excel.callback.ICellCallback;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;

@@ -1,7 +1,16 @@
 package com.sonin.modules.data.controller;
 
+import com.sonin.core.vo.Result;
+import com.sonin.modules.data.entity.DataLog;
+import com.sonin.modules.data.service.DataLogService;
+import com.sonin.utils.BeanExtUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -12,7 +21,17 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2023-03-24
  */
 @RestController
-@RequestMapping("/data/data-log")
+@RequestMapping("/gwt/data/dataLog")
 public class DataLogController {
+
+    @Autowired
+    private DataLogService dataLogService;
+
+    @PostMapping("/add")
+    public Result<Object> addCtrl(@RequestBody Map<String, Object> paramsMap) throws Exception {
+        DataLog dataLog = BeanExtUtils.map2Bean(paramsMap, DataLog.class);
+        dataLogService.save(dataLog);
+        return Result.ok();
+    }
 
 }
