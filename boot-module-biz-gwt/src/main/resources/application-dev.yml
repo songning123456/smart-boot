@@ -113,3 +113,4 @@ boot:
     # 前后端加解密通用，且必须16位
     crypto:
       secretKey: aaaabbbbccccdddd
+  baseUrl: https://skran.cn:18083
