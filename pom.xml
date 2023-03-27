@@ -21,7 +21,6 @@
         <module>boot-module-clean</module>
         <module>boot-module-biz</module>
         <module>boot-module-third</module>
-        <module>boot-module-biz-gwt</module>
     </modules>
 
     <properties>
