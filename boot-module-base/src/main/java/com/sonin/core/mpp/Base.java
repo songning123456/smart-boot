@@ -126,6 +126,11 @@ public abstract class Base implements IBase {
         }
         String className, tableName, fieldName, column, alias;
         for (Field field : fields) {
+            // 过滤掉 @TableField(exist = false) 情况
+            TableField tableFieldAnno = field.getAnnotation(TableField.class);
+            if (tableFieldAnno != null && !tableFieldAnno.exist()) {
+                continue;
+            }
             className = field.getDeclaringClass().getSimpleName();
             tableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, className);
             fieldName = field.getName();
@@ -176,6 +181,11 @@ public abstract class Base implements IBase {
             this.selectedColumns = new LinkedHashSet<>();
         }
         Field field = lambdaField(sFunc);
+        // 过滤掉 @TableField(exist = false) 情况
+        TableField tableFieldAnno = field.getAnnotation(TableField.class);
+        if (tableFieldAnno != null && !tableFieldAnno.exist()) {
+            return this;
+        }
         String className = field.getDeclaringClass().getSimpleName();
         String tableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, className);
         String fieldName = field.getName();
