@@ -350,7 +350,7 @@ public class Result implements IBase {
         return key;
     }
 
-    <T> Field lambdaField(SFunction<T, ?> func) {
+    private <T> Field lambdaField(SFunction<T, ?> func) {
         SerializedLambda serializedLambda = LambdaUtils.resolve(func);
         Field targetField;
         try {
