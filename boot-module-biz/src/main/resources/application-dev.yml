@@ -47,6 +47,12 @@ spring:
           url: jdbc:mysql://192.168.2.126:3306/smart-boot-biz?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
           username: root
           password: 123456
+        mysql-kingtrol-dev:
+          url: jdbc:mysql://47.104.179.187:6003/sk-se-boot-yiwu?characterEncoding=UTF-8&rewriteBatchedStatements=true&useUnicode=true&useSSL=false&connectTimeout=60000&socketTimeout=1800
+          username: root
+          password:  jkauto@123
+          driver-class-name: com.mysql.jdbc.Driver
+
   redis:
     database: 3
     # 服务器地址
