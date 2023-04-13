@@ -129,9 +129,9 @@ public class BootApplicationTest {
                 String id = PinyinUtil.getFirstLetter(prefixName + metricName + " ", "").toUpperCase();
                 String metricUnit = Convert.toStr(metricInfoMap.get("metric_unit"));
                 String departId = Convert.toStr(metricInfoMap.get("depart_id"));
+                int sortNum = maxCount + index;
                 // 切换数据源
                 DynamicDataSourceContextHolder.push(dataSource);
-                int sortNum = maxCount + index;
                 transactionTemplate.execute(transactionStatus -> {
                     baseService.insert("sys_metric_dict", new LinkedHashMap<String, Object>() {{
                         put("id", id);
@@ -157,10 +157,10 @@ public class BootApplicationTest {
                     return 1;
                 });
                 DynamicDataSourceContextHolder.clear();
+                index += 10;
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            index += 10;
         }
     }
 
