@@ -1,5 +1,5 @@
 server:
-  port: 18083
+  port: 18084
   servlet:
     context-path: /boot
 
@@ -44,9 +44,9 @@ spring:
       datasource:
         master:
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://120.78.135.123:13306/smart-boot-biz-magic?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://192.168.2.126:3306/smart-boot-biz-magic?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
           username: root
-          password: Ywaly8609
+          password: 123456
   redis:
     database: 3
     # 服务器地址
@@ -114,3 +114,12 @@ boot:
     crypto:
       secretKey: aaaabbbbccccdddd
   baseUrl: https://skran.cn:18083
+
+magic-api:
+  # 配置web页面入口
+  web: /magic/web
+  resource:
+    # 配置文件存储位置。当以classpath开头时，为只读模式
+    # mac用户请改为可读写的目录
+    # 如果不想存到文件中，可以参考配置将接口信息存到数据库、Redis中（或自定义）
+    location: E:\Downloads\magic-api

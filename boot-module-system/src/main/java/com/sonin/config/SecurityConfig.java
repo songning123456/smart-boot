@@ -49,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/auth/captcha",
             "/websocket/app",
             // todo 自定义security忽略
-            "/magic/**", // 管网通
+            "/magic/**",
     };
 
 
