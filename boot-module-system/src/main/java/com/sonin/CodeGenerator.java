@@ -22,9 +22,9 @@ public class CodeGenerator {
     */
     private static final Map<String, String> configMap = new HashMap<String, String>() {{
         // todo 待修改：项目模块
-        put("globalModuleName", "boot-module-biz-gwt");
+        put("globalModuleName", "boot-module-biz-magic");
         // todo 待修改：数据源配置
-        put("url", "jdbc:mysql://192.168.2.126:3306/smart-boot-biz-gwt?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai");
+        put("url", "jdbc:mysql://192.168.2.126:3306/smart-boot-biz-magic?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai");
         put("driverName", "com.mysql.cj.jdbc.Driver");
         put("username", "root");
         put("password", "123456");

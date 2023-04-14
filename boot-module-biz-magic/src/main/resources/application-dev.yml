@@ -44,7 +44,7 @@ spring:
       datasource:
         master:
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://120.78.135.123:13306/smart-boot-biz-gwt?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://120.78.135.123:13306/smart-boot-biz-magic?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
           username: root
           password: Ywaly8609
   redis:
