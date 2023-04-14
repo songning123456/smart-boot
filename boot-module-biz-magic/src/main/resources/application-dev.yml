@@ -96,25 +96,6 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
-boot:
-  jwt:
-    header: Authorization
-    #7天，秒单位
-    expire: 604800
-    secret: ji8n3439n439n43ld9ne9343fdfer49h
-  path:
-    fileUpload: E:\\images\\smart
-  encryption:
-    sm2:
-      # 对称加密公钥
-      publicKey: 04AC3B1EAB84DFB621F3CBC26EC8DCEB23A966A63841C3086564F59A3129CBEFA3C1304EA61328199C830A2D54181413F1F0CF8D423193A655C4B984B8ECEEBC08
-      # 对称加密私钥
-      privateKey: 190CF37BB3509F11E527BAC06C4C8DD6380929C8A641ABCE858F2A33071DB570
-    # 前后端加解密通用，且必须16位
-    crypto:
-      secretKey: aaaabbbbccccdddd
-  baseUrl: https://skran.cn:18083
-
 magic-api:
   # 配置web页面入口
   web: /magic/web

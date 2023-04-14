@@ -17,7 +17,6 @@
 
     <modules>
         <module>boot-module-base</module>
-        <module>boot-module-system</module>
         <module>boot-module-biz-magic</module>
     </modules>
 
