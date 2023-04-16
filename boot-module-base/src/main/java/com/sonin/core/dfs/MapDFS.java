@@ -1,9 +1,6 @@
 package com.sonin.core.dfs;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <pre>
@@ -81,25 +78,44 @@ public class MapDFS {
                     ((List) k.get(children)).add(v);
                 }
             }
-            // 先按照orderNum排序，再按照name排序
-            ((List) k.get(children)).sort((o1, o2) -> {
-                if (((Map) o1).get(orderNum) == null || ((Map) o2).get(orderNum) == null) {
-                    return (EMPTY + ((Map) o1).get(name)).compareTo(EMPTY + ((Map) o2).get(name));
-                } else {
-                    if (((Map) o1).get(orderNum).equals(((Map) o2).get(orderNum))) {
-                        return (EMPTY + ((Map) o2).get(orderNum)).compareTo(EMPTY + ((Map) o2).get(orderNum));
-                    } else {
-                        return (EMPTY + ((Map) o1).get(orderNum)).compareTo(EMPTY + ((Map) o2).get(orderNum));
-                    }
-                }
-            });
             // 提取出父节点
             String parentIdStr = EMPTY + k.get(parentId);
             if (parentList.contains(parentIdStr)) {
                 tree.add(k);
             }
         }
+        // 排序
+        sortFunc(tree);
         return tree;
+    }
+
+    /**
+     * <pre>
+     * 先按照orderNum升序排序，再按照name排序
+     * </pre>
+     * @param list
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    private void sortFunc(List<Map<String, Object>> list) {
+        if (list != null && !list.isEmpty()) {
+            list.sort((o1, o2) -> {
+                if (o1.get(orderNum) == null || o2.get(orderNum) == null) {
+                    return (EMPTY + o1.get(name)).compareTo(EMPTY + o2.get(name));
+                } else {
+                    if (o1.get(orderNum).equals(o2.get(orderNum))) {
+                        return (EMPTY + o1.get(name)).compareTo(EMPTY + o2.get(name));
+                    } else {
+                        return (Integer.valueOf(EMPTY + o1.get(orderNum))).compareTo(Integer.valueOf(EMPTY + o2.get(orderNum)));
+                    }
+                }
+            });
+            for (Map<String, Object> item : list) {
+                if (item.get(children) instanceof List) {
+                    sortFunc((List) item.get(children));
+                }
+            }
+        }
     }
 
 }
