@@ -22,8 +22,6 @@ public class MapDFS {
 
     private String name = "name";
 
-    private String type = "type";
-
     private String children = "children";
 
     private String orderNum = "orderNum";
@@ -36,12 +34,15 @@ public class MapDFS {
     public MapDFS() {
     }
 
-    public MapDFS(String name, String type, String orderNum, List<String> parentList) {
+    public MapDFS(String id, String parentId, String name, String orderNum, List<String> parentList) {
+        if (id != null && id.length() != 0) {
+            this.id = id;
+        }
+        if (parentId != null && parentId.length() != 0) {
+            this.parentId = parentId;
+        }
         if (name != null && name.length() != 0) {
             this.name = name;
-        }
-        if (type != null && type.length() != 0) {
-            this.type = type;
         }
         if (orderNum != null && orderNum.length() != 0) {
             this.orderNum = orderNum;
