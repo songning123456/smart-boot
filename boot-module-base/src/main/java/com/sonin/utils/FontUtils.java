@@ -30,7 +30,7 @@ public class FontUtils {
             font = Font.createFont(Font.TRUETYPE_FONT, file);
             font = font.deriveFont(fontSize);
         } catch (Exception e) {
-            font = new java.awt.Font("宋体", Font.PLAIN, (int) fontSize);
+            font = new Font("宋体", Font.PLAIN, (int) fontSize);
         }
         return font;
     }

@@ -1,6 +1,11 @@
 package com.sonin.core.mpp;
 
+import com.baomidou.mybatisplus.core.toolkit.ClassUtils;
+import com.baomidou.mybatisplus.core.toolkit.LambdaUtils;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.baomidou.mybatisplus.core.toolkit.support.SerializedLambda;
 import com.sonin.core.callback.IBeanConvertCallback;
+import org.apache.ibatis.reflection.property.PropertyNamer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -32,6 +37,10 @@ public class Result implements IBase {
         return this;
     }
 
+    public <T> Result addCallback(SFunction<T, ?> srcFunc, SFunction<T, ?> targetFunc) {
+        return addCallback(lambdaField(srcFunc), lambdaField(targetFunc));
+    }
+
     public Result addCallback(Field srcField, String targetField) {
         if (this.callbackMap == null) {
             this.callbackMap = new LinkedHashMap<>();
@@ -40,6 +49,10 @@ public class Result implements IBase {
         String srcFieldName = srcField.getName();
         this.callbackMap.put(srcClassName + UNDERLINE + srcFieldName, targetField);
         return this;
+    }
+
+    public <T> Result addCallback(SFunction<T, ?> srcFunc, String targetField) {
+        return addCallback(lambdaField(srcFunc), targetField);
     }
 
     public Result addCallback(String srcField, String targetField) {
@@ -335,6 +348,18 @@ public class Result implements IBase {
             }
         }
         return key;
+    }
+
+    private <T> Field lambdaField(SFunction<T, ?> func) {
+        SerializedLambda serializedLambda = LambdaUtils.resolve(func);
+        Field targetField;
+        try {
+            targetField = ClassUtils.toClassConfident(serializedLambda.getImplClass().getName()).getDeclaredField(PropertyNamer.methodToProperty(serializedLambda.getImplMethodName()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            targetField = null;
+        }
+        return targetField;
     }
 
 }
