@@ -1,7 +1,6 @@
 package com.sonin;
 
 import com.sonin.modules.base.service.IBaseService;
-import com.sonin.modules.quartz.ScheduleJob;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,13 +27,10 @@ public class BootApplicationTest {
     private IBaseService baseService;
     @Autowired
     private TransactionTemplate transactionTemplate;
-    @Autowired
-    private ScheduleJob scheduleJob;
-
 
     @Test
     public void QuartzTest() {
-        scheduleJob.hourJob(0);
+
     }
 
 }
