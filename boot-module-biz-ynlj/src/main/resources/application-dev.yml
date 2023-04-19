@@ -1,5 +1,5 @@
 server:
-  port: 18084
+  port: 18085
   servlet:
     context-path: /boot
 
@@ -47,24 +47,24 @@ spring:
           url: jdbc:mysql://192.168.2.126:3306/smart-boot-biz-magic?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
           username: root
           password: 123456
-  redis:
-    database: 3
-    # 服务器地址
-    host: 192.168.2.125
-    # 服务器连接密码（默认为空）
-    password: ''
-    # 服务器连接端口
-    port: 6379
-    # 连接超时时间（毫秒）
-    timeout: 2000
-    jedis:
-      pool:
-        # 连接池最大连接数（使用负值表示没有限制）
-        max-active: 50
-        # 连接池中的最大空闲连接
-        max-idle: 20
-        # 连接池最大阻塞等待时间（使用负值表示没有限制）
-        max-wait: 1000
+#  redis:
+#    database: 3
+#    # 服务器地址
+#    host: 192.168.2.125
+#    # 服务器连接密码（默认为空）
+#    password: ''
+#    # 服务器连接端口
+#    port: 6379
+#    # 连接超时时间（毫秒）
+#    timeout: 2000
+#    jedis:
+#      pool:
+#        # 连接池最大连接数（使用负值表示没有限制）
+#        max-active: 50
+#        # 连接池中的最大空闲连接
+#        max-idle: 20
+#        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+#        max-wait: 1000
   quartz:
     #相关属性配置
     properties:
@@ -95,12 +95,3 @@ mybatis-plus:
   # 是否打印控制台
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-
-magic-api:
-  # 配置web页面入口
-  web: /magic/web
-  resource:
-    # 配置文件存储位置。当以classpath开头时，为只读模式
-    # mac用户请改为可读写的目录
-    # 如果不想存到文件中，可以参考配置将接口信息存到数据库、Redis中（或自定义）
-    location: E:\Downloads\magic-api

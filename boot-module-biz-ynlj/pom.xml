@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>boot-module-clean</artifactId>
+    <artifactId>boot-module-ynlj</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -64,14 +64,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-
-        <!-- 业务 -->
-        <dependency>
-            <groupId>org.ssssssss</groupId>
-            <artifactId>magic-api-spring-boot-starter</artifactId>
-            <version>2.1.0</version>
-        </dependency>
-
         <!-- 加載postgresql驱动 -->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -81,7 +73,7 @@
     </dependencies>
 
     <build>
-        <finalName>smart-boot-biz-magic</finalName>
+        <finalName>smart-boot-biz-ynlj</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

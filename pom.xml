@@ -17,7 +17,7 @@
 
     <modules>
         <module>boot-module-base</module>
-        <module>boot-module-biz-magic</module>
+        <module>boot-module-biz-ynlj</module>
     </modules>
 
     <properties>
