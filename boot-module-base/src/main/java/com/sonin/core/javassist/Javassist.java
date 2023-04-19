@@ -21,8 +21,18 @@ public class Javassist {
 
     private Map<String, Class> fieldMap;
 
+    private String prefixPackage = "javassist.";
+
     Javassist() {
         fieldMap = new LinkedHashMap<>();
+    }
+
+    public String getPrefixPackage() {
+        return prefixPackage;
+    }
+
+    public void setPrefixPackage(String prefixPackage) {
+        this.prefixPackage = prefixPackage;
     }
 
     /**
@@ -44,6 +54,11 @@ public class Javassist {
      */
     public Javassist similarClassName(String similarClassName) {
         this.similarClassName = similarClassName;
+        return this;
+    }
+
+    public Javassist similarClassName(Class similarClass) {
+        this.similarClassName = prefixPackage + similarClass.getName();
         return this;
     }
 
