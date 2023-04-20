@@ -18,7 +18,7 @@
     <modules>
         <module>boot-module-base</module>
         <module>boot-module-system</module>
-        <module>boot-module-biz-empty</module>
+        <module>boot-module-biz</module>
     </modules>
 
     <properties>
