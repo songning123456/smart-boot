@@ -2,6 +2,7 @@ package com.sonin.core.mpp;
 
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.google.common.base.CaseFormat;
+import com.sonin.utils.ReflectUtils;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
@@ -50,7 +51,7 @@ public class Join extends Base {
 
     @Override
     public <L, R> Base innerJoin(Class clazz, SFunction<L, ?> leftFunc, SFunction<R, ?> rightFunc) {
-        directionJoin(clazz, lambdaField(leftFunc), lambdaField(rightFunc), INNER_JOIN);
+        directionJoin(clazz, ReflectUtils.lambdaField(leftFunc), ReflectUtils.lambdaField(rightFunc), INNER_JOIN);
         return this;
     }
 
@@ -62,7 +63,7 @@ public class Join extends Base {
 
     @Override
     public <L, R> Base leftJoin(Class clazz, SFunction<L, ?> leftFunc, SFunction<R, ?> rightFunc) {
-        directionJoin(clazz, lambdaField(leftFunc), lambdaField(rightFunc), LEFT_JOIN);
+        directionJoin(clazz, ReflectUtils.lambdaField(leftFunc), ReflectUtils.lambdaField(rightFunc), LEFT_JOIN);
         return this;
     }
 
@@ -74,7 +75,7 @@ public class Join extends Base {
 
     @Override
     public <L, R> Base rightJoin(Class clazz, SFunction<L, ?> leftFunc, SFunction<R, ?> rightFunc) {
-        directionJoin(clazz, lambdaField(leftFunc), lambdaField(rightFunc), RIGHT_JOIN);
+        directionJoin(clazz, ReflectUtils.lambdaField(leftFunc), ReflectUtils.lambdaField(rightFunc), RIGHT_JOIN);
         return this;
     }
 
