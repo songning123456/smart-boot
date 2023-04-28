@@ -43,16 +43,16 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://192.168.88.51:3306/sk-se-boot-ynlj?characterEncoding=UTF-8&useUnicode=true&useSSL=false&connectTimeout=60000&socketTimeout=1800
+          url: jdbc:mysql://47.104.179.187:6003/sk-se-boot-factory?characterEncoding=UTF-8&useUnicode=true&useSSL=false&connectTimeout=60000&socketTimeout=1800
           username: root
-          password: jkauto@123lj
+          password:  jkauto@123
           driver-class-name: com.mysql.cj.jdbc.Driver
         # 多数据源配置
-        pg-db:
-          url: jdbc:postgresql://192.168.70.14:10086/postgres?useUnicode=true&characterEncoding=UTF8
-          username: postgres
-          password: jkauto@123lj
-          driver-class-name: org.postgresql.Driver
+#        pg-db:
+#          url: jdbc:postgresql://192.168.70.14:10086/postgres?useUnicode=true&characterEncoding=UTF8
+#          username: postgres
+#          password: jkauto@123lj
+#          driver-class-name: org.postgresql.Driver
 
 mybatis-plus:
   mapper-locations: classpath*:com/sonin/modules/**/xml/*Mapper.xml
