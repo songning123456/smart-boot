@@ -1,5 +1,6 @@
 package com.sonin.core.mpp;
 
+import com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -13,8 +14,6 @@ import com.sonin.core.context.SpringContext;
 import org.apache.ibatis.reflection.property.PropertyNamer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -594,37 +593,31 @@ public abstract class Base implements IBase {
         return baseService.queryForList(this.prefixSql, this.queryWrapper);
     }
 
-    public Map<String, Object> queryForMap(String DBName) throws Exception {
-        String initSql = initSql();
-        printLog(initSql);
-        JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringContext.getBean(DBName);
-        return jdbcTemplate.queryForMap(initSql);
+    public Map<String, Object> queryForMap(String DBName) {
+        printLog();
+        IBaseService baseService = SpringContext.getBean(IBaseService.class);
+        DynamicDataSourceContextHolder.push(DBName);
+        Map<String, Object> queryMap = baseService.queryForMap(this.prefixSql, this.queryWrapper);
+        DynamicDataSourceContextHolder.clear();
+        return queryMap;
     }
 
-    public IPage<Map<String, Object>> queryForPage(IPage<Map<String, Object>> page, String DBName, String customPageSql) throws Exception {
-        JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringContext.getBean(DBName);
-        TransactionTemplate transactionTemplate = SpringContext.getBean(TransactionTemplate.class);
-        String countSql = SELECT + SPACE + COUNT_ALL + SPACE + FROM + SPACE + LEFT_BRACKET + initSql() + RIGHT_BRACKET + SPACE + AS + SPACE + "tmp";
-        if (customPageSql == null || EMPTY.equals(customPageSql)) {
-            queryWrapper.last(LIMIT + SPACE + (page.getCurrent() - 1) * page.getSize() + COMMA + SPACE + page.getCurrent() * page.getSize());
-        } else {
-            queryWrapper.last(customPageSql);
-        }
-        String initSql = initSql();
-        printLog(initSql);
-        transactionTemplate.execute((transactionStatus -> {
-            page.setTotal(Long.parseLong("" + jdbcTemplate.queryForMap(countSql).get(COUNT_ALL)));
-            page.setRecords(jdbcTemplate.queryForList(initSql));
-            return 1;
-        }));
-        return page;
+    public IPage<Map<String, Object>> queryForPage(IPage<Map<String, Object>> page, String DBName) {
+        printLog();
+        IBaseService baseService = SpringContext.getBean(IBaseService.class);
+        DynamicDataSourceContextHolder.push(DBName);
+        IPage<Map<String, Object>> queryMapPage = baseService.queryForPage(page, this.prefixSql, this.queryWrapper);
+        DynamicDataSourceContextHolder.clear();
+        return queryMapPage;
     }
 
-    public List<Map<String, Object>> queryForList(String DBName) throws Exception {
-        String initSql = initSql();
-        printLog(initSql);
-        JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringContext.getBean(DBName);
-        return jdbcTemplate.queryForList(initSql);
+    public List<Map<String, Object>> queryForList(String DBName) {
+        printLog();
+        IBaseService baseService = SpringContext.getBean(IBaseService.class);
+        DynamicDataSourceContextHolder.push(DBName);
+        List<Map<String, Object>> queryMapList = baseService.queryForList(this.prefixSql, this.queryWrapper);
+        DynamicDataSourceContextHolder.clear();
+        return queryMapList;
     }
 
     /**
