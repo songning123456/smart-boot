@@ -19,4 +19,8 @@ public class BaseFactory {
         return new Result();
     }
 
+    public static Dict DICT() {
+        return new Dict();
+    }
+
 }
