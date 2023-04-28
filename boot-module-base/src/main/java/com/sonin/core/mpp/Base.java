@@ -4,13 +4,13 @@ import com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.ClassUtils;
 import com.baomidou.mybatisplus.core.toolkit.LambdaUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.core.toolkit.support.SerializedLambda;
 import com.google.common.base.CaseFormat;
 import com.sonin.modules.base.service.IBaseService;
 import com.sonin.core.context.SpringContext;
+import com.sonin.utils.ReflectUtils;
 import org.apache.ibatis.reflection.property.PropertyNamer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,7 +171,7 @@ public abstract class Base implements IBase {
     }
 
     public <T> Base select(SFunction<T, ?> sFunc) {
-        this.select(new Field[]{lambdaField(sFunc)});
+        this.select(new Field[]{ReflectUtils.lambdaField(sFunc)});
         return this;
     }
 
@@ -179,7 +179,7 @@ public abstract class Base implements IBase {
         if (this.selectedColumns == null) {
             this.selectedColumns = new LinkedHashSet<>();
         }
-        Field field = lambdaField(sFunc);
+        Field field = ReflectUtils.lambdaField(sFunc);
         // 过滤掉 @TableField(exist = false) 情况
         TableField tableFieldAnno = field.getAnnotation(TableField.class);
         if (tableFieldAnno != null && !tableFieldAnno.exist()) {
@@ -194,19 +194,19 @@ public abstract class Base implements IBase {
     }
 
     public <T> Base select(boolean prefixCondition, SFunction<T, ?> sFunc) {
-        this.select(prefixCondition, new Field[]{lambdaField(sFunc)});
+        this.select(prefixCondition, new Field[]{ReflectUtils.lambdaField(sFunc)});
         return this;
     }
 
     @SafeVarargs
     public final <T> Base select(SFunction<T, ?>... sFuncs) {
-        this.select(Arrays.stream(sFuncs).map(this::lambdaField).collect(Collectors.toList()).toArray(new Field[]{}));
+        this.select(Arrays.stream(sFuncs).map(ReflectUtils::lambdaField).collect(Collectors.toList()).toArray(new Field[]{}));
         return this;
     }
 
     @SafeVarargs
     public final <T> Base select(boolean prefixCondition, SFunction<T, ?>... sFuncs) {
-        this.select(prefixCondition, Arrays.stream(sFuncs).map(this::lambdaField).collect(Collectors.toList()).toArray(new Field[]{}));
+        this.select(prefixCondition, Arrays.stream(sFuncs).map(ReflectUtils::lambdaField).collect(Collectors.toList()).toArray(new Field[]{}));
         return this;
     }
 
@@ -303,7 +303,7 @@ public abstract class Base implements IBase {
     }
 
     public <L, R> Base eq(boolean condition, SFunction<L, ?> leftFunc, SFunction<R, ?> rightFunc) {
-        return this.eq(condition, lambdaField(leftFunc), lambdaField(rightFunc));
+        return this.eq(condition, ReflectUtils.lambdaField(leftFunc), ReflectUtils.lambdaField(rightFunc));
     }
 
     public Base eq(boolean condition, String column, Object val) {
@@ -624,19 +624,7 @@ public abstract class Base implements IBase {
      * === 以下lambda转换方法 ===
      */
 
-    <T> Field lambdaField(SFunction<T, ?> func) {
-        SerializedLambda serializedLambda = LambdaUtils.resolve(func);
-        Field targetField;
-        try {
-            targetField = ClassUtils.toClassConfident(serializedLambda.getImplClass().getName()).getDeclaredField(PropertyNamer.methodToProperty(serializedLambda.getImplMethodName()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            targetField = null;
-        }
-        return targetField;
-    }
-
-    <T> String lambdaColumn(SFunction<T, ?> func) {
+    private <T> String lambdaColumn(SFunction<T, ?> func) {
         SerializedLambda serializedLambda = LambdaUtils.resolve(func);
         String tableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, serializedLambda.getImplClass().getSimpleName());
         String columnName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, PropertyNamer.methodToProperty(serializedLambda.getImplMethodName()));
