@@ -1,5 +1,11 @@
 package com.sonin.utils;
 
+import com.baomidou.mybatisplus.core.toolkit.ClassUtils;
+import com.baomidou.mybatisplus.core.toolkit.LambdaUtils;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.baomidou.mybatisplus.core.toolkit.support.SerializedLambda;
+import org.apache.ibatis.reflection.property.PropertyNamer;
+
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
@@ -84,6 +90,18 @@ public class ReflectUtils {
                 clazz = clazz.getSuperclass();
             }
         }
+    }
+
+    public static  <T> Field lambdaField(SFunction<T, ?> func) {
+        SerializedLambda serializedLambda = LambdaUtils.resolve(func);
+        Field targetField;
+        try {
+            targetField = ClassUtils.toClassConfident(serializedLambda.getImplClass().getName()).getDeclaredField(PropertyNamer.methodToProperty(serializedLambda.getImplMethodName()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            targetField = null;
+        }
+        return targetField;
     }
 
 }
