@@ -1,5 +1,5 @@
 spring:
   application:
-    name: smart-boot-biz-empty
+    name: smart-boot-biz-fuzhou
   profiles:
     active: dev
