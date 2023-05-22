@@ -7,32 +7,36 @@ import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+import com.sonin.utils.PropertyUtils;
 
 import java.util.*;
 
 public class CodeGenerator {
 
     /**
-    * <pre>
-    * 待修改参数信息
-    * </pre>
+     * <pre>
+     * 待修改参数信息
+     * </pre>
      * @param null
-    * @author sonin  
-    * @Description: TODO(这里描述这个方法的需求变更情况)
-    */
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
     private static final Map<String, String> configMap = new HashMap<String, String>() {{
+        String ymlSuffix = String.valueOf(PropertyUtils.getCommonYml("application.yml", "spring.profiles.active"));
+        String masterDBUrl = String.valueOf(PropertyUtils.getCommonYml("application-" + ymlSuffix + ".yml", "spring.datasource.dynamic.datasource.master.url"));
+        String masterDBDriverName = String.valueOf(PropertyUtils.getCommonYml("application-" + ymlSuffix + ".yml", "spring.datasource.dynamic.datasource.master.driver-class-name"));
+        String masterDBUsername = String.valueOf(PropertyUtils.getCommonYml("application-" + ymlSuffix + ".yml", "spring.datasource.dynamic.datasource.master.username"));
+        String masterDBPassword = String.valueOf(PropertyUtils.getCommonYml("application-" + ymlSuffix + ".yml", "spring.datasource.dynamic.datasource.master.password"));
+        put("url", masterDBUrl);
+        put("driverName", masterDBDriverName);
+        put("username", masterDBUsername);
+        put("password", masterDBPassword);
         // todo 待修改：项目模块
-        put("globalModuleName", "boot-module-biz-gwt");
-        // todo 待修改：数据源配置
-        put("url", "jdbc:mysql://192.168.2.126:3306/smart-boot-biz-gwt?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai");
-        put("driverName", "com.mysql.cj.jdbc.Driver");
-        put("username", "root");
-        put("password", "123456");
+        put("globalModuleName", "boot-module-biz");
         // todo 待修改：表名
-        put("tableName", "data_log");
-        // 包配置
+        put("tableName", "f_report_item");
         // todo 待修改：业务模块
-        put("moduleName", "data");
+        put("moduleName", "freport");
         put("parent", "com.sonin.modules");
     }};
 
