@@ -1,14 +1,11 @@
 package com.sonin.modules.quartz.component;
 
-import com.sonin.core.context.SpringContext;
+import com.sonin.modules.historydata.service.IHistoryDataService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * <pre>
@@ -23,6 +20,9 @@ import java.util.Map;
 @Slf4j
 public class ScheduleJob {
 
+    @Autowired
+    private IHistoryDataService historyDataService;
+
     /**
      * <pre>
      * 今日数据，每隔3min执行一次
@@ -34,9 +34,8 @@ public class ScheduleJob {
      */
     @Scheduled(cron = "*/30 * * * * ?")
     public void todayDataJob() {
-        JdbcTemplate jdbcTemplate = (JdbcTemplate) SpringContext.getBean("taos-db");
-        List<Map<String, Object>> mapList = jdbcTemplate.queryForList("select ts as time,tag_name as monitorId,tag_value as monitorValue from qxdb.historydata where tag_name in('YBDLT1AH1ZDN') and ts >= '2023-05-18 00:00:00' and ts < '2023-05-18 23:59:59'");
-        System.out.println("");
+        double val = historyDataService.queryDiffForDay("YBDLT1AH1ZDN", "2023-05-18");
+        System.out.println(val);
     }
 
     /**
