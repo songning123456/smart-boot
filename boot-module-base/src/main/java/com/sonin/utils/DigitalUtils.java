@@ -42,12 +42,15 @@ public class DigitalUtils {
      * @return
      */
     public static boolean isNumeric(String str) {
-        Pattern pattern = Pattern.compile("^[+-]?\\d+\\.?\\d*[Ee][+-]?\\d+$");
+        Pattern pattern = Pattern.compile("-?[0-9]+.?[0-9]*");
+        // 科学计数法
+        Pattern pattern2 = Pattern.compile("^[+-]?[\\d]+([.][\\d]*)?([Ee][+-]?[\\d]+)?$");
         if (StringUtils.isEmpty(str)) {
             return false;
         } else {
             Matcher isNum = pattern.matcher(str);
-            return isNum.matches();
+            Matcher isNum2 = pattern2.matcher(str);
+            return isNum.matches() || isNum2.matches();
         }
     }
 
