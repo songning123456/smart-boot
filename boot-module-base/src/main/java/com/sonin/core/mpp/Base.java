@@ -602,7 +602,7 @@ public abstract class Base implements IBase {
         return queryMap;
     }
 
-    public IPage<Map<String, Object>> queryForPage(IPage<Map<String, Object>> page, String DBName) {
+    public IPage<Map<String, Object>> queryForPage(IPage<?> page, String DBName) {
         printLog();
         IBaseService baseService = SpringContext.getBean(IBaseService.class);
         DynamicDataSourceContextHolder.push(DBName);
