@@ -11,6 +11,6 @@ package com.sonin.core.callback;
 @FunctionalInterface
 public interface IDictCallback {
 
-    Object dict(String srcField, Object srcValue);
+    Object dict(String srcFieldName, Object srcFieldValue);
 
 }
