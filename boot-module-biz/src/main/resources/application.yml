@@ -1,5 +1,5 @@
 spring:
   application:
-    name: smart-boot-biz-empty
+    name: smart-boot-biz-mqtt
   profiles:
     active: dev

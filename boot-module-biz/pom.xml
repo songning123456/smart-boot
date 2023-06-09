@@ -21,7 +21,7 @@
     </dependencies>
 
     <build>
-        <finalName>smart-boot-biz-empty</finalName>
+        <finalName>smart-boot-biz-mqtt</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
