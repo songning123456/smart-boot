@@ -1,6 +1,7 @@
 package com.sonin;
 
 import com.sonin.modules.base.service.IBaseService;
+import com.sonin.modules.xsinsert.quartz.job.ScheduleJob;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,9 +25,16 @@ public class BootApplicationTest {
 
     @Autowired
     private IBaseService baseService;
+    @Autowired
+    private ScheduleJob scheduleJob;
 
     @Test
     public void test() {
+    }
+
+    @Test
+    public void createTableTest() {
+        scheduleJob.createTableFunc();
     }
 
 }
