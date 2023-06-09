@@ -36,15 +36,20 @@ public class Dict implements IBase {
         return this;
     }
 
-    public Dict dicts(String... srcFields) {
-        for (String srcField : srcFields) {
-            dictMap.put(srcField, srcField + dictSuffix);
+    public Dict dicts(String... srcFieldNames) {
+        for (String srcFieldName : srcFieldNames) {
+            dictMap.put(srcFieldName, srcFieldName + dictSuffix);
         }
         return this;
     }
 
-    public Dict dict(String srcField, String targetField) {
-        dictMap.put(srcField, targetField);
+    public Dict dict(String srcFieldName) {
+        dictMap.put(srcFieldName, srcFieldName + dictSuffix);
+        return this;
+    }
+
+    public Dict dict(String srcFieldName, String targetFieldName) {
+        dictMap.put(srcFieldName, targetFieldName);
         return this;
     }
 
@@ -67,22 +72,22 @@ public class Dict implements IBase {
     }
 
     public Map<String, Object> dictMap(Map<String, Object> srcMap, IDictCallback iDictCallback) {
-        String srcField, targetField;
-        Object srcValue, targetValue;
+        String srcFieldName, targetFieldName;
+        Object srcFieldValue, targetFieldValue;
         Map<String, Object> targetMap = new LinkedHashMap<>();
         for (Map.Entry<String, Object> entry : srcMap.entrySet()) {
-            srcField = entry.getKey();
-            srcValue = entry.getValue();
-            targetMap.put(srcField, srcValue);
+            srcFieldName = entry.getKey();
+            srcFieldValue = entry.getValue();
+            targetMap.put(srcFieldName, srcFieldValue);
             // 默认解析Date格式
-            if (srcValue instanceof Date) {
-                targetValue = DateUtils.date2Str((Date) srcValue, BaseConstant.dateFormat);
-                targetMap.put(srcField, targetValue);
+            if (srcFieldValue instanceof Date) {
+                targetFieldValue = DateUtils.date2Str((Date) srcFieldValue, BaseConstant.dateFormat);
+                targetMap.put(srcFieldName, targetFieldValue);
             }
-            targetField = dictMap.get(srcField);
-            if (!"".equals(targetField) && targetField != null) {
-                targetValue = iDictCallback.dict(srcField, srcValue);
-                targetMap.put(targetField, targetValue);
+            targetFieldName = dictMap.get(srcFieldName);
+            if (!"".equals(targetFieldName) && targetFieldName != null) {
+                targetFieldValue = iDictCallback.dict(srcFieldName, srcFieldValue);
+                targetMap.put(targetFieldName, targetFieldValue);
             }
         }
         return targetMap;
