@@ -2,6 +2,7 @@ package com.sonin.modules.xsinsert.quartz.job;
 
 import com.sonin.core.constant.BaseConstant;
 import com.sonin.core.context.SpringContext;
+import com.sonin.modules.constant.BusinessConstant;
 import com.sonin.utils.DateUtils;
 import com.sonin.utils.DigitalUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -103,18 +104,16 @@ public class ScheduleJob {
                 if (!DigitalUtils.isNumeric(beforeDay)) {
                     beforeDay = "10";
                 }
-                String dateFormat = "yyyyMMdd";
-                String todayStr = DateUtils.date2Str(new Date(), dateFormat);
-                String dropTableName = "xsinsert";
+                String todayStr = DateUtils.date2Str(new Date(), BusinessConstant.DATE_FORMAT);
                 JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
                 String dataBaseSchema = dataBaseUrl.substring(dataBaseUrl.lastIndexOf("/") + 1, dataBaseUrl.indexOf("?"));
                 String dropTableSql = "select distinct table_name from information_schema.tables where table_schema = ? and table_name like concat(?, '%')";
-                List<Map<String, Object>> queryMapList = masterDB.queryForList(dropTableSql, new Object[]{dataBaseSchema, dropTableName});
+                List<Map<String, Object>> queryMapList = masterDB.queryForList(dropTableSql, new Object[]{dataBaseSchema, BusinessConstant.BASE_TABLE});
                 for (Map<String, Object> item: queryMapList) {
                     String tableName = String.valueOf(item.get("table_name"));
-                    String tableNameSuffix = tableName.replaceFirst(dropTableName, "");
+                    String tableNameSuffix = tableName.replaceFirst(BusinessConstant.BASE_TABLE, "");
                     if (DigitalUtils.isNumeric(tableNameSuffix)) {
-                        boolean flag = DateUtils.strToDate(tableNameSuffix, dateFormat).getTime() / 1000 + 3600 * 24 * new Integer(beforeDay) <= DateUtils.strToDate(todayStr, dateFormat).getTime() / 1000;
+                        boolean flag = DateUtils.strToDate(tableNameSuffix, BusinessConstant.DATE_FORMAT).getTime() / 1000 + 3600 * 24 * new Integer(beforeDay) <= DateUtils.strToDate(todayStr, BusinessConstant.DATE_FORMAT).getTime() / 1000;
                         if (flag) {
                             masterDB.execute("drop table if exists " + tableName);
                             log.info(">>> 删除表" + tableName + "成功 <<<");

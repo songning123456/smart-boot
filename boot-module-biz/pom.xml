@@ -18,6 +18,12 @@
             <artifactId>boot-module-system</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <!--  mqtt emqx -->
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-mqtt</artifactId>
+            <version>5.5.14</version>
+        </dependency>
     </dependencies>
 
     <build>
