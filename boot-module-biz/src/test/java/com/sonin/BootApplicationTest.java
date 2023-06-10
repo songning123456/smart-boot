@@ -28,13 +28,15 @@ public class BootApplicationTest {
     @Autowired
     private ScheduleJob scheduleJob;
 
+
     @Test
     public void test() {
     }
 
     @Test
     public void createTableTest() {
-        scheduleJob.createTableFunc();
+        // scheduleJob.createTableFunc();
+        scheduleJob.deleteTableFunc();
     }
 
 }

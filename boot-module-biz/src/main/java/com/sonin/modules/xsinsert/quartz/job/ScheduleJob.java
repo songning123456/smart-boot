@@ -3,8 +3,8 @@ package com.sonin.modules.xsinsert.quartz.job;
 import com.sonin.core.constant.BaseConstant;
 import com.sonin.core.context.SpringContext;
 import com.sonin.utils.DateUtils;
+import com.sonin.utils.DigitalUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -30,8 +30,10 @@ public class ScheduleJob {
 
     @Value("${biz.deleteTable.enable:}")
     private String enable;
-    @Value("${biz.deleteTable.beforeDate:}")
-    private String beforeDate;
+    @Value("${biz.deleteTable.beforeDay:10}")
+    private String beforeDay;
+    @Value("${spring.datasource.dynamic.datasource.master.url}")
+    private String dataBaseUrl;
 
     /**
      * <pre>
@@ -44,6 +46,7 @@ public class ScheduleJob {
      */
     @Scheduled(cron = "0 0 1 * * ?")
     public void createTableJob() {
+        log.info(">>> 开始执行定时任务 <<<");
         createTableFunc();
         deleteTableFunc();
     }
@@ -95,9 +98,32 @@ public class ScheduleJob {
     * @Description: TODO(这里描述这个方法的需求变更情况)
     */
     public void deleteTableFunc() {
-        if ("true".equals(enable) && StringUtils.isNotEmpty(beforeDate)) {
-            JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
-            List<Map<String, Object>> queryMapList = masterDB.queryForList("show tables");
+        try {
+            if ("true".equals(enable)) {
+                if (!DigitalUtils.isNumeric(beforeDay)) {
+                    beforeDay = "10";
+                }
+                String dateFormat = "yyyyMMdd";
+                String todayStr = DateUtils.date2Str(new Date(), dateFormat);
+                String dropTableName = "xsinsert";
+                JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
+                String dataBaseSchema = dataBaseUrl.substring(dataBaseUrl.lastIndexOf("/") + 1, dataBaseUrl.indexOf("?"));
+                String dropTableSql = "select distinct table_name from information_schema.tables where table_schema = ? and table_name like concat(?, '%')";
+                List<Map<String, Object>> queryMapList = masterDB.queryForList(dropTableSql, new Object[]{dataBaseSchema, dropTableName});
+                for (Map<String, Object> item: queryMapList) {
+                    String tableName = String.valueOf(item.get("table_name"));
+                    String tableNameSuffix = tableName.replaceFirst(dropTableName, "");
+                    if (DigitalUtils.isNumeric(tableNameSuffix)) {
+                        boolean flag = DateUtils.strToDate(tableNameSuffix, dateFormat).getTime() / 1000 + 3600 * 24 * new Integer(beforeDay) <= DateUtils.strToDate(todayStr, dateFormat).getTime() / 1000;
+                        if (flag) {
+                            masterDB.execute("drop table if exists " + tableName);
+                            log.info(">>> 删除表" + tableName + "成功 <<<");
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

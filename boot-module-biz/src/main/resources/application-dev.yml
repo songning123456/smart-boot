@@ -57,6 +57,6 @@ mybatis-plus:
 biz:
   deleteTable:
     enable: true
-    # 删除日期之前的表(包含beforeDate)
-    beforeDate: 20230609
+    # 删除多少天之前的表(包含beforeDay)
+    beforeDay: 10
 
