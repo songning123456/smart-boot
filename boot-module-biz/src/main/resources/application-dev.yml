@@ -74,6 +74,7 @@ biz:
     beforeDay: 10
   redisConsumerFlag: true
   mqtt:
+    enable: false
     username:
     password:
     url:
@@ -82,3 +83,4 @@ biz:
     timeout:
     keepAlive:
     qos: 1
+    tpoic:

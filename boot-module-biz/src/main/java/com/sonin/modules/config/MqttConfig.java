@@ -24,6 +24,9 @@ import javax.annotation.PostConstruct;
 @Configuration
 public class MqttConfig {
 
+    @Value("${biz.mqtt.enable:}")
+    private String enable;
+
     @Value("${biz.mqtt.username:}")
     private String username;
 
@@ -62,24 +65,27 @@ public class MqttConfig {
      * 连接 MQTT
      */
     public void connect() {
-        try {
-            client = new MqttClient(hostUrl, clientId, new MemoryPersistence());
-            // MQTT连接选项
-            MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setUserName(username);
-            connOpts.setPassword(password.toCharArray());
-            // 保留会话
-            connOpts.setCleanSession(true);
-            // 设置超时时间，单位秒
-            connOpts.setConnectionTimeout(timeout);
-            // 设置心跳时间，单位秒，表示服务器每隔1.5*20秒的时间向客户端发送心跳判断客户端是否在线
-            connOpts.setKeepAliveInterval(keepAlive);
-            // 设置回调
-            client.setCallback(new OnMessageCallback());
-            // 建立连接
-            client.connect(connOpts);
-        } catch (Exception e) {
-            e.printStackTrace();
+        // 开启mqtt连接
+        if ("true".equals(enable)) {
+            try {
+                client = new MqttClient(hostUrl, clientId, new MemoryPersistence());
+                // MQTT连接选项
+                MqttConnectOptions connOpts = new MqttConnectOptions();
+                connOpts.setUserName(username);
+                connOpts.setPassword(password.toCharArray());
+                // 保留会话
+                connOpts.setCleanSession(true);
+                // 设置超时时间，单位秒
+                connOpts.setConnectionTimeout(timeout);
+                // 设置心跳时间，单位秒，表示服务器每隔1.5*20秒的时间向客户端发送心跳判断客户端是否在线
+                connOpts.setKeepAliveInterval(keepAlive);
+                // 设置回调
+                client.setCallback(new OnMessageCallback());
+                // 建立连接
+                client.connect(connOpts);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

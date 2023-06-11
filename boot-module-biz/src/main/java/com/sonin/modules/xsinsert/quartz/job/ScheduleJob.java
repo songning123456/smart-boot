@@ -91,13 +91,14 @@ public class ScheduleJob {
     }
 
     /**
-    * <pre>
-    * 删除指定日期（包含）之前的表
-    * </pre>
+     * <pre>
+     * 删除指定日期（包含）之前的表
+     * </pre>
+     *
      * @param
-    * @author sonin
-    * @Description: TODO(这里描述这个方法的需求变更情况)
-    */
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
     public void deleteTableFunc() {
         try {
             if ("true".equals(enable)) {
@@ -109,7 +110,7 @@ public class ScheduleJob {
                 String dataBaseSchema = dataBaseUrl.substring(dataBaseUrl.lastIndexOf("/") + 1, dataBaseUrl.indexOf("?"));
                 String dropTableSql = "select distinct table_name from information_schema.tables where table_schema = ? and table_name like concat(?, '%')";
                 List<Map<String, Object>> queryMapList = masterDB.queryForList(dropTableSql, new Object[]{dataBaseSchema, BusinessConstant.BASE_TABLE});
-                for (Map<String, Object> item: queryMapList) {
+                for (Map<String, Object> item : queryMapList) {
                     String tableName = String.valueOf(item.get("table_name"));
                     String tableNameSuffix = tableName.replaceFirst(BusinessConstant.BASE_TABLE, "");
                     if (DigitalUtils.isNumeric(tableNameSuffix)) {

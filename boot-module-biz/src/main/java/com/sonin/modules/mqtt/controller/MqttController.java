@@ -19,6 +19,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/mqtt")
 public class MqttController {
+
     @Resource
     private MqttConfig mqttConfig;
 
@@ -26,31 +27,32 @@ public class MqttController {
     public void sendMessageCtrl(@PathVariable("message") String message) {
         String subTopic = "testtopic/#";
         String pubTopic = "testtopic/1";
-        String topicTest="zmtest";
+        String topicTest = "zmtest";
         String data = "hello MQTT test";
         mqttConfig.publish(topicTest, message);
 
-      // 订阅
-//        mqttConfig.subscribe(subTopic);
-      // 发布消息
-//        mqttConfig.publish(pubTopic, data);
+        // 订阅
+        mqttConfig.subscribe(subTopic);
+        // 发布消息
+        mqttConfig.publish(pubTopic, data);
         // 断开连接
-        // mqttConfig.disconnect();
+        mqttConfig.disconnect();
     }
 
     @GetMapping("/receive")
     public void receiveMessageCtrl() {
         String subTopic = "testtopic/#";
         String pubTopic = "testtopic/1";
-        String topicTest="zmtest";
+        String topicTest = "zmtest";
         String data = "hello MQTT test";
-//        mqttConfig.publish(topicTest, data);
+        mqttConfig.publish(topicTest, data);
 
-//        // 订阅
+        // 订阅
         mqttConfig.subscribe(topicTest);
-//        // 发布消息
-//        mqttConfig.publish(pubTopic, data);
+        // 发布消息
+        mqttConfig.publish(pubTopic, data);
         // 断开连接
-        // mqttConfig.disconnect();
+        mqttConfig.disconnect();
     }
+
 }

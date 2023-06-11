@@ -25,7 +25,7 @@ public class ThreadPoolConfig {
         threadPoolTaskExecutor.setMaxPoolSize(500);
         threadPoolTaskExecutor.setQueueCapacity(2000);
         threadPoolTaskExecutor.setKeepAliveSeconds(60);
-        threadPoolTaskExecutor.setThreadNamePrefix("AsyncQuery_");
+        threadPoolTaskExecutor.setThreadNamePrefix("AsyncRedis_");
         threadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         threadPoolTaskExecutor.setWaitForTasksToCompleteOnShutdown(true);
         threadPoolTaskExecutor.setAwaitTerminationSeconds(60);

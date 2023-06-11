@@ -46,10 +46,10 @@ public class RedisQueueConsumer implements Runnable {
                     }
                     JSONObject jsonObject = JSONObject.parseObject(String.valueOf(object));
                     String day = jsonObject.getString("day");
-                    JSONArray dataJSONArray =jsonObject.getJSONArray("data");
+                    JSONArray dataJSONArray = jsonObject.getJSONArray("data");
                     List<Xsinsert> dataList = JSONArray.parseArray(dataJSONArray.toJSONString(), Xsinsert.class);
                     baseService.saveBatch(BusinessConstant.BASE_TABLE + day, dataList);
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
