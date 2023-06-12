@@ -6,11 +6,13 @@ import com.sonin.modules.constant.BusinessConstant;
 import com.sonin.utils.DateUtils;
 import com.sonin.utils.DigitalUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Date;
 import java.util.List;
@@ -33,6 +35,8 @@ public class ScheduleJob {
     private String deleteTableDay;
     @Value("${spring.datasource.dynamic.datasource.master.url}")
     private String dataBaseUrl;
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     /**
      * <pre>
@@ -53,6 +57,12 @@ public class ScheduleJob {
     public void deleteTableJob() {
         log.info(">>> 开始执行{}定时任务 <<<", "删除表");
         deleteMysqlTableFunc();
+    }
+
+    @Scheduled(cron = "${biz.scheduled.updateRealtimeDataCron}")
+    public void updateRealtimeDataJob() {
+        log.info(">>> 开始执行{}定时任务 <<<", "更新realtimedata表");
+        updateRealtimeDataFunc();
     }
 
     /**
@@ -129,6 +139,25 @@ public class ScheduleJob {
                     }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateRealtimeDataFunc() {
+        try {
+            String day = DateUtils.date2Str(new Date(), BusinessConstant.DATE_FORMAT);
+            JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
+            String sqlPrefix = "INSERT INTO realtimedata ( nm, v, ts, createtime, factoryname, devicename, type, gatewaycode ) ";
+            String sqlSuffix = "SELECT t1.nm, t1.v, t1.ts, t1.createtime, t1.factoryname, t1.devicename, t1.type, t1.gatewaycode FROM xsinsert${day} t1 INNER JOIN ( SELECT nm, max( ts ) AS ts FROM xsinsert${day} GROUP BY nm ) t2 ON t1.nm = t2.nm AND t1.ts = t2.ts";
+            sqlSuffix = sqlSuffix.replaceAll("\\$\\{day}", day);
+            String deleteSql = "delete from realtimedata where nm in (select tmp.nm from (" + sqlSuffix + ") as tmp)";
+            String updateSql = sqlPrefix + sqlSuffix;
+            transactionTemplate.execute((transactionStatus -> {
+                masterDB.execute(deleteSql);
+                masterDB.execute(updateSql);
+                return 1;
+            }));
         } catch (Exception e) {
             e.printStackTrace();
         }

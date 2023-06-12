@@ -75,13 +75,15 @@ biz:
   # 是否开启定时任务
   scheduled:
     enable: true
-    # 创建表
+    # 创建表(每天凌晨1点)
     createTableCron: 0 0 1 * * ?
-    # 删除表
+    # 删除表(每天凌晨1点)
     deleteTableCron: 0 0 1 * * ?
+    # 更新realtimedata表(每隔10s)
+    updateRealtimeDataCron: 0/10 * * * * ?
   mqtt:
     # 是否开启mqtt订阅
-    enable: true
+    enable: false
     username: admin
     password: public
     url: tcp://118.190.97.62:18833

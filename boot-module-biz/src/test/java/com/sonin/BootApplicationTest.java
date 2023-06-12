@@ -37,6 +37,7 @@ public class BootApplicationTest {
     public void createTableTest() {
         scheduleJob.createMysqlTableFunc();
         scheduleJob.deleteMysqlTableFunc();
+        scheduleJob.updateRealtimeDataFunc();
     }
 
 }
