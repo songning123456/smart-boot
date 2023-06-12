@@ -41,7 +41,7 @@ public class RedisQueueConsumer implements Runnable {
                     Object object = redisTemplate.opsForList().rightPop(BusinessConstant.QUEUE_NAME);
                     if (object == null) {
                         // 睡眠时间
-                        TimeUnit.SECONDS.sleep(3);
+                        TimeUnit.SECONDS.sleep(BusinessConstant.TIMEOUT);
                         continue;
                     }
                     JSONObject jsonObject = JSONObject.parseObject(String.valueOf(object));

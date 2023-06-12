@@ -45,10 +45,15 @@ public class ScheduleJob {
      * @author sonin
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(cron = "${biz.scheduled.createTableCron}")
     public void createTableJob() {
-        log.info(">>> 开始执行定时任务 <<<");
+        log.info(">>> 开始执行{}定时任务 <<<", "创建表");
         createMysqlTableFunc();
+    }
+
+    @Scheduled(cron = "${biz.scheduled.deleteTableCron}")
+    public void deleteTableJob() {
+        log.info(">>> 开始执行{}定时任务 <<<", "删除表");
         deleteMysqlTableFunc();
     }
 

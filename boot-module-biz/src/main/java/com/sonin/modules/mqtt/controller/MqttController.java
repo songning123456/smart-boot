@@ -1,12 +1,12 @@
 package com.sonin.modules.mqtt.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.sonin.modules.config.MqttConfig;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Map;
 
 /**
  * <pre>
@@ -20,37 +20,19 @@ import javax.annotation.Resource;
 @RequestMapping("/mqtt")
 public class MqttController {
 
+    @Value("${biz.mqtt.topic:}")
+    private String mqttTopic;
     @Resource
     private MqttConfig mqttConfig;
 
-    @GetMapping("/send/{message}")
-    public void sendMessageCtrl(@PathVariable("message") String message) {
-        String subTopic = "testtopic/#";
-        String pubTopic = "testtopic/1";
-        String topicTest = "zmtest";
-        String data = "hello MQTT test";
-        mqttConfig.publish(topicTest, message);
-        // 订阅
-        mqttConfig.subscribe(subTopic);
-        // 发布消息
-        mqttConfig.publish(pubTopic, data);
-        // 断开连接
-        mqttConfig.disconnect();
+    @GetMapping("/publishStr")
+    public void publishStrCtrl(String dataStr) {
+        mqttConfig.publish(mqttTopic, dataStr);
     }
 
-    @GetMapping("/receive")
-    public void receiveMessageCtrl() {
-        String subTopic = "testtopic/#";
-        String pubTopic = "testtopic/1";
-        String topicTest = "zmtest";
-        String data = "hello MQTT test";
-        mqttConfig.publish(topicTest, data);
-        // 订阅
-        mqttConfig.subscribe(topicTest);
-        // 发布消息
-        mqttConfig.publish(pubTopic, data);
-        // 断开连接
-        mqttConfig.disconnect();
+    @PostMapping("/publish")
+    public void publishCtrl(Map<String, Object> paramMap) {
+        mqttConfig.publish(mqttTopic, JSONObject.toJSONString(paramMap));
     }
 
 }

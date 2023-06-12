@@ -73,13 +73,18 @@ biz:
     # 删除多少天之前的表(包含beforeDay)
     beforeDay: 10
   redisConsumerFlag: true
+  scheduled:
+    enable: true
+    createTableCron: 0 0 1 * * ?
+    deleteTableCron: 0 0 1 * * ?
   mqtt:
-    enable: false
+    enable: true
     username: admin
     password: public
-    url: tcp://47.104.99.86:18833
-    clientId: 127.0.0.1
-    timeout: 10000
-    keepAlive: 10000
+    # url: tcp://47.104.99.86:18833
+    url: tcp://118.190.97.62:18833
+    clientId: emqx
+    timeout: 100
+    keepAlive: 200
     qos: 1
-    tpoic:
+    topic: zzdd02
