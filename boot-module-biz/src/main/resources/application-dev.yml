@@ -68,23 +68,26 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 biz:
-  deleteTable:
-    enable: true
-    # 删除多少天之前的表(包含beforeDay)
-    beforeDay: 10
+  # 删除n天前的表(包含)
+  deleteTableDay: 10
+  # 是否启动redis队列消费数据入库
   redisConsumerFlag: true
+  # 是否开启定时任务
   scheduled:
     enable: true
+    # 创建表
     createTableCron: 0 0 1 * * ?
+    # 删除表
     deleteTableCron: 0 0 1 * * ?
   mqtt:
+    # 是否开启mqtt订阅
     enable: true
     username: admin
     password: public
-    # url: tcp://47.104.99.86:18833
     url: tcp://118.190.97.62:18833
     clientId: emqx
     timeout: 100
     keepAlive: 200
     qos: 1
+    # 订阅主题
     topic: zzdd02

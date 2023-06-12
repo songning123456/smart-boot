@@ -29,10 +29,8 @@ import java.util.Map;
 @Slf4j
 public class ScheduleJob {
 
-    @Value("${biz.deleteTable.enable:}")
-    private String enable;
-    @Value("${biz.deleteTable.beforeDay:10}")
-    private String beforeDay;
+    @Value("${biz.deleteTableDay:10}")
+    private String deleteTableDay;
     @Value("${spring.datasource.dynamic.datasource.master.url}")
     private String dataBaseUrl;
 
@@ -106,30 +104,28 @@ public class ScheduleJob {
      */
     public void deleteMysqlTableFunc() {
         try {
-            if ("true".equals(enable)) {
-                if (!DigitalUtils.isNumeric(beforeDay)) {
-                    beforeDay = "10";
-                }
-                String todayStr = DateUtils.date2Str(new Date(), BusinessConstant.DATE_FORMAT);
-                // 今日0点秒
-                long todaySecond = DateUtils.strToDate(todayStr, BusinessConstant.DATE_FORMAT).getTime() / 1000;
-                // n天换算成秒
-                long beforeSecond = 3600 * 24 * new Integer(beforeDay);
-                JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
-                String dataBaseSchema = dataBaseUrl.substring(dataBaseUrl.lastIndexOf("/") + 1, dataBaseUrl.indexOf("?"));
-                String dropTableSql = "select distinct table_name from information_schema.tables where table_schema = ? and table_name like concat(?, '%')";
-                List<Map<String, Object>> queryMapList = masterDB.queryForList(dropTableSql, new Object[]{dataBaseSchema, BusinessConstant.BASE_TABLE});
-                String tableName, tableNameSuffix;
-                boolean flag;
-                for (Map<String, Object> item : queryMapList) {
-                    tableName = String.valueOf(item.get("table_name"));
-                    tableNameSuffix = tableName.replaceFirst(BusinessConstant.BASE_TABLE, "");
-                    if (DigitalUtils.isNumeric(tableNameSuffix)) {
-                        flag = DateUtils.strToDate(tableNameSuffix, BusinessConstant.DATE_FORMAT).getTime() / 1000 + beforeSecond <= todaySecond;
-                        if (flag) {
-                            masterDB.execute("drop table if exists " + tableName);
-                            log.info(">>> 删除表" + tableName + "成功 <<<");
-                        }
+            if (!DigitalUtils.isNumeric(deleteTableDay)) {
+                deleteTableDay = "10";
+            }
+            String todayStr = DateUtils.date2Str(new Date(), BusinessConstant.DATE_FORMAT);
+            // 今日0点秒
+            long todaySecond = DateUtils.strToDate(todayStr, BusinessConstant.DATE_FORMAT).getTime() / 1000;
+            // n天换算成秒
+            long beforeSecond = 3600 * 24 * new Integer(deleteTableDay);
+            JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
+            String dataBaseSchema = dataBaseUrl.substring(dataBaseUrl.lastIndexOf("/") + 1, dataBaseUrl.indexOf("?"));
+            String dropTableSql = "select distinct table_name from information_schema.tables where table_schema = ? and table_name like concat(?, '%')";
+            List<Map<String, Object>> queryMapList = masterDB.queryForList(dropTableSql, new Object[]{dataBaseSchema, BusinessConstant.BASE_TABLE});
+            String tableName, tableNameSuffix;
+            boolean flag;
+            for (Map<String, Object> item : queryMapList) {
+                tableName = String.valueOf(item.get("table_name"));
+                tableNameSuffix = tableName.replaceFirst(BusinessConstant.BASE_TABLE, "");
+                if (DigitalUtils.isNumeric(tableNameSuffix)) {
+                    flag = DateUtils.strToDate(tableNameSuffix, BusinessConstant.DATE_FORMAT).getTime() / 1000 + beforeSecond <= todaySecond;
+                    if (flag) {
+                        masterDB.execute("drop table if exists " + tableName);
+                        log.info(">>> 删除表" + tableName + "成功 <<<");
                     }
                 }
             }
