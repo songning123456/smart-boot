@@ -25,7 +25,7 @@ public class OnMessageCallback implements MqttCallback, IDataQueue {
 
     @Override
     public void messageArrived(String topic, MqttMessage message) {
-        DATA_QUEUE.add(new String(message.getPayload()));
+        DATA_QUEUE.add(message.getPayload());
     }
 
     @Override

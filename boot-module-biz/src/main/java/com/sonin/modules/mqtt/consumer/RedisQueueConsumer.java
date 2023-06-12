@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sonin.modules.base.service.IBaseService;
 import com.sonin.modules.constant.BusinessConstant;
+import com.sonin.modules.realtimedata.entity.Realtimedata;
+import com.sonin.modules.realtimedata.service.RealtimedataService;
 import com.sonin.modules.xsinsert.entity.Xsinsert;
+import com.sonin.utils.BeanExtUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +35,8 @@ public class RedisQueueConsumer implements Runnable {
     private RedisTemplate redisTemplate;
     @Autowired
     private IBaseService baseService;
+    @Autowired
+    private RealtimedataService realtimedataService;
 
     @Override
     public void run() {
@@ -49,6 +54,9 @@ public class RedisQueueConsumer implements Runnable {
                     JSONArray dataJSONArray = jsonObject.getJSONArray("data");
                     List<Xsinsert> dataList = JSONArray.parseArray(dataJSONArray.toJSONString(), Xsinsert.class);
                     baseService.saveBatch(BusinessConstant.BASE_TABLE + day, dataList);
+                    List<Realtimedata> realtimedataList = BeanExtUtils.beans2Beans(dataList, Realtimedata.class);
+                    realtimedataList.forEach(item -> item.setId(item.getNm()));
+                    realtimedataService.saveOrUpdateBatch(realtimedataList);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

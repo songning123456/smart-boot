@@ -30,7 +30,7 @@ public class DataQueueConsumer implements Runnable, IDataQueue {
 
     @Override
     public void run() {
-        List<String> dataList;
+        List<byte[]> dataList;
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 // 每次取出的数据存放到dataList里

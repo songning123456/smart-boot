@@ -37,9 +37,9 @@ public class CodeGenerator {
         // todo 待修改：项目模块
         put("globalModuleName", "boot-module-biz");
         // todo 待修改：表名
-        put("tableName", "f_report_item");
+        put("tableName", "realtimedata");
         // todo 待修改：业务模块
-        put("moduleName", "freport");
+        put("moduleName", "realtimedata");
         put("parent", "com.sonin.modules");
     }};
 

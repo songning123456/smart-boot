@@ -1,17 +1,17 @@
-package com.sonin.modules.xsinsert.entity;
+package com.sonin.modules.realtimedata.entity;
 
 import lombok.Data;
 
 /**
- * <pre>
- * <请输入描述信息>
- * </pre>
+ * <p>
+ * 实时表
+ * </p>
  *
  * @author sonin
- * @version 1.0 2023/6/9 17:56
+ * @since 2023-06-12
  */
 @Data
-public class Xsinsert {
+public class Realtimedata {
 
     private String id;
 

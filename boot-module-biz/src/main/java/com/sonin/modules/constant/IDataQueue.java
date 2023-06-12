@@ -13,6 +13,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public interface IDataQueue {
 
-    BlockingQueue<String> DATA_QUEUE = new LinkedBlockingQueue<>();
+    BlockingQueue<byte[]> DATA_QUEUE = new LinkedBlockingQueue<>();
 
 }
