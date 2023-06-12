@@ -37,6 +37,7 @@ public class DataRunnable implements Runnable {
         JSONObject jsonObject;
         Xsinsert xsinsert;
         String day;
+        String createTime = String.valueOf(new Date().getTime() / 1000);
         for (byte[] byteArray : dataList) {
             try {
                 newByteArray = AesUtils.decode(Arrays.copyOfRange(byteArray, 7, byteArray.length), AesUtils.DECRYPT_PASSWORD);
@@ -48,7 +49,8 @@ public class DataRunnable implements Runnable {
                     xsinsert.setNm(jsonObject.getString("nm"));
                     xsinsert.setTs(jsonObject.getString("ts"));
                     xsinsert.setV(jsonObject.getString("v"));
-                    day = new SimpleDateFormat(BusinessConstant.DATE_FORMAT).format(new java.util.Date(Integer.parseInt(xsinsert.getTs()) * 1000));
+                    xsinsert.setCreatetime(createTime);
+                    day = new SimpleDateFormat(BusinessConstant.DATE_FORMAT).format(new java.util.Date(Long.parseLong(xsinsert.getTs()) * 1000));
                     day2dataMap.putIfAbsent(day, new ArrayList<>());
                     day2dataMap.get(day).add(xsinsert);
                 }
@@ -58,8 +60,14 @@ public class DataRunnable implements Runnable {
         }
         if (!day2dataMap.isEmpty()) {
             RedisTemplate redisTemplate = (RedisTemplate) SpringContext.getBean("redisTemplate");
-            // 存入redis队列，待消费
-            redisTemplate.opsForList().leftPush(BusinessConstant.QUEUE_NAME, JSON.toJSONString(day2dataMap));
+            Map<String, Object> queueMap;
+            for (Map.Entry<String, List<Xsinsert>> item : day2dataMap.entrySet()) {
+                queueMap = new HashMap<>();
+                queueMap.put("day", item.getKey());
+                queueMap.put("data", item.getValue());
+                // 存入redis队列，待消费
+                redisTemplate.opsForList().leftPush(BusinessConstant.QUEUE_NAME, JSON.toJSONString(queueMap));
+            }
         }
     }
 
