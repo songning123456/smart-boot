@@ -48,8 +48,8 @@ public class ScheduleJob {
     @Scheduled(cron = "0 0 1 * * ?")
     public void createTableJob() {
         log.info(">>> 开始执行定时任务 <<<");
-        createTableFunc();
-        deleteTableFunc();
+        createMysqlTableFunc();
+        deleteMysqlTableFunc();
     }
 
     /**
@@ -61,7 +61,7 @@ public class ScheduleJob {
      * @author sonin
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
-    public void createTableFunc() {
+    public void createMysqlTableFunc() {
         Date now = new Date();
         List<String> dayList = DateUtils.intervalByDay(DateUtils.date2Str(now, BaseConstant.dateFormat), DateUtils.date2Str(DateUtils.nextMonth(now), BaseConstant.dateFormat), BaseConstant.dateFormat.split(" ")[0]);
         JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
@@ -99,22 +99,28 @@ public class ScheduleJob {
      * @author sonin
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
-    public void deleteTableFunc() {
+    public void deleteMysqlTableFunc() {
         try {
             if ("true".equals(enable)) {
                 if (!DigitalUtils.isNumeric(beforeDay)) {
                     beforeDay = "10";
                 }
                 String todayStr = DateUtils.date2Str(new Date(), BusinessConstant.DATE_FORMAT);
+                // 今日0点秒
+                long todaySecond = DateUtils.strToDate(todayStr, BusinessConstant.DATE_FORMAT).getTime() / 1000;
+                // n天换算成秒
+                long beforeSecond = 3600 * 24 * new Integer(beforeDay);
                 JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
                 String dataBaseSchema = dataBaseUrl.substring(dataBaseUrl.lastIndexOf("/") + 1, dataBaseUrl.indexOf("?"));
                 String dropTableSql = "select distinct table_name from information_schema.tables where table_schema = ? and table_name like concat(?, '%')";
                 List<Map<String, Object>> queryMapList = masterDB.queryForList(dropTableSql, new Object[]{dataBaseSchema, BusinessConstant.BASE_TABLE});
+                String tableName, tableNameSuffix;
+                boolean flag;
                 for (Map<String, Object> item : queryMapList) {
-                    String tableName = String.valueOf(item.get("table_name"));
-                    String tableNameSuffix = tableName.replaceFirst(BusinessConstant.BASE_TABLE, "");
+                    tableName = String.valueOf(item.get("table_name"));
+                    tableNameSuffix = tableName.replaceFirst(BusinessConstant.BASE_TABLE, "");
                     if (DigitalUtils.isNumeric(tableNameSuffix)) {
-                        boolean flag = DateUtils.strToDate(tableNameSuffix, BusinessConstant.DATE_FORMAT).getTime() / 1000 + 3600 * 24 * new Integer(beforeDay) <= DateUtils.strToDate(todayStr, BusinessConstant.DATE_FORMAT).getTime() / 1000;
+                        flag = DateUtils.strToDate(tableNameSuffix, BusinessConstant.DATE_FORMAT).getTime() / 1000 + beforeSecond <= todaySecond;
                         if (flag) {
                             masterDB.execute("drop table if exists " + tableName);
                             log.info(">>> 删除表" + tableName + "成功 <<<");

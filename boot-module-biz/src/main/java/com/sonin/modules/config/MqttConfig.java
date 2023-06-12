@@ -48,9 +48,6 @@ public class MqttConfig {
     @Value("${biz.mqtt.qos:}")
     private Integer qos;
 
-    @Value("${biz.mqtt.defaultTopic:}")
-    private String defaultTopic;
-
     private MqttClient client;
 
     /**

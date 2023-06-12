@@ -20,19 +20,17 @@ public class OnMessageCallback implements MqttCallback, IDataQueue {
     @Override
     public void connectionLost(Throwable cause) {
         // 连接丢失后，一般在这里面进行重连
-        log.info("连接断开，可以做重连");
+        log.info("连接断开，可以做重连: {}", cause.getMessage());
     }
 
     @Override
     public void messageArrived(String topic, MqttMessage message) {
-        String dataStr = new String(message.getPayload());
-        // Xsinsert xsinsert = JSONObject.parseObject(dataStr, Xsinsert.class);
-        DATA_QUEUE.add(dataStr);
+        DATA_QUEUE.add(new String(message.getPayload()));
     }
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
-        log.info("deliveryComplete: " + token.isComplete());
+        log.info("deliveryComplete: {}", token.isComplete());
     }
 
 }

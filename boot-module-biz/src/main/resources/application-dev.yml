@@ -75,12 +75,11 @@ biz:
   redisConsumerFlag: true
   mqtt:
     enable: false
-    username:
-    password:
-    url:
-    clientId:
-    defaultTopic:
-    timeout:
-    keepAlive:
+    username: admin
+    password: public
+    url: tcp://47.104.99.86:18833
+    clientId: 127.0.0.1
+    timeout: 10000
+    keepAlive: 10000
     qos: 1
     tpoic:

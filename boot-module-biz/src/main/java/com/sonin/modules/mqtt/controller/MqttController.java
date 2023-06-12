@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 
 /**
  * <pre>
- * <请输入描述信息>
+ * mqtt发布订阅ctrl
  * </pre>
  *
  * @author sonin
@@ -30,7 +30,6 @@ public class MqttController {
         String topicTest = "zmtest";
         String data = "hello MQTT test";
         mqttConfig.publish(topicTest, message);
-
         // 订阅
         mqttConfig.subscribe(subTopic);
         // 发布消息
@@ -46,7 +45,6 @@ public class MqttController {
         String topicTest = "zmtest";
         String data = "hello MQTT test";
         mqttConfig.publish(topicTest, data);
-
         // 订阅
         mqttConfig.subscribe(topicTest);
         // 发布消息

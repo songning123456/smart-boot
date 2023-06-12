@@ -35,8 +35,8 @@ public class BootApplicationTest {
 
     @Test
     public void createTableTest() {
-        scheduleJob.createTableFunc();
-        scheduleJob.deleteTableFunc();
+        scheduleJob.createMysqlTableFunc();
+        scheduleJob.deleteMysqlTableFunc();
     }
 
 }

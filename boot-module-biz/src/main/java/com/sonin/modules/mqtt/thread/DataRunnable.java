@@ -28,7 +28,6 @@ public class DataRunnable implements Runnable {
     @Override
     public void run() {
         // todo 开始处理mqtt数据
-        this.dataList.add("test" + System.currentTimeMillis());
         RedisTemplate redisTemplate = (RedisTemplate) SpringContext.getBean("redisTemplate");
         // 存入redis队列，待消费
         redisTemplate.opsForList().leftPush(BusinessConstant.QUEUE_NAME, JSON.toJSONString(this.dataList));
