@@ -93,3 +93,10 @@ biz:
     qos: 1
     # 订阅主题
     topic: zzdd02
+#magic-api
+magic-api:
+  web: /magic/web
+  resource:
+    type: database
+    table-name: magic_api_file_v3
+    prefix: /magic-api

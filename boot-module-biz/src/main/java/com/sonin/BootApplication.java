@@ -3,6 +3,7 @@ package com.sonin;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
@@ -14,7 +15,7 @@ import java.net.UnknownHostException;
  * @date 2022/3/25 9:05
  */
 @Slf4j
-@SpringBootApplication
+@SpringBootApplication(exclude = SpringDataWebAutoConfiguration.class)
 public class BootApplication {
 
     public static void main(String[] args) throws UnknownHostException {
