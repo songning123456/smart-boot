@@ -59,6 +59,13 @@ public class Javassist {
 
     public Javassist similarClassName(Class similarClass) {
         this.similarClassName = prefixPackage + similarClass.getName();
+        if (!cache.containsKey(this.similarClassName)) {
+            synchronized (cache) {
+                if (!cache.containsKey(this.similarClassName)) {
+                    JavassistFactory.create(similarClass);
+                }
+            }
+        }
         return this;
     }
 
@@ -76,12 +83,12 @@ public class Javassist {
 
     public Class buildClass() throws Exception {
         if (similarClassName == null) {
-            initClass(1);
+            initClass(ClassEnum.FIELD);
         } else {
             if (!cache.containsKey(similarClassName)) {
-                initClass(1);
+                initClass(ClassEnum.FIELD);
             } else {
-                initClass(2);
+                initClass(ClassEnum.SIMILAR_CLASS);
             }
         }
         return cache.get(className);
@@ -92,12 +99,10 @@ public class Javassist {
     }
 
     /**
-     * type: 1 => 根据field生成类; 2 => 根据similarClass生成相似类
-     *
-     * @param type
+     * @param classEnum
      * @throws Exception
      */
-    private void initClass(int type) throws Exception {
+    private void initClass(ClassEnum classEnum) throws Exception {
         if (!cache.containsKey(className)) {
             synchronized (cache) {
                 if (!cache.containsKey(className)) {
@@ -105,11 +110,11 @@ public class Javassist {
                     ClassPool classPool = ClassPool.getDefault();
                     // 生成类的名称
                     CtClass ctClass = classPool.makeClass(className);
-                    if (type == 1) {
+                    if (classEnum == ClassEnum.FIELD) {
                         for (Map.Entry<String, Class> item : fieldMap.entrySet()) {
                             initField(classPool, ctClass, item.getValue().getName(), item.getKey());
                         }
-                    } else if (type == 2) {
+                    } else if (classEnum == ClassEnum.SIMILAR_CLASS) {
                         Class similarClass = cache.get(similarClassName);
                         for (Field field : similarClass.getDeclaredFields()) {
                             initField(classPool, ctClass, field.getType().getName(), field.getName());
