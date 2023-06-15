@@ -48,7 +48,8 @@ public class RedisQueueConsumer implements Runnable {
                     String day = jsonObject.getString("day");
                     JSONArray dataJSONArray = jsonObject.getJSONArray("data");
                     List<Xsinsert> dataList = JSONArray.parseArray(dataJSONArray.toJSONString(), Xsinsert.class);
-                    baseService.saveBatch(BusinessConstant.BASE_TABLE + day, dataList);
+                    String month = day.substring(0, 6);
+                    baseService.saveBatch(BusinessConstant.BASE_TABLE + month, dataList);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

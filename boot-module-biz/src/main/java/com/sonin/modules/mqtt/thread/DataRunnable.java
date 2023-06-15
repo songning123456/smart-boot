@@ -3,6 +3,7 @@ package com.sonin.modules.mqtt.thread;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.sonin.core.constant.BaseConstant;
 import com.sonin.core.context.SpringContext;
 import com.sonin.modules.constant.BusinessConstant;
 import com.sonin.modules.utils.AesUtils;
@@ -48,6 +49,7 @@ public class DataRunnable implements Runnable {
                     xsinsert = new Xsinsert();
                     xsinsert.setNm(jsonObject.getString("nm"));
                     xsinsert.setTs(jsonObject.getString("ts"));
+                    xsinsert.setTsformat(new SimpleDateFormat(BaseConstant.dateFormat).format(new java.util.Date(Long.parseLong(xsinsert.getTs()) * 1000)));
                     xsinsert.setV(jsonObject.getString("v"));
                     xsinsert.setCreatetime(createTime);
                     day = new SimpleDateFormat(BusinessConstant.DATE_FORMAT).format(new java.util.Date(Long.parseLong(xsinsert.getTs()) * 1000));

@@ -31,8 +31,8 @@ import java.util.Map;
 @Slf4j
 public class ScheduleJob {
 
-    @Value("${biz.deleteTableDay:10}")
-    private String deleteTableDay;
+    @Value("${biz.deleteTableMonth:3}")
+    private String deleteTableMonth;
     @Value("${spring.datasource.dynamic.datasource.master.url}")
     private String dataBaseUrl;
     @Autowired
@@ -76,15 +76,16 @@ public class ScheduleJob {
      */
     public void createMysqlTableFunc() {
         Date now = new Date();
-        List<String> dayList = DateUtils.intervalByDay(DateUtils.date2Str(now, BaseConstant.dateFormat), DateUtils.date2Str(DateUtils.nextMonth(now), BaseConstant.dateFormat), BaseConstant.dateFormat.split(" ")[0]);
+        List<String> monthList = DateUtils.intervalByMonth(DateUtils.date2Str(now, BaseConstant.dateFormat), DateUtils.date2Str(DateUtils.nextYear(now), BaseConstant.dateFormat), "yyyy-MM");
         JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
-        for (String yearMonthDay : dayList) {
-            yearMonthDay = yearMonthDay.replaceAll("-", "");
-            String createTableSql = "CREATE TABLE `xsinsert" + yearMonthDay + "` (\n" +
+        for (String yearMonth : monthList) {
+            yearMonth = yearMonth.replaceAll("-", "");
+            String createTableSql = "CREATE TABLE `xsinsert" + yearMonth + "` (\n" +
                     "\t`id` VARCHAR ( 100 ) NOT NULL COMMENT '主键ID',\n" +
                     "\t`nm` VARCHAR ( 200 ) DEFAULT NULL COMMENT '',\n" +
                     "\t`v` VARCHAR ( 40 ) DEFAULT NULL COMMENT '',\n" +
                     "\t`ts` VARCHAR ( 64 ) DEFAULT NULL COMMENT '',\n" +
+                    "\t`tsformat` VARCHAR ( 64 ) DEFAULT NULL COMMENT '',\n" +
                     "\t`createtime` VARCHAR ( 64 ) DEFAULT NULL COMMENT '',\n" +
                     "\t`factoryname` VARCHAR ( 255 ) DEFAULT NULL COMMENT '',\n" +
                     "\t`devicename` VARCHAR ( 255 ) DEFAULT NULL COMMENT '',\n" +
@@ -93,10 +94,10 @@ public class ScheduleJob {
                     "\tPRIMARY KEY ( `id` ) USING BTREE,\n" +
                     "\tKEY `index_nm` ( `nm` ) USING BTREE,\n" +
                     "\tKEY `index_ts` ( `ts` ) USING BTREE\n" +
-                    ") ENGINE = INNODB DEFAULT CHARSET = utf8 COMMENT = '历史表" + yearMonthDay + "'";
+                    ") ENGINE = INNODB DEFAULT CHARSET = utf8 COMMENT = '历史表" + yearMonth + "'";
             try {
                 masterDB.execute(createTableSql);
-                log.info(">>> 创建表" + yearMonthDay + "成功 <<<");
+                log.info(">>> 创建表" + yearMonth + "成功 <<<");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -114,14 +115,14 @@ public class ScheduleJob {
      */
     public void deleteMysqlTableFunc() {
         try {
-            if (!DigitalUtils.isNumeric(deleteTableDay)) {
-                deleteTableDay = "10";
+            if (!DigitalUtils.isNumeric(deleteTableMonth)) {
+                deleteTableMonth = "3";
             }
             String todayStr = DateUtils.date2Str(new Date(), BusinessConstant.DATE_FORMAT);
             // 今日0点秒
             long todaySecond = DateUtils.strToDate(todayStr, BusinessConstant.DATE_FORMAT).getTime() / 1000;
-            // n天换算成秒
-            long beforeSecond = 3600 * 24 * new Integer(deleteTableDay);
+            // n月换算成秒
+            long beforeSecond = 3600 * 24 * 30 * new Integer(deleteTableMonth);
             JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
             String dataBaseSchema = dataBaseUrl.substring(dataBaseUrl.lastIndexOf("/") + 1, dataBaseUrl.indexOf("?"));
             String dropTableSql = "select distinct table_name from information_schema.tables where table_schema = ? and table_name like concat(?, '%')";
