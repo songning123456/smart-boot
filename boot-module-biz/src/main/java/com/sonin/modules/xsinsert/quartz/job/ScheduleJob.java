@@ -133,7 +133,7 @@ public class ScheduleJob {
                 tableName = String.valueOf(item.get("table_name"));
                 tableNameSuffix = tableName.replaceFirst(BusinessConstant.BASE_TABLE, "");
                 if (DigitalUtils.isNumeric(tableNameSuffix)) {
-                    flag = DateUtils.strToDate(tableNameSuffix, BusinessConstant.DATE_FORMAT).getTime() / 1000 + beforeSecond <= todaySecond;
+                    flag = DateUtils.strToDate(tableNameSuffix, "yyyyMM").getTime() / 1000 + beforeSecond <= todaySecond;
                     if (flag) {
                         masterDB.execute("drop table if exists " + tableName);
                         log.info(">>> 删除表" + tableName + "成功 <<<");

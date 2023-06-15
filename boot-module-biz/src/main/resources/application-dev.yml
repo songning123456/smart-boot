@@ -68,8 +68,8 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 biz:
-  # 删除n天前的表(包含)
-  deleteTableDay: 10
+  # 删除n月前的表(包含)
+  deleteTableMonth: 3
   # 是否启动redis队列消费数据入库
   redisConsumerFlag: true
   # 是否开启定时任务
