@@ -21,8 +21,6 @@ public class Xsinsert {
 
     private String ts;
 
-    private String tsformat;
-
     private String createtime;
 
     private String factoryname;

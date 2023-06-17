@@ -61,7 +61,7 @@ public class ScheduleJob {
 
     @Scheduled(cron = "${biz.scheduled.updateRealtimeDataCron}")
     public void updateRealtimeDataJob() {
-        log.info(">>> 开始执行{}定时任务 <<<", "更新realtimedata表");
+        //log.info(">>> 开始执行{}定时任务 <<<", "更新realtimedata表");
         updateRealtimeDataFunc();
     }
 
@@ -79,13 +79,13 @@ public class ScheduleJob {
         List<String> monthList = DateUtils.intervalByMonth(DateUtils.date2Str(now, BaseConstant.dateFormat), DateUtils.date2Str(DateUtils.nextYear(now), BaseConstant.dateFormat), "yyyy-MM");
         JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
         for (String yearMonth : monthList) {
+//            "\t`tsformat` VARCHAR ( 64 ) DEFAULT NULL COMMENT '',\n" +
             yearMonth = yearMonth.replaceAll("-", "");
             String createTableSql = "CREATE TABLE `xsinsert" + yearMonth + "` (\n" +
                     "\t`id` VARCHAR ( 100 ) NOT NULL COMMENT '主键ID',\n" +
                     "\t`nm` VARCHAR ( 200 ) DEFAULT NULL COMMENT '',\n" +
                     "\t`v` VARCHAR ( 40 ) DEFAULT NULL COMMENT '',\n" +
                     "\t`ts` VARCHAR ( 64 ) DEFAULT NULL COMMENT '',\n" +
-                    "\t`tsformat` VARCHAR ( 64 ) DEFAULT NULL COMMENT '',\n" +
                     "\t`createtime` VARCHAR ( 64 ) DEFAULT NULL COMMENT '',\n" +
                     "\t`factoryname` VARCHAR ( 255 ) DEFAULT NULL COMMENT '',\n" +
                     "\t`devicename` VARCHAR ( 255 ) DEFAULT NULL COMMENT '',\n" +
@@ -151,7 +151,7 @@ public class ScheduleJob {
             JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
             String sqlPrefix = "INSERT INTO realtimedata ( nm, v, ts, createtime, factoryname, devicename, type, gatewaycode ) ";
             String sqlSuffix = "SELECT t1.nm, t1.v, t1.ts, t1.createtime, t1.factoryname, t1.devicename, t1.type, t1.gatewaycode FROM xsinsert${day} t1 INNER JOIN ( SELECT nm, max( ts ) AS ts FROM xsinsert${day} GROUP BY nm ) t2 ON t1.nm = t2.nm AND t1.ts = t2.ts";
-            sqlSuffix = sqlSuffix.replaceAll("\\$\\{day}", day);
+            sqlSuffix = sqlSuffix.replaceAll("\\$\\{day}", day.substring(0, 6));
             String deleteSql = "delete from realtimedata where nm in (select tmp.nm from (" + sqlSuffix + ") as tmp)";
             String updateSql = sqlPrefix + sqlSuffix;
             transactionTemplate.execute((transactionStatus -> {

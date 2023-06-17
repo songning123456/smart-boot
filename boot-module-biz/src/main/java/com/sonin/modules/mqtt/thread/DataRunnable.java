@@ -43,13 +43,14 @@ public class DataRunnable implements Runnable {
             try {
                 newByteArray = AesUtils.decode(Arrays.copyOfRange(byteArray, 7, byteArray.length), AesUtils.DECRYPT_PASSWORD);
                 String dataStr = AesUtils.decompressStr(Arrays.copyOfRange(newByteArray, 4, newByteArray.length));
+                //log.info("diyibu:"+dataStr);
                 JSONArray dataJSONArray = JSONObject.parseObject(dataStr).getJSONArray("datas");
                 for (int i = 0; i < dataJSONArray.size(); i++) {
                     jsonObject = dataJSONArray.getJSONObject(i);
                     xsinsert = new Xsinsert();
                     xsinsert.setNm(jsonObject.getString("nm"));
                     xsinsert.setTs(jsonObject.getString("ts"));
-                    xsinsert.setTsformat(new SimpleDateFormat(BaseConstant.dateFormat).format(new java.util.Date(Long.parseLong(xsinsert.getTs()) * 1000)));
+                    //xsinsert.setTsformat(new SimpleDateFormat(BaseConstant.dateFormat).format(new java.util.Date(Long.parseLong(xsinsert.getTs()) * 1000)));
                     xsinsert.setV(jsonObject.getString("v"));
                     xsinsert.setCreatetime(createTime);
                     day = new SimpleDateFormat(BusinessConstant.DATE_FORMAT).format(new java.util.Date(Long.parseLong(xsinsert.getTs()) * 1000));
@@ -68,6 +69,7 @@ public class DataRunnable implements Runnable {
                 queueMap.put("day", item.getKey());
                 queueMap.put("data", item.getValue());
                 // 存入redis队列，待消费
+                //log.info("diyibu:"+s);
                 redisTemplate.opsForList().leftPush(BusinessConstant.QUEUE_NAME, JSON.toJSONString(queueMap));
             }
         }

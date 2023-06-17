@@ -44,6 +44,7 @@ public class RedisQueueConsumer implements Runnable {
                         TimeUnit.SECONDS.sleep(BusinessConstant.TIMEOUT);
                         continue;
                     }
+                   //log.info("第三步："+ object);
                     JSONObject jsonObject = JSONObject.parseObject(String.valueOf(object));
                     String day = jsonObject.getString("day");
                     JSONArray dataJSONArray = jsonObject.getJSONArray("data");
