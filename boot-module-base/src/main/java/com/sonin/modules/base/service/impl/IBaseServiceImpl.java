@@ -102,9 +102,9 @@ public class IBaseServiceImpl implements IBaseService {
         keys.sort(String::compareTo);
         List<Map> ewList = new ArrayList<>();
         Map ew;
-        for (Map<String, Object> data: dataList) {
+        for (Map<String, Object> data : dataList) {
             ew = new LinkedHashMap();
-            for (String key: keys) {
+            for (String key : keys) {
                 ew.put(key, data.get(key));
             }
             // 设置主键ID
@@ -155,6 +155,38 @@ public class IBaseServiceImpl implements IBaseService {
             e.printStackTrace();
         }
         return baseMapper.insertBatch(tableName, keys, ewList);
+    }
+
+    @Override
+    public List<Map<String, Object>> querySql(String sql) {
+        if ("select".equals(sql.split(" ")[0].toLowerCase())) {
+            return baseMapper.querySql(sql);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer insertSql(String sql) {
+        if ("insert".equals(sql.split(" ")[0].toLowerCase())) {
+            return baseMapper.insertSql(sql);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer deleteSql(String sql) {
+        if ("delete".equals(sql.split(" ")[0].toLowerCase())) {
+            return baseMapper.deleteSql(sql);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer updateSql(String sql) {
+        if ("update".equals(sql.split(" ")[0].toLowerCase())) {
+            return baseMapper.updateSql(sql);
+        }
+        return null;
     }
 
 }

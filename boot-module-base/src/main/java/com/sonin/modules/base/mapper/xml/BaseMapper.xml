@@ -46,4 +46,20 @@
         </foreach>
     </insert>
 
+    <select id="querySql" resultType="java.util.LinkedHashMap">
+        ${sql}
+    </select>
+
+    <insert id="insertSql">
+        ${sql}
+    </insert>
+
+    <delete id="deleteSql">
+        ${sql}
+    </delete>
+
+    <update id="updateSql">
+        ${sql}
+    </update>
+
 </mapper>

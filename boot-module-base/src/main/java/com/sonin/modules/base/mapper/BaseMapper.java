@@ -28,4 +28,12 @@ public interface BaseMapper {
 
     int insertBatch(@Param("tableName") String tableName, @Param("keys") List<String> keys, @Param("ewList") List<Map> ewList);
 
+    List<Map<String, Object>> querySql(@Param("sql") String sql);
+
+    int insertSql(@Param("sql") String sql);
+
+    int deleteSql(@Param("sql") String sql);
+
+    int updateSql(@Param("sql") String sql);
+
 }
