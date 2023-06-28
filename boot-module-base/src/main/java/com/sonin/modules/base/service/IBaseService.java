@@ -30,4 +30,12 @@ public interface IBaseService {
 
     <S> Integer saveBatch(String tableName, List<S> dataList);
 
+    List<Map<String, Object>> querySql(String sql);
+
+    Integer insertSql(String sql);
+
+    Integer deleteSql(String sql);
+
+    Integer updateSql(String sql);
+
 }
