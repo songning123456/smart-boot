@@ -3,8 +3,11 @@ package com.sonin.modules.xsinsert.quartz.job;
 import com.sonin.core.constant.BaseConstant;
 import com.sonin.core.context.SpringContext;
 import com.sonin.modules.constant.BusinessConstant;
+import com.sonin.modules.realtimedata.entity.Realtimedata;
+import com.sonin.modules.realtimedata.service.RealtimedataService;
 import com.sonin.utils.DateUtils;
 import com.sonin.utils.DigitalUtils;
+import com.sonin.utils.StrUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +41,8 @@ public class ScheduleJob {
     private String dataBaseUrl;
     @Autowired
     private TransactionTemplate transactionTemplate;
+    @Autowired
+    private RealtimedataService realtimedataService;
 
     /**
      * <pre>
@@ -149,16 +155,26 @@ public class ScheduleJob {
         try {
             String day = DateUtils.date2Str(new Date(), BusinessConstant.DATE_FORMAT);
             JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
-            String sqlPrefix = "INSERT INTO realtimedata ( nm, v, ts, createtime, factoryname, devicename, type, gatewaycode ) ";
             String sqlSuffix = "SELECT t1.nm, t1.v, t1.ts, t1.createtime, t1.factoryname, t1.devicename, t1.type, t1.gatewaycode FROM xsinsert${day} t1 INNER JOIN ( SELECT nm, max( ts ) AS ts FROM xsinsert${day} GROUP BY nm ) t2 ON t1.nm = t2.nm AND t1.ts = t2.ts";
             sqlSuffix = sqlSuffix.replaceAll("\\$\\{day}", day.substring(0, 6));
-            String deleteSql = "delete from realtimedata where nm in (select tmp.nm from (" + sqlSuffix + ") as tmp)";
-            String updateSql = sqlPrefix + sqlSuffix;
-            transactionTemplate.execute((transactionStatus -> {
-                masterDB.execute(deleteSql);
-                masterDB.execute(updateSql);
-                return 1;
-            }));
+            List<Map<String, Object>> dataMapList = masterDB.queryForList(sqlSuffix);
+            List<Realtimedata> realtimedataList = new ArrayList<>();
+            dataMapList.forEach(item -> {
+                Realtimedata realtimedata = new Realtimedata();
+                realtimedata.setId(StrUtils.getString(item.get("nm")));
+                realtimedata.setNm(StrUtils.getString(item.get("nm")));
+                realtimedata.setV(StrUtils.getString(item.get("v")));
+                realtimedata.setTs(StrUtils.getString(item.get("ts")));
+                realtimedata.setCreatetime(StrUtils.getString(item.get("createtime")));
+                realtimedata.setFactoryname(StrUtils.getString(item.get("factoryname")));
+                realtimedata.setDevicename(StrUtils.getString(item.get("devicename")));
+                realtimedata.setType(StrUtils.getString(item.get("type")));
+                realtimedata.setGatewaycode(StrUtils.getString(item.get("gatewaycode")));
+                realtimedataList.add(realtimedata);
+            });
+            if (!realtimedataList.isEmpty()) {
+                realtimedataService.saveOrUpdateBatch(realtimedataList);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

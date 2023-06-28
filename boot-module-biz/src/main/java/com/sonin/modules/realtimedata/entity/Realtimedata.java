@@ -13,6 +13,8 @@ import lombok.Data;
 @Data
 public class Realtimedata {
 
+    private String id;
+
     private String nm;
 
     private String v;
