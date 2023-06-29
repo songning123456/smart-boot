@@ -1,5 +1,7 @@
 package com.sonin.utils;
 
+import com.sonin.core.constant.BaseConstant;
+
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -315,6 +317,41 @@ public class DateUtils {
 
     /**
      * <pre>
+     * 日期字符串转秒
+     * e.g: 2023-06-20 12:00:00 => 1687233600
+     * </pre>
+     *
+     * @param dateStr
+     * @param format
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static Long dateStr2Sec(String dateStr, String format) {
+        try {
+            return new SimpleDateFormat(format).parse(dateStr).getTime() / 1000;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * <pre>
+     * 秒转日期字符串
+     * e.g: 1687233600 => 2023-06-20 12:00:00
+     * </pre>
+     *
+     * @param sec
+     * @param format
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static String sec2DateStr(long sec, String format) {
+        return new java.text.SimpleDateFormat(format).format(new Date(sec * 1000));
+    }
+
+    /**
+     * <pre>
      * 获取最近月份集合
      * </pre>
      *
@@ -355,7 +392,7 @@ public class DateUtils {
      * @author sonin
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
-    public static String[] tbTimeFunc(String startTime, String endTime) {
+    public static String[] tbTime(String startTime, String endTime) {
         String yyyyOfStart = startTime.split("-")[0];
         String yyyyOfEnd = endTime.split("-")[0];
         String yyyyOfPrevStart = "" + (Integer.parseInt(yyyyOfStart) - 1);
@@ -373,20 +410,13 @@ public class DateUtils {
      * @author sonin
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
-    public static String[] hbTimeFunc(String startTime, String endTime) {
-        String format = "yyyy-MM-dd HH:mm:ss";
-        String hbStartTime = DateUtils.date2Str(DateUtils.prevMonth(DateUtils.strToDate(startTime, format)), format);
-        String hbEndTime = DateUtils.date2Str(DateUtils.prevMonth(DateUtils.strToDate(endTime, format)), format);
+    public static String[] hbTime(String startTime, String endTime) {
+        String hbStartTime = DateUtils.date2Str(DateUtils.prevMonth(DateUtils.strToDate(startTime, BaseConstant.dateFormat)), BaseConstant.dateFormat);
+        String hbEndTime = DateUtils.date2Str(DateUtils.prevMonth(DateUtils.strToDate(endTime, BaseConstant.dateFormat)), BaseConstant.dateFormat);
         while (!hbStartTime.split("-")[1].equals(hbEndTime.split("-")[1])) {
-            hbEndTime = DateUtils.date2Str(DateUtils.prevDay(DateUtils.strToDate(hbEndTime, format)), format);
+            hbEndTime = DateUtils.date2Str(DateUtils.prevDay(DateUtils.strToDate(hbEndTime, BaseConstant.dateFormat)), BaseConstant.dateFormat);
         }
         return new String[]{hbStartTime, hbEndTime};
-    }
-
-    public static void main(String[] args) {
-        // System.out.println(someWeek(-1));
-        System.out.println(someMonth(1));
-        System.out.println("");
     }
 
 }
