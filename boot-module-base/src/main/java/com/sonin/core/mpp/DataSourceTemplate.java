@@ -14,9 +14,15 @@ import com.sonin.core.callback.IDataSourceCallback;
 public class DataSourceTemplate {
 
     public static <T> T execute(String DBName, IDataSourceCallback<T> iDataSourceCallback) {
+        T result = null;
         DynamicDataSourceContextHolder.push(DBName);
-        T result = iDataSourceCallback.execute();
-        DynamicDataSourceContextHolder.clear();
+        try {
+            result = iDataSourceCallback.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DynamicDataSourceContextHolder.clear();
+        }
         return result;
     }
 
