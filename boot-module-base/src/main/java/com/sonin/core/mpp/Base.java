@@ -596,27 +596,45 @@ public abstract class Base implements IBase {
     public Map<String, Object> queryForMap(String DBName) {
         printLog();
         IBaseService baseService = SpringContext.getBean(IBaseService.class);
+        Map<String, Object> queryMap = null;
         DynamicDataSourceContextHolder.push(DBName);
-        Map<String, Object> queryMap = baseService.queryForMap(this.prefixSql, this.queryWrapper);
-        DynamicDataSourceContextHolder.clear();
+        try {
+            queryMap = baseService.queryForMap(this.prefixSql, this.queryWrapper);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DynamicDataSourceContextHolder.clear();
+        }
         return queryMap;
     }
 
     public IPage<Map<String, Object>> queryForPage(IPage<?> page, String DBName) {
         printLog();
         IBaseService baseService = SpringContext.getBean(IBaseService.class);
+        IPage<Map<String, Object>> queryMapPage = null;
         DynamicDataSourceContextHolder.push(DBName);
-        IPage<Map<String, Object>> queryMapPage = baseService.queryForPage(page, this.prefixSql, this.queryWrapper);
-        DynamicDataSourceContextHolder.clear();
+        try {
+            queryMapPage = baseService.queryForPage(page, this.prefixSql, this.queryWrapper);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DynamicDataSourceContextHolder.clear();
+        }
         return queryMapPage;
     }
 
     public List<Map<String, Object>> queryForList(String DBName) {
         printLog();
         IBaseService baseService = SpringContext.getBean(IBaseService.class);
+        List<Map<String, Object>> queryMapList = null;
         DynamicDataSourceContextHolder.push(DBName);
-        List<Map<String, Object>> queryMapList = baseService.queryForList(this.prefixSql, this.queryWrapper);
-        DynamicDataSourceContextHolder.clear();
+        try {
+            queryMapList = baseService.queryForList(this.prefixSql, this.queryWrapper);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DynamicDataSourceContextHolder.clear();
+        }
         return queryMapList;
     }
 
