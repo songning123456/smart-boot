@@ -597,8 +597,8 @@ public abstract class Base implements IBase {
         printLog();
         IBaseService baseService = SpringContext.getBean(IBaseService.class);
         Map<String, Object> queryMap = null;
-        DynamicDataSourceContextHolder.push(DBName);
         try {
+            DynamicDataSourceContextHolder.push(DBName);
             queryMap = baseService.queryForMap(this.prefixSql, this.queryWrapper);
         } catch (Exception e) {
             e.printStackTrace();
@@ -612,8 +612,8 @@ public abstract class Base implements IBase {
         printLog();
         IBaseService baseService = SpringContext.getBean(IBaseService.class);
         IPage<Map<String, Object>> queryMapPage = null;
-        DynamicDataSourceContextHolder.push(DBName);
         try {
+            DynamicDataSourceContextHolder.push(DBName);
             queryMapPage = baseService.queryForPage(page, this.prefixSql, this.queryWrapper);
         } catch (Exception e) {
             e.printStackTrace();
@@ -627,8 +627,8 @@ public abstract class Base implements IBase {
         printLog();
         IBaseService baseService = SpringContext.getBean(IBaseService.class);
         List<Map<String, Object>> queryMapList = null;
-        DynamicDataSourceContextHolder.push(DBName);
         try {
+            DynamicDataSourceContextHolder.push(DBName);
             queryMapList = baseService.queryForList(this.prefixSql, this.queryWrapper);
         } catch (Exception e) {
             e.printStackTrace();
