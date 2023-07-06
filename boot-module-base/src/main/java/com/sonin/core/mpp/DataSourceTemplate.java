@@ -15,8 +15,8 @@ public class DataSourceTemplate {
 
     public static <T> T execute(String DBName, IDataSourceCallback<T> iDataSourceCallback) {
         T result = null;
-        DynamicDataSourceContextHolder.push(DBName);
         try {
+            DynamicDataSourceContextHolder.push(DBName);
             result = iDataSourceCallback.execute();
         } catch (Exception e) {
             e.printStackTrace();
