@@ -22,6 +22,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.util.Map;
 
 /**
@@ -42,16 +44,18 @@ public class HttpUtils {
     /**
      * 模拟get请求接口返回json数据格式
      *
-     * @param url
+     * @param urlStr
      * @return
      */
-    public static String doGet(String url) {
+    public static String doGet(String urlStr) {
         String result = "";
         try {
             CloseableHttpClient client = null;
             CloseableHttpResponse response = null;
             try {
-                HttpGet httpGet = new HttpGet(url);
+                URL url = new URL(urlStr);
+                URI uri = new URI(url.getProtocol(), url.getHost(), url.getPath(), url.getQuery(), null);
+                HttpGet httpGet = new HttpGet(uri);
                 client = HttpClients.createDefault();
                 response = client.execute(httpGet);
                 HttpEntity entity = response.getEntity();
