@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ public class BootApplicationTest {
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
     @Test
-    public void test() {
+    public void transactionTest() {
         String day = "20240601";
         String sqlPrefix = "INSERT INTO realtimedata ( id, nm, v, ts, createtime, factoryname, devicename, type, gatewaycode ) ";
         String sqlSuffix = "SELECT t1.nm as id, t1.nm, t1.v, t1.ts, t1.createtime, t1.factoryname, t1.devicename, t1.type, t1.gatewaycode FROM xsinsert${day} t1 INNER JOIN ( SELECT nm, max( ts ) AS ts FROM xsinsert${day} GROUP BY nm ) t2 ON t1.nm = t2.nm AND t1.ts = t2.ts";
@@ -58,6 +59,32 @@ public class BootApplicationTest {
             return 1;
         }));
         System.out.println("");
+    }
+
+    /**
+    * <pre>
+    * 读取文件测试
+    * </pre>
+     * @param
+    * @author sonin
+    * @Description: TODO(这里描述这个方法的需求变更情况)
+    */
+    @Test
+    public void readFileTest() {
+        File folder = new File("E:\\Project\\github-pages\\interview-linux\\pages");
+        StringBuilder stringBuilder = new StringBuilder();
+        // 检查文件夹是否存在
+        if (folder.exists() && folder.isDirectory()) {
+            File[] files = folder.listFiles(); // 获取文件夹下的所有文件
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile()) { // 只处理文件，不包括子文件夹
+                        stringBuilder.append("* [").append(file.getName().replaceAll("\\.md", "")).append("](/pages/").append(file.getName()).append(")\n");
+                    }
+                }
+            }
+        }
+        System.out.println(stringBuilder.toString());
     }
 
 }
