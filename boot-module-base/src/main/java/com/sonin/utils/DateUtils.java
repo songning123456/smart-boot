@@ -6,6 +6,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -398,6 +399,19 @@ public class DateUtils {
         String yyyyOfPrevStart = "" + (Integer.parseInt(yyyyOfStart) - 1);
         String yyyyOfPrevEnd = "" + (Integer.parseInt(yyyyOfEnd) - 1);
         return new String[]{startTime.replaceFirst(yyyyOfStart, yyyyOfPrevStart), endTime.replaceFirst(yyyyOfEnd, yyyyOfPrevEnd)};
+    }
+
+    /**
+    * <pre>
+    * 某个月的天数
+    * </pre>
+     * @param year
+     * @param month
+    * @author sonin
+    * @Description: TODO(这里描述这个方法的需求变更情况)
+    */
+    public static int lengthOfSomeMonth(int year, int month) {
+        return YearMonth.of(year, month).lengthOfMonth();
     }
 
     /**
