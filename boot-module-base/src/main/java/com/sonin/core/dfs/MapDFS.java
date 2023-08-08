@@ -1,5 +1,7 @@
 package com.sonin.core.dfs;
 
+import lombok.Data;
+
 import java.util.*;
 
 /**
@@ -10,6 +12,7 @@ import java.util.*;
  * @author sonin
  * @version 1.0 2023/4/16 8:54
  */
+@Data
 public class MapDFS {
 
     // 定义基础常量
