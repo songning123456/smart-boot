@@ -1,6 +1,10 @@
 package com.sonin;
 
+import cn.hutool.extra.pinyin.PinyinUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sonin.modules.base.service.IBaseService;
+import com.sonin.utils.StrUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,13 +66,14 @@ public class BootApplicationTest {
     }
 
     /**
-    * <pre>
-    * 读取文件测试
-    * </pre>
+     * <pre>
+     * 读取文件测试
+     * </pre>
+     *
      * @param
-    * @author sonin
-    * @Description: TODO(这里描述这个方法的需求变更情况)
-    */
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
     @Test
     public void readFileTest() {
         File folder = new File("E:\\Project\\github-pages\\interview-linux\\pages");
@@ -85,6 +90,29 @@ public class BootApplicationTest {
             }
         }
         System.out.println(stringBuilder.toString());
+    }
+
+    /**
+     * <pre>
+     * 汉字转拼音
+     * </pre>
+     *
+     * @param
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    @Test
+    public void pinyinTest() {
+        String tableName = "sheet";
+        List<Map<String, Object>> queryMapList = baseService.queryForList("select * from " + tableName, new QueryWrapper<>());
+        for (Map<String, Object> item : queryMapList) {
+            String name = StrUtils.getString(item.get("name"));
+            String id = PinyinUtil.getPinyin(name, "") + "A01";
+            UpdateWrapper<?> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.set("id", id)
+                    .eq("name", name);
+            baseService.update(tableName, updateWrapper);
+        }
     }
 
 }
