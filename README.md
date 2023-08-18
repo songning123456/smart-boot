@@ -8,7 +8,8 @@ CREATE TABLE `table_name` (
   `create_time` datetime DEFAULT NULL COMMENT '创建日期',
   `update_by` varchar(40) DEFAULT NULL COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新日期',
-  `del_flag` varchar(1) DEFAULT '0' COMMENT '删除状态(0正常;1已删除)',
+  `order_num` int DEFAULT NULL COMMENT '排序字段',
+  `del_flag` char(1) DEFAULT '0' COMMENT '删除状态(0正常;1已删除)',
    PRIMARY KEY (`id`) USING BTREE
 )  ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='table_name';
 
