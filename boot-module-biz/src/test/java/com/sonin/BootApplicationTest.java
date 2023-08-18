@@ -14,8 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -103,16 +102,30 @@ public class BootApplicationTest {
      */
     @Test
     public void pinyinTest() {
-        String tableName = "sheet";
-        List<Map<String, Object>> queryMapList = baseService.queryForList("select * from " + tableName, new QueryWrapper<>());
-        for (Map<String, Object> item : queryMapList) {
-            String name = StrUtils.getString(item.get("name"));
-            String id = PinyinUtil.getPinyin(name, "") + "A01";
-            UpdateWrapper<?> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.set("id", id)
-                    .eq("name", name);
-            baseService.update(tableName, updateWrapper);
+        List<String> zhNameList = new ArrayList<String>() {{
+            add("原水浊度");
+            add("原水pH");
+            add("出水浊度");
+            add("出水pH");
+            add("出水余氯");
+            add("原水流量");
+            add("出水流量");
+            add("当前出水压力");
+        }};
+        String tableName = "sys_metric_dict_alias";
+        List<Map<String, Object>> entityList = new ArrayList<>();
+        Map<String, Object> entityMap;
+        Date nowDate = new Date();
+        for (String zhName : zhNameList) {
+            String id = PinyinUtil.getPinyin(zhName, "");
+            entityMap = new LinkedHashMap<>();
+            entityMap.put("id", id);
+            entityMap.put("alias_desc", zhName);
+            entityMap.put("create_by", "sonin");
+            entityMap.put("create_time", nowDate);
+            entityList.add(entityMap);
         }
+        baseService.insertBatch(tableName, entityList);
     }
 
 }
