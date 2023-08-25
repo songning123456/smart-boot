@@ -52,7 +52,7 @@ public class IBaseServiceImpl implements IBaseService {
     @Override
     public Integer insert(String tableName, Map<String, Object> ew) {
         // 设置主键ID
-        if (ew.get("id") == null) {
+        if (ew.containsKey("id") && ew.get("id") == null) {
             ew.put("id", sequenceService.nextId());
         }
         return baseMapper.insert(tableName, ew);
@@ -81,7 +81,7 @@ public class IBaseServiceImpl implements IBaseService {
             e.printStackTrace();
         }
         // 设置主键ID
-        if (ew.get("id") == null) {
+        if (ew.containsKey("id") && ew.get("id") == null) {
             ew.put("id", sequenceService.nextId());
         }
         return baseMapper.insert(tableName, ew);
@@ -94,10 +94,6 @@ public class IBaseServiceImpl implements IBaseService {
         }
         // 获取第一条数据的keys
         List<String> keys = new ArrayList<>(dataList.get(0).keySet());
-        // 添加主键id
-        if (!keys.contains("id")) {
-            keys.add("id");
-        }
         // 排序
         keys.sort(String::compareTo);
         List<Map> ewList = new ArrayList<>();
@@ -108,7 +104,7 @@ public class IBaseServiceImpl implements IBaseService {
                 ew.put(key, data.get(key));
             }
             // 设置主键ID
-            if (ew.get("id") == null) {
+            if (ew.containsKey("id") && ew.get("id") == null) {
                 ew.put("id", sequenceService.nextId());
             }
             ewList.add(ew);
@@ -146,7 +142,7 @@ public class IBaseServiceImpl implements IBaseService {
                     clazz = clazz.getSuperclass();
                 }
                 // 设置主键ID
-                if (ew.get("id") == null) {
+                if (ew.containsKey("id") && ew.get("id") == null) {
                     ew.put("id", sequenceService.nextId());
                 }
                 ewList.add(ew);

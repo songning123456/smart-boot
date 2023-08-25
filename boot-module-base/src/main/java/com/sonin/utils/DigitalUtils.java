@@ -2,6 +2,7 @@ package com.sonin.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +53,19 @@ public class DigitalUtils {
             Matcher isNum2 = pattern2.matcher(str);
             return isNum.matches() || isNum2.matches();
         }
+    }
+
+    /**
+    * <pre>
+    * 生成int类型的随机数 [min, max)
+    * </pre>
+     * @param min
+     * @param max
+    * @author sonin
+    * @Description: TODO(这里描述这个方法的需求变更情况)
+    */
+    public static int intRandom(int min, int max) {
+        return ThreadLocalRandom.current().nextInt(min, max);
     }
 
 }

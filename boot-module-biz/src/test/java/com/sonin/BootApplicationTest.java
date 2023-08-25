@@ -1,9 +1,12 @@
 package com.sonin;
 
 import cn.hutool.extra.pinyin.PinyinUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.sonin.core.constant.BaseConstant;
+import com.sonin.core.mpp.DataSourceTemplate;
 import com.sonin.modules.base.service.IBaseService;
+import com.sonin.modules.sequence.service.ISequenceService;
+import com.sonin.utils.DateUtils;
+import com.sonin.utils.DigitalUtils;
 import com.sonin.utils.StrUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -34,6 +37,8 @@ public class BootApplicationTest {
     private IBaseService baseService;
     @Autowired
     private TransactionTemplate transactionTemplate;
+    @Autowired
+    private ISequenceService sequenceService;
 
     /**
      * <pre>
@@ -126,6 +131,61 @@ public class BootApplicationTest {
             entityList.add(entityMap);
         }
         baseService.insertBatch(tableName, entityList);
+    }
+
+    /**
+     * <pre>
+     * 模拟数据
+     * </pre>
+     *
+     * @param
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    @Test
+    public void generateDataTest() {
+        String yearMonthDayStr = "2023-08-24";
+        List<String> nmList = new ArrayList<String>() {{
+            add("demo_test");
+        }};
+        String startTime = yearMonthDayStr + " 00:00:00";
+        String endTime = yearMonthDayStr + " 23:59:59";
+        String countTable = "ffs_count";
+        long startTs = DateUtils.strToDate(startTime, BaseConstant.dateFormat).getTime() / 1000;
+        long endTs = DateUtils.strToDate(endTime, BaseConstant.dateFormat).getTime() / 1000;
+        List<Map<String, Object>> historyDataList = new ArrayList<>();
+        List<Map<String, Object>> countDataList = new ArrayList<>();
+        int index = 0;
+        for (String nm : nmList) {
+            for (long ts = startTs; ts <= endTs; ts += 10) {
+                long finalTs = ts;
+                historyDataList.add(new HashMap<String, Object>() {{
+                    put("nm", nm);
+                    put("v", DigitalUtils.intRandom(0, 100));
+                    put("ts", finalTs);
+                }});
+            }
+            for (long ts = startTs; ts <= endTs; ts += 3600) {
+                String hourStr = DateUtils.sec2DateStr(ts, BaseConstant.dateFormat.substring(0, 13)) + ":00:00";
+                Long hourTs = DateUtils.dateStr2Sec(hourStr, BaseConstant.dateFormat);
+                int finalIndex = index;
+                countDataList.add(new HashMap<String, Object>() {{
+                    put("id", finalIndex);
+                    put("nm", nm);
+                    put("v", DigitalUtils.intRandom(0, 100));
+                    put("ts", StrUtils.getString(hourTs));
+                }});
+                index++;
+            }
+        }
+        if (!historyDataList.isEmpty() && !countDataList.isEmpty()) {
+            DataSourceTemplate.execute("pg-db", () -> {
+                baseService.insert("realtimedata", historyDataList.get(historyDataList.size() - 1));
+                baseService.insertBatch("xsinsert" + yearMonthDayStr.replaceAll("-", ""), historyDataList);
+                baseService.insertBatch(countTable, countDataList);
+                return 1;
+            });
+        }
     }
 
 }
