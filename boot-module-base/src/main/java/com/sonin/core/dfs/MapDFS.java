@@ -76,7 +76,7 @@ public class MapDFS {
     public List<Map<String, Object>> buildTree(List<Map<String, Object>> mapList) {
         List<Map<String, Object>> tree = new ArrayList<>();
         for (Map<String, Object> k : mapList) {
-            k.putIfAbsent(children, new ArrayList<>());
+            k.put(children, new ArrayList<>());
             for (Map<String, Object> v : mapList) {
                 if (k.get(id).equals(v.get(parentId))) {
                     ((List) k.get(children)).add(v);
