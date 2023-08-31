@@ -59,5 +59,5 @@ biz:
   # 是否开启定时任务
   scheduled:
     enable: true
-    # 创建表(每隔60min)
-    backup: 0/60 * * * * ?
+    # 创建表(每隔5min)
+    backup: 0/5 * * * * ?
