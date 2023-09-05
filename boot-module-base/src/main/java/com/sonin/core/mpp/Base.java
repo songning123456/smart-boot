@@ -231,7 +231,7 @@ public abstract class Base implements IBase {
     }
 
     /**
-     * === 以下MYSQL case when统计 ===
+     * === 以下case when统计 ===
      */
 
     public <T> Base selectCaseWhen(String caseWhen, String then, String els, String alias) {
@@ -239,8 +239,18 @@ public abstract class Base implements IBase {
         return this;
     }
 
+    public <T> Base selectPgCaseWhen(String caseWhen, String then, String els, String alias) {
+        this.select("COALESCE(sum(case when (" + caseWhen + ") then cast(" + then + " as float) else " + els + " end), 0) as " + DOUBLE_QUOTES + alias + DOUBLE_QUOTES);
+        return this;
+    }
+
     public <T> Base selectCaseWhen(String caseWhen, String alias) {
         this.selectCaseWhen(caseWhen, "1", "0", alias);
+        return this;
+    }
+
+    public <T> Base selectPgCaseWhen(String caseWhen, String alias) {
+        this.selectPgCaseWhen(caseWhen, "1", "0", alias);
         return this;
     }
 
