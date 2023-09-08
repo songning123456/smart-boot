@@ -12,4 +12,12 @@ public interface BaseConstant {
 
     String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
+    String startTimeSuffix = " 00:00:00";
+
+    String endTimeSuffix = " 23:59:59";
+
+    String countSuffix = "Count";
+
+    String sumSuffix = "Sum";
+
 }
