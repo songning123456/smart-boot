@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -348,6 +349,10 @@ public class StrUtils {
             formatStr.append("0");
         }
         return new DecimalFormat(formatStr.toString()).format(v);
+    }
+
+    public static String UUID(String str) {
+        return UUID.nameUUIDFromBytes(str.getBytes()).toString().replaceAll("-", "");
     }
 
 }
