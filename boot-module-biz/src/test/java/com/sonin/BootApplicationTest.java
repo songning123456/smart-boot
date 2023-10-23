@@ -98,6 +98,44 @@ public class BootApplicationTest {
 
     /**
      * <pre>
+     * 文件重命名
+     * </pre>
+     *
+     * @param
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    @Test
+    public void mvFileTest() {
+        File folder = new File("F:\\");
+        List<String> singerList = Arrays.asList("邓紫棋", "林俊杰", "周杰伦 - ", "周杰伦 -", "周杰伦");
+        if (folder.exists() && folder.isDirectory()) {
+            File[] files = folder.listFiles(); // 获取文件夹下的所有文件
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile()) {
+                        String fileName = file.getName();
+                        for (String singer : singerList) {
+                            if (fileName.toLowerCase().contains(singer) && fileName.endsWith(".mp3")) {
+                                fileName = fileName.replace(".mp3", "");
+                                int lastIndex = fileName.indexOf(singer) + singer.length();
+                                String newFileName = fileName.substring(lastIndex + 1) + "_" + singer + ".mp3";
+                                File newFile = new File(file.getParent() + File.separator + newFileName);
+                                try {
+                                    file.renameTo(newFile);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * <pre>
      * 汉字转拼音
      * </pre>
      *
