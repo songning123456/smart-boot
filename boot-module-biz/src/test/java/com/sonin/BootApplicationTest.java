@@ -107,7 +107,7 @@ public class BootApplicationTest {
      */
     @Test
     public void mvFileTest() {
-        File folder = new File("F:\\");
+        File folder = new File("E:\\Downloads\\demo1");
         List<String> singerList = Arrays.asList("邓紫棋", "林俊杰", "周杰伦 - ", "周杰伦 -", "周杰伦");
         if (folder.exists() && folder.isDirectory()) {
             File[] files = folder.listFiles(); // 获取文件夹下的所有文件
@@ -118,14 +118,24 @@ public class BootApplicationTest {
                         for (String singer : singerList) {
                             if (fileName.toLowerCase().contains(singer) && fileName.endsWith(".mp3")) {
                                 fileName = fileName.replace(".mp3", "");
-                                int lastIndex = fileName.indexOf(singer) + singer.length();
+                                /*int lastIndex = fileName.indexOf(singer) + singer.length();
                                 String newFileName = fileName.substring(lastIndex + 1) + "_" + singer + ".mp3";
                                 File newFile = new File(file.getParent() + File.separator + newFileName);
                                 try {
                                     file.renameTo(newFile);
                                 } catch (Exception e) {
                                     e.printStackTrace();
+                                }*/
+                                if (fileName.endsWith("周杰伦 - ")) {
+                                    String newFileName = fileName.replace("周杰伦 - ", "周杰伦") + ".mp3";
+                                    File newFile = new File(file.getParent() + File.separator + newFileName);
+                                    try {
+                                        file.renameTo(newFile);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
+                                break;
                             }
                         }
                     }
