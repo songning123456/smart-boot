@@ -1,4 +1,4 @@
-package com.sonin.core.dfs;
+package com.sonin.core.entity;
 
 import lombok.Data;
 

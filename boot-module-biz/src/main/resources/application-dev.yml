@@ -49,9 +49,9 @@ spring:
           driver-class-name: com.mysql.cj.jdbc.Driver
         # 多数据源配置
 #        pg-db:
-#          url: jdbc:postgresql://192.168.70.14:10086/postgres?useUnicode=true&characterEncoding=UTF8
+#          url: jdbc:postgresql://168.0.9.152:10086/postgres?useUnicode=true&characterEncoding=UTF8
 #          username: postgres
-#          password: jkauto@123lj
+#          password: Jkauto@123fz
 #          driver-class-name: org.postgresql.Driver
 
 mybatis-plus:

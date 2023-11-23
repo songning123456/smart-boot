@@ -1,7 +1,10 @@
 package com.sonin;
 
 import cn.hutool.extra.pinyin.PinyinUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sonin.core.constant.BaseConstant;
+import com.sonin.core.context.SpringContext;
+import com.sonin.core.entity.CaseWhen;
 import com.sonin.core.mpp.DataSourceTemplate;
 import com.sonin.modules.base.service.IBaseService;
 import com.sonin.modules.sequence.service.ISequenceService;
@@ -13,10 +16,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -234,6 +239,36 @@ public class BootApplicationTest {
                 return 1;
             });
         }
+    }
+
+    /**
+     * <pre>
+     * case when 测试
+     * </pre>
+     *
+     * @param
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    @Test
+    public void caseWhenTest() {
+        // mysql测试
+        CaseWhen caseWhen = new CaseWhen();
+        caseWhen.selectCaseWhen("sex = '0'", "1", "0", "mysql0");
+        caseWhen.selectCaseWhen("sex = '1'", "1", "0", "mysql1");
+        Map<String, Object> queryMap = baseService.queryForMap("select " + caseWhen.print() + " from sys_user", new QueryWrapper<>());
+        // mysql返回BigDecimal类型
+        BigDecimal mysql0 = (BigDecimal) queryMap.get("mysql0");
+        System.out.println(mysql0);
+        // pg测试
+        CaseWhen caseWhen2 = new CaseWhen();
+        caseWhen2.selectPgCaseWhen("ts >= '1693375200'", "1", "0", "pg0");
+        caseWhen2.selectPgCaseWhen("ts < '1693375200'", "1", "0", "pg1");
+        JdbcTemplate pgDB = (JdbcTemplate) SpringContext.getBean("pg-db");
+        Map<String, Object> queryMap2 = pgDB.queryForMap("select " + caseWhen2.print() + " from ffs_count");
+        // pg返回Double类型
+        Double pg0 = (Double) queryMap2.get("pg0");
+        System.out.println(pg0);
     }
 
 }
