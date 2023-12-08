@@ -23,7 +23,7 @@
     </delete>
 
     <insert id="insert">
-        insert into ${tableName}
+        ${insertType} into ${tableName}
         <foreach collection="ew.keys" item="key" open="(" close=")" separator=",">
             ${key}
         </foreach>
@@ -34,7 +34,7 @@
     </insert>
 
     <insert id="insertBatch">
-        insert into ${tableName}
+        ${insertType} into ${tableName}
         <foreach collection="keys" item="key" open="(" close=")" separator=",">
             ${key}
         </foreach>
@@ -45,21 +45,5 @@
             </foreach>
         </foreach>
     </insert>
-
-    <select id="querySql" resultType="java.util.LinkedHashMap">
-        ${sql}
-    </select>
-
-    <insert id="insertSql">
-        ${sql}
-    </insert>
-
-    <delete id="deleteSql">
-        ${sql}
-    </delete>
-
-    <update id="updateSql">
-        ${sql}
-    </update>
 
 </mapper>

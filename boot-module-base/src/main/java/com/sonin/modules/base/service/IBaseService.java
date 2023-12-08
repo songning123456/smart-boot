@@ -24,18 +24,18 @@ public interface IBaseService {
 
     Integer insert(String tableName, Map<String, Object> ew);
 
+    Integer insert(String tableName, Map<String, Object> ew, String insertType);
+
     <S> Integer save(String tableName, S entity);
+
+    <S> Integer save(String tableName, S entity, String insertType);
 
     Integer insertBatch(String tableName, List<Map<String, Object>> dataList);
 
+    Integer insertBatch(String tableName, List<Map<String, Object>> dataList, String insertType);
+
     <S> Integer saveBatch(String tableName, List<S> dataList);
 
-    List<Map<String, Object>> querySql(String sql);
-
-    Integer insertSql(String sql);
-
-    Integer deleteSql(String sql);
-
-    Integer updateSql(String sql);
+    <S> Integer saveBatch(String tableName, List<S> dataList, String insertType);
 
 }

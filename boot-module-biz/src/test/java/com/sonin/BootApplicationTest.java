@@ -1,13 +1,11 @@
 package com.sonin;
 
-import cn.hutool.extra.pinyin.PinyinUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sonin.core.constant.BaseConstant;
 import com.sonin.core.context.SpringContext;
 import com.sonin.core.entity.CaseWhen;
 import com.sonin.core.mpp.DataSourceTemplate;
 import com.sonin.modules.base.service.IBaseService;
-import com.sonin.modules.sequence.service.ISequenceService;
 import com.sonin.utils.DateUtils;
 import com.sonin.utils.DigitalUtils;
 import com.sonin.utils.StrUtils;
@@ -18,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -42,39 +39,7 @@ public class BootApplicationTest {
 
     @Autowired
     private IBaseService baseService;
-    @Autowired
-    private TransactionTemplate transactionTemplate;
-    @Autowired
-    private ISequenceService sequenceService;
 
-    /**
-     * <pre>
-     * JdbcTemplate不支持事务，mybatis支持事务
-     * </pre>
-     *
-     * @param
-     * @author sonin
-     * @Description: TODO(这里描述这个方法的需求变更情况)
-     */
-    @Test
-    public void transactionTest() {
-        String day = "20240601";
-        String sqlPrefix = "INSERT INTO realtimedata ( id, nm, v, ts, createtime, factoryname, devicename, type, gatewaycode ) ";
-        String sqlSuffix = "SELECT t1.nm as id, t1.nm, t1.v, t1.ts, t1.createtime, t1.factoryname, t1.devicename, t1.type, t1.gatewaycode FROM xsinsert${day} t1 INNER JOIN ( SELECT nm, max( ts ) AS ts FROM xsinsert${day} GROUP BY nm ) t2 ON t1.nm = t2.nm AND t1.ts = t2.ts";
-        sqlSuffix = sqlSuffix.replaceAll("\\$\\{day}", day.substring(0, 8));
-        String deleteSql = "delete from realtimedata where nm in (select tmp.nm from (" + sqlSuffix + ") as tmp)";
-        String insertSql = sqlPrefix + sqlSuffix;
-        String querySql = "select * from realtimedata";
-        transactionTemplate.execute((transactionStatus -> {
-            List<Map<String, Object>> queryResult = baseService.querySql(querySql);
-            int deleteResult = baseService.deleteSql(deleteSql);
-            List<Map<String, Object>> queryResult2 = baseService.querySql(querySql);
-            int insertResult = baseService.insertSql(insertSql);
-            List<Map<String, Object>> queryResult3 = baseService.querySql(querySql);
-            return 1;
-        }));
-        System.out.println("");
-    }
 
     /**
      * <pre>
@@ -101,91 +66,6 @@ public class BootApplicationTest {
             }
         }
         System.out.println(stringBuilder.toString());
-    }
-
-    /**
-     * <pre>
-     * 文件重命名
-     * </pre>
-     *
-     * @param
-     * @author sonin
-     * @Description: TODO(这里描述这个方法的需求变更情况)
-     */
-    @Test
-    public void mvFileTest() {
-        File folder = new File("E:\\Downloads\\demo1");
-        List<String> singerList = Arrays.asList("邓紫棋", "林俊杰", "周杰伦 - ", "周杰伦 -", "周杰伦");
-        if (folder.exists() && folder.isDirectory()) {
-            File[] files = folder.listFiles(); // 获取文件夹下的所有文件
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isFile()) {
-                        String fileName = file.getName();
-                        for (String singer : singerList) {
-                            if (fileName.toLowerCase().contains(singer) && fileName.endsWith(".mp3")) {
-                                fileName = fileName.replace(".mp3", "");
-                                /*int lastIndex = fileName.indexOf(singer) + singer.length();
-                                String newFileName = fileName.substring(lastIndex + 1) + "_" + singer + ".mp3";
-                                File newFile = new File(file.getParent() + File.separator + newFileName);
-                                try {
-                                    file.renameTo(newFile);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }*/
-                                if (fileName.endsWith("周杰伦 - ")) {
-                                    String newFileName = fileName.replace("周杰伦 - ", "周杰伦") + ".mp3";
-                                    File newFile = new File(file.getParent() + File.separator + newFileName);
-                                    try {
-                                        file.renameTo(newFile);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * <pre>
-     * 汉字转拼音
-     * </pre>
-     *
-     * @param
-     * @author sonin
-     * @Description: TODO(这里描述这个方法的需求变更情况)
-     */
-    @Test
-    public void pinyinTest() {
-        List<String> zhNameList = new ArrayList<String>() {{
-            add("原水浊度");
-            add("原水pH");
-            add("出水浊度");
-            add("出水pH");
-            add("出水余氯");
-            add("原水流量");
-            add("出水流量");
-            add("当前出水压力");
-        }};
-        String tableName = "sys_metric_dict_alias";
-        List<Map<String, Object>> entityList = new ArrayList<>();
-        Map<String, Object> entityMap;
-        Date nowDate = new Date();
-        for (String zhName : zhNameList) {
-            String id = PinyinUtil.getPinyin(zhName, "");
-            entityMap = new LinkedHashMap<>();
-            entityMap.put("id", id);
-            entityMap.put("alias_desc", zhName);
-            entityMap.put("create_by", "sonin");
-            entityMap.put("create_time", nowDate);
-            entityList.add(entityMap);
-        }
-        baseService.insertBatch(tableName, entityList);
     }
 
     /**
@@ -345,6 +225,41 @@ public class BootApplicationTest {
                 }
             }
         }
+    }
+
+    /**
+     * <pre>
+     * mysql中insert、insert ignore、replace插入测试
+     * </pre>
+     *
+     * @param
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    @Test
+    public void insertTypeTest() {
+        // 测试insert
+        Map<String, Object> entity0Map = new LinkedHashMap<String, Object>() {{
+            put("id", "1");
+            put("create_by", "sonin0");
+        }};
+        // 检查主键，重复会报错，res0=1
+        int res0 = baseService.insert("demo_n", entity0Map, com.sonin.modules.base.constant.BaseConstant.INSERT);
+        // 测试insert ignore
+        Map<String, Object> entity1Map = new LinkedHashMap<String, Object>() {{
+            put("id", "1");
+            put("create_by", "sonin1");
+        }};
+        // 忽略主键相同的数据，res1=0
+        int res1 = baseService.insert("demo_n", entity1Map, com.sonin.modules.base.constant.BaseConstant.INSERT_IGNORE);
+        // 测试replace
+        Map<String, Object> entity2Map = new LinkedHashMap<String, Object>() {{
+            put("id", "1");
+            put("create_by", "sonin2");
+        }};
+        // 若有相同主键则替换，若无则新生成，res2=2
+        int res2 = baseService.insert("demo_n", entity2Map, com.sonin.modules.base.constant.BaseConstant.REPLACE);
+        System.out.println("end");
     }
 
 }

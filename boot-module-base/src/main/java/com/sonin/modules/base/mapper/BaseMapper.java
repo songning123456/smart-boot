@@ -24,16 +24,8 @@ public interface BaseMapper {
 
     int delete(@Param("tableName") String tableName, @Param(Constants.WRAPPER) Wrapper<?> wrapper);
 
-    int insert(@Param("tableName") String tableName, @Param(Constants.WRAPPER) Map ew);
+    int insert(@Param("tableName") String tableName, @Param(Constants.WRAPPER) Map ew, @Param("insertType") String insertType);
 
-    int insertBatch(@Param("tableName") String tableName, @Param("keys") List<String> keys, @Param("ewList") List<Map> ewList);
-
-    List<Map<String, Object>> querySql(@Param("sql") String sql);
-
-    int insertSql(@Param("sql") String sql);
-
-    int deleteSql(@Param("sql") String sql);
-
-    int updateSql(@Param("sql") String sql);
+    int insertBatch(@Param("tableName") String tableName, @Param("keys") List<String> keys, @Param("ewList") List<Map> ewList, @Param("insertType") String insertType);
 
 }

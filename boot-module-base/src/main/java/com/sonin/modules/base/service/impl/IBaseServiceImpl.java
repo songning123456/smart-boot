@@ -3,6 +3,7 @@ package com.sonin.modules.base.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.common.base.CaseFormat;
+import com.sonin.modules.base.constant.BaseConstant;
 import com.sonin.modules.base.mapper.BaseMapper;
 import com.sonin.modules.base.service.IBaseService;
 import com.sonin.modules.sequence.service.impl.SequenceService;
@@ -51,21 +52,31 @@ public class IBaseServiceImpl implements IBaseService {
 
     @Override
     public Integer insert(String tableName, Map<String, Object> ew) {
+        return insert(tableName, ew, BaseConstant.INSERT);
+    }
+
+    @Override
+    public Integer insert(String tableName, Map<String, Object> ew, String insertType) {
         // 设置主键ID
-        if (ew.containsKey("id") && ew.get("id") == null) {
-            ew.put("id", sequenceService.nextId());
+        if (ew.containsKey(BaseConstant.ID) && ew.get(BaseConstant.ID) == null) {
+            ew.put(BaseConstant.ID, sequenceService.nextId());
         }
-        return baseMapper.insert(tableName, ew);
+        return baseMapper.insert(tableName, ew, insertType);
     }
 
     @Override
     public <S> Integer save(String tableName, S entity) {
+        return save(tableName, entity, BaseConstant.INSERT);
+    }
+
+    @Override
+    public <S> Integer save(String tableName, S entity, String insertType) {
         Map<String, Object> ew = new HashMap<>();
         // entity => map
         try {
             Class clazz = entity.getClass();
             Field[] fields;
-            while (!"java.lang.Object".equals(clazz.getName())) {
+            while (!BaseConstant.OBJECT_CLASS_NAME.equals(clazz.getName())) {
                 fields = clazz.getDeclaredFields();
                 for (Field field : fields) {
                     field.setAccessible(true);
@@ -81,14 +92,19 @@ public class IBaseServiceImpl implements IBaseService {
             e.printStackTrace();
         }
         // 设置主键ID
-        if (ew.containsKey("id") && ew.get("id") == null) {
-            ew.put("id", sequenceService.nextId());
+        if (ew.containsKey(BaseConstant.ID) && ew.get(BaseConstant.ID) == null) {
+            ew.put(BaseConstant.ID, sequenceService.nextId());
         }
-        return baseMapper.insert(tableName, ew);
+        return baseMapper.insert(tableName, ew, insertType);
     }
 
     @Override
     public Integer insertBatch(String tableName, List<Map<String, Object>> dataList) {
+        return insertBatch(tableName, dataList, BaseConstant.INSERT);
+    }
+
+    @Override
+    public Integer insertBatch(String tableName, List<Map<String, Object>> dataList, String insertType) {
         if (dataList == null || dataList.isEmpty()) {
             return 0;
         }
@@ -104,16 +120,21 @@ public class IBaseServiceImpl implements IBaseService {
                 ew.put(key, data.get(key));
             }
             // 设置主键ID
-            if (ew.containsKey("id") && ew.get("id") == null) {
-                ew.put("id", sequenceService.nextId());
+            if (ew.containsKey(BaseConstant.ID) && ew.get(BaseConstant.ID) == null) {
+                ew.put(BaseConstant.ID, sequenceService.nextId());
             }
             ewList.add(ew);
         }
-        return baseMapper.insertBatch(tableName, keys, ewList);
+        return baseMapper.insertBatch(tableName, keys, ewList, insertType);
     }
 
     @Override
     public <S> Integer saveBatch(String tableName, List<S> dataList) {
+        return saveBatch(tableName, dataList, BaseConstant.INSERT);
+    }
+
+    @Override
+    public <S> Integer saveBatch(String tableName, List<S> dataList, String insertType) {
         if (dataList == null || dataList.isEmpty()) {
             return 0;
         }
@@ -128,7 +149,7 @@ public class IBaseServiceImpl implements IBaseService {
                 clazz = dataList.get(i).getClass();
                 entity = dataList.get(i);
                 ew = new LinkedHashMap();
-                while (!"java.lang.Object".equals(clazz.getName())) {
+                while (!BaseConstant.OBJECT_CLASS_NAME.equals(clazz.getName())) {
                     fields = clazz.getDeclaredFields();
                     for (Field field : fields) {
                         field.setAccessible(true);
@@ -142,47 +163,15 @@ public class IBaseServiceImpl implements IBaseService {
                     clazz = clazz.getSuperclass();
                 }
                 // 设置主键ID
-                if (ew.containsKey("id") && ew.get("id") == null) {
-                    ew.put("id", sequenceService.nextId());
+                if (ew.containsKey(BaseConstant.ID) && ew.get(BaseConstant.ID) == null) {
+                    ew.put(BaseConstant.ID, sequenceService.nextId());
                 }
                 ewList.add(ew);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return baseMapper.insertBatch(tableName, keys, ewList);
-    }
-
-    @Override
-    public List<Map<String, Object>> querySql(String sql) {
-        if ("select".equals(sql.split(" ")[0].toLowerCase())) {
-            return baseMapper.querySql(sql);
-        }
-        return null;
-    }
-
-    @Override
-    public Integer insertSql(String sql) {
-        if ("insert".equals(sql.split(" ")[0].toLowerCase())) {
-            return baseMapper.insertSql(sql);
-        }
-        return null;
-    }
-
-    @Override
-    public Integer deleteSql(String sql) {
-        if ("delete".equals(sql.split(" ")[0].toLowerCase())) {
-            return baseMapper.deleteSql(sql);
-        }
-        return null;
-    }
-
-    @Override
-    public Integer updateSql(String sql) {
-        if ("update".equals(sql.split(" ")[0].toLowerCase())) {
-            return baseMapper.updateSql(sql);
-        }
-        return null;
+        return baseMapper.insertBatch(tableName, keys, ewList, insertType);
     }
 
 }
