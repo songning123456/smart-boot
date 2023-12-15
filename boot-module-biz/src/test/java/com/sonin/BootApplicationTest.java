@@ -10,6 +10,9 @@ import com.sonin.utils.DateUtils;
 import com.sonin.utils.DigitalUtils;
 import com.sonin.utils.StrUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,6 +71,68 @@ public class BootApplicationTest {
             }
         }
         System.out.println(stringBuilder.toString());
+    }
+
+    /**
+     * <pre>
+     * 读取.csv
+     * 备注: CSV读取是流式读取，只能forEach循环读取，不能先获取大小再重新更具索引index获取数据。
+     * </pre>
+     *
+     * @param
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    @Test
+    public void readCSVTest() {
+        String fileName = "E:\\Company\\kingtrol\\007-云南丽江\\丽江模型结果输出demo及说明\\CSV\\Link_ _工况1_ds_depth.csv";
+        String[] fileNameArray = fileName.split("\\\\");
+        String configType = fileNameArray[fileNameArray.length - 1].split("\\.")[0];
+        int startCol = 2;
+        try {
+            Reader reader = new FileReader(fileName);
+            CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
+            int i = 0;
+            Map<Integer, String> index2IdMap = new LinkedHashMap<>();
+            for (CSVRecord csvRecord : csvParser) {
+                if (i == 0) {
+                    for (int colIndex = startCol; colIndex < csvRecord.size(); colIndex++) {
+                        String configCode = csvRecord.get(colIndex);
+                        String id = StrUtils.UUID(configType + configCode);
+                        index2IdMap.put(colIndex, id);
+                        Map<String, Object> entityMap0 = new HashMap<String, Object>() {{
+                            put("id", id);
+                            put("config_type", configType);
+                            put("config_code", configCode);
+                        }};
+                        baseService.insert("model_config", entityMap0, com.sonin.modules.base.constant.BaseConstant.INSERT_IGNORE);
+                    }
+                } else {
+                    String time = StrUtils.getString(csvRecord.get(0));
+                    // todo 下一行待删除
+                    time = "2023-12-15 00:00:00";
+                    int ts = DateUtils.dateStr2Sec(time, BaseConstant.dateFormat).intValue();
+                    // 从第2列开始读取指标数据(0: Time; 1: Seconds)
+                    for (int colIndex = startCol; colIndex < csvRecord.size(); colIndex++) {
+                        String cellValue = csvRecord.get(colIndex);
+                        Map<String, Object> entityMap = new HashMap<>();
+                        String id = StrUtils.UUID(index2IdMap.get(colIndex) + ts);
+                        entityMap.put("id", id);
+                        entityMap.put("ts", ts);
+                        entityMap.put("config_id", index2IdMap.get(colIndex));
+                        entityMap.put("v", cellValue);
+                        String tableSuffix = time.substring(0, 10).replaceAll("-", "");
+                        DataSourceTemplate.execute("ynlj-third", () -> {
+                            baseService.insert("model_data" + tableSuffix, entityMap, com.sonin.modules.base.constant.BaseConstant.INSERT_IGNORE);
+                            return 1;
+                        });
+                    }
+                }
+                i++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -164,8 +231,8 @@ public class BootApplicationTest {
      */
     @Test
     public void xsinsert2countTest() {
-        String startTime = "2023-12-01 00:00:00";
-        String endTime = "2023-12-05 23:59:59";
+        String startTime = "2023-12-09 00:00:00";
+        String endTime = "2023-12-14 23:59:59";
         List<String> timeList = DateUtils.intervalByHour(startTime, endTime, BaseConstant.dateFormat.substring(0, 14));
         // 查询depart_id => device_id 转换关系
         List<Map<String, Object>> deviceMapList = baseService.queryForList("select depart_id, device_id from sys_factory_device", new QueryWrapper<>());
