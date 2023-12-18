@@ -139,6 +139,19 @@ public class DateUtils {
 
     /**
      * <pre>
+     * 上一个小时此刻
+     * </pre>
+     *
+     * @param currentDate
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static Date prevHour(Date currentDate) {
+        return someDate(currentDate, Calendar.HOUR, -1);
+    }
+
+    /**
+     * <pre>
      * 昨天此刻
      * </pre>
      *
@@ -402,14 +415,15 @@ public class DateUtils {
     }
 
     /**
-    * <pre>
-    * 某个月的天数
-    * </pre>
+     * <pre>
+     * 某个月的天数
+     * </pre>
+     *
      * @param year
      * @param month
-    * @author sonin
-    * @Description: TODO(这里描述这个方法的需求变更情况)
-    */
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
     public static int lengthOfSomeMonth(int year, int month) {
         return YearMonth.of(year, month).lengthOfMonth();
     }
