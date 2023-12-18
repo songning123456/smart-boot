@@ -36,7 +36,7 @@
     </dependencies>
 
     <build>
-        <finalName>smart-boot-biz-empty</finalName>
+        <finalName>smart-boot-biz-ynlj-data</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

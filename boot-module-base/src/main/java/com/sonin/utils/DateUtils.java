@@ -139,6 +139,19 @@ public class DateUtils {
 
     /**
      * <pre>
+     * 上一个小时此刻
+     * </pre>
+     *
+     * @param currentDate
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static Date prevHour(Date currentDate) {
+        return someDate(currentDate, Calendar.HOUR, -1);
+    }
+
+    /**
+     * <pre>
      * 昨天此刻
      * </pre>
      *
