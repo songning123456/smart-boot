@@ -11,7 +11,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import cn.hutool.extra.qrcode.BufferedImageLuminanceSource;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.zxing.*;
 import com.google.zxing.common.*;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
