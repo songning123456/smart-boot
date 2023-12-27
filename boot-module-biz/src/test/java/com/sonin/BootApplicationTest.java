@@ -6,11 +6,13 @@ import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sonin.core.constant.BaseConstant;
 import com.sonin.core.context.SpringContext;
+import com.sonin.core.mpp.DataSourceTemplate;
 import com.sonin.modules.base.service.IBaseService;
 import com.sonin.modules.model.service.IModelService;
 import com.sonin.utils.DateUtils;
 import com.sonin.utils.StrUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -192,6 +194,50 @@ public class BootApplicationTest {
                     }
                 }
             }
+        }
+    }
+
+    @Test
+    public void readExcelTest() {
+        try {
+            // 指定本地Excel文件路径，替换为实际文件路径
+            String filePath = "E:\\Company\\kingtrol\\007-云南丽江\\入数据\\丽江市日供水数据01.xlsx";
+            FileInputStream file = new FileInputStream(new File(filePath));
+            // 创建一个Workbook对象，打开Excel文件
+            Workbook workbook = WorkbookFactory.create(file);
+            // 获取第一个sheet页
+            Sheet sheet0 = workbook.getSheetAt(0);
+            // 遍历每一行并打印内容
+            Map<String, String> time2ValMap = new LinkedHashMap<>();
+            int rowIndex = 0;
+            for (Row row0 : sheet0) {
+                if (rowIndex > 0) {
+                    Date date = DateUtil.getJavaDate(row0.getCell(0).getNumericCellValue());
+                    String time = DateUtils.date2Str(date, BaseConstant.dateFormat);
+                    String val = StrUtils.getString(row0.getCell(1)).trim();
+                    time2ValMap.put(time, val);
+                }
+                rowIndex++;
+            }
+            String nm = "custom_rjgsl";
+            for (Map.Entry<String, String> entry : time2ValMap.entrySet()) {
+                String ts = String.valueOf(DateUtils.dateStr2Sec(entry.getKey(), BaseConstant.dateFormat));
+                String tableSuffix = entry.getKey().substring(0, 10).replaceAll("-", "");
+                Map<String, Object> entityMap = new HashMap<>();
+                entityMap.put("nm", nm);
+                entityMap.put("ts", ts);
+                entityMap.put("v", entry.getValue());
+                DataSourceTemplate.execute("pg-db", () -> {
+                    // baseService.insert("xsinsert" + tableSuffix, entityMap);
+                    baseService.insert("rjgsl_count", entityMap);
+                    return 1;
+                });
+            }
+            // 关闭workbook和文件流
+            workbook.close();
+            file.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
