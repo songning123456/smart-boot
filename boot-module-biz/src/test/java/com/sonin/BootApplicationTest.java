@@ -1,5 +1,8 @@
 package com.sonin;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sonin.core.constant.BaseConstant;
 import com.sonin.core.context.SpringContext;
@@ -16,6 +19,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StringUtils;
 
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,14 +43,87 @@ public class BootApplicationTest {
 
     @Test
     public void readCSVTest() throws Exception {
-        String parentDirName = "E:\\Company\\kingtrol\\007-云南丽江\\模型\\结果输出文件02";
+        String parentDirName = "E:\\Company\\kingtrol\\007-云南丽江\\模型\\结果输出文件01";
         modelService.explainCSVFunc(parentDirName);
+    }
+
+    @Test
+    public void readCSV2Test() {
+        String parentDirName = "E:\\Company\\kingtrol\\007-云南丽江\\模型\\结果输出文件01";
+        File folderFile = new File(parentDirName + File.separator + "管道统计结果");
+        Map<String, Map<String, String>> code2ZhName2ValMap = new LinkedHashMap<>();
+        int startCol = 1;
+        String line, cvsSplitBy = ",";
+        if (folderFile.exists() && folderFile.isDirectory()) {
+            File[] files = folderFile.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile()) {
+                        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "GBK"))) {
+                            int rowIndex = 0;
+                            Map<Integer, String> index2ZhNameMap = new LinkedHashMap<>();
+                            while ((line = bufferedReader.readLine()) != null) {
+                                String[] columnArray = line.split(cvsSplitBy);
+                                if (rowIndex == 0) {
+                                    // 记录索引
+                                    for (int colIndex = startCol; colIndex < columnArray.length; colIndex++) {
+                                        index2ZhNameMap.put(colIndex, columnArray[colIndex].trim());
+                                    }
+                                } else {
+                                    for (int colIndex = startCol; colIndex < columnArray.length; colIndex++) {
+                                        String code = columnArray[0];
+                                        code2ZhName2ValMap.putIfAbsent(code, new LinkedHashMap<>());
+                                        code2ZhName2ValMap.get(code).putIfAbsent(index2ZhNameMap.get(colIndex), columnArray[colIndex]);
+                                    }
+                                }
+                                rowIndex++;
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+        String primaryId = "id", jsonName = "conduit";
+        String outputFileName = folderFile.getAbsolutePath() + File.separator + jsonName + ".json";
+        String inputFileName = "E:\\Company\\kingtrol\\007-云南丽江\\模型\\原始json" + File.separator + jsonName + ".json";
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFileName))) {
+            StringBuilder stringBuilder = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+            JSONObject jsonObject = JSONObject.parseObject(stringBuilder.toString());
+            JSONArray jsonArray = jsonObject.getJSONArray("features");
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject tmpObject = jsonArray.getJSONObject(i).getJSONObject("properties");
+                String code = tmpObject.getString(primaryId);
+                Map<String, String> zhName2ValMap = code2ZhName2ValMap.get(code);
+                if (zhName2ValMap == null) {
+                    continue;
+                }
+                for (Map.Entry<String, String> entry1 : zhName2ValMap.entrySet()) {
+                    String zhName = entry1.getKey();
+                    tmpObject.put(zhName, entry1.getValue());
+                }
+            }
+            // 输出内容到文件
+            FileWriter fileWriter = new FileWriter(outputFileName);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            String outStr = JSON.toJSONString(jsonObject);
+            bufferedWriter.write(outStr);
+            bufferedWriter.close();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // 删除csv
         modelService.deleteCSVFunc(parentDirName);
     }
 
     /**
      * <pre>
-     * xsinert 转换成 count
+     * xsinsert 转换成 count
      * </pre>
      *
      * @param

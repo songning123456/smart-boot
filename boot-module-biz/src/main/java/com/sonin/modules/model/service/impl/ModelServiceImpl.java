@@ -1,16 +1,17 @@
 package com.sonin.modules.model.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONWriter;
 import com.sonin.core.constant.BaseConstant;
 import com.sonin.modules.model.service.IModelService;
 import com.sonin.utils.DateUtils;
+import com.sonin.utils.DigitalUtils;
 import com.sonin.utils.StrUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.util.*;
@@ -51,7 +52,9 @@ public class ModelServiceImpl implements IModelService {
         Map<String, Map<String, Map<String, String>>> code2Time2Type2ValMap = new LinkedHashMap<>();
         String timePrefix = DateUtils.date2Str(new Date(), BaseConstant.dateFormat).substring(0, 10);
         int startCol = 2;
-        List<String> includeList = Arrays.asList("00", "30");
+        String line, cvsSplitBy = ",";
+        // todo 暂时先算1小时一条
+        List<String> includeList = Arrays.asList("00");
         if (folderFile.exists() && folderFile.isDirectory()) {
             File[] files = folderFile.listFiles();
             if (files != null) {
@@ -61,28 +64,29 @@ public class ModelServiceImpl implements IModelService {
                         String[] fileNameArray = fileName.replaceAll("\\.csv", "").split("_");
                         String type = fileNameArray[fileNameArray.length - 1];
                         try {
-                            Reader reader = new FileReader(file);
-                            CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
-                            int i = 0;
-                            Map<Integer, String> index2CodeMap = new LinkedHashMap<>();
-                            for (CSVRecord csvRecord : csvParser) {
-                                if (i == 0) {
-                                    // 记录索引
-                                    for (int colIndex = startCol; colIndex < csvRecord.size(); colIndex++) {
-                                        index2CodeMap.put(colIndex, csvRecord.get(colIndex).trim());
-                                    }
-                                } else {
-                                    String time = timePrefix + " " + StrUtils.getString(csvRecord.get(0)).split(" ")[1];
-                                    if (includeList.contains(time.substring(14, 16))) {
-                                        // 半小时记录一次
-                                        for (int colIndex = startCol; colIndex < csvRecord.size(); colIndex++) {
-                                            code2Time2Type2ValMap.putIfAbsent(index2CodeMap.get(colIndex), new LinkedHashMap<>());
-                                            code2Time2Type2ValMap.get(index2CodeMap.get(colIndex)).putIfAbsent(time, new LinkedHashMap<>());
-                                            code2Time2Type2ValMap.get(index2CodeMap.get(colIndex)).get(time).putIfAbsent(type, csvRecord.get(colIndex).trim());
+                            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "GBK"))) {
+                                int rowIndex = 0;
+                                Map<Integer, String> index2CodeMap = new LinkedHashMap<>();
+                                while ((line = bufferedReader.readLine()) != null) {
+                                    String[] columnArray = line.split(cvsSplitBy);
+                                    if (rowIndex == 0) {
+                                        // 记录索引
+                                        for (int colIndex = startCol; colIndex < columnArray.length; colIndex++) {
+                                            index2CodeMap.put(colIndex, columnArray[colIndex].trim());
+                                        }
+                                    } else {
+                                        String time = timePrefix + " " + StrUtils.getString(columnArray[0]).split(" ")[1];
+                                        if (time.length() >= 16 && includeList.contains(time.substring(14, 16))) {
+                                            // 半小时记录一次
+                                            for (int colIndex = startCol; colIndex < columnArray.length; colIndex++) {
+                                                code2Time2Type2ValMap.putIfAbsent(index2CodeMap.get(colIndex), new LinkedHashMap<>());
+                                                code2Time2Type2ValMap.get(index2CodeMap.get(colIndex)).putIfAbsent(time, new LinkedHashMap<>());
+                                                code2Time2Type2ValMap.get(index2CodeMap.get(colIndex)).get(time).putIfAbsent(type, columnArray[colIndex].trim());
+                                            }
                                         }
                                     }
+                                    rowIndex++;
                                 }
-                                i++;
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -108,7 +112,6 @@ public class ModelServiceImpl implements IModelService {
         String inputFileName = "E:\\Company\\kingtrol\\007-云南丽江\\模型\\原始json" + File.separator + jsonName + ".json";
         try (BufferedReader reader = new BufferedReader(new FileReader(inputFileName))) {
             StringBuilder stringBuilder = new StringBuilder();
-            String line;
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line);
             }
@@ -121,14 +124,48 @@ public class ModelServiceImpl implements IModelService {
                 if (time2Type2ValMap == null) {
                     continue;
                 }
+                // 计算 排水能力
+                String capacityVal = tmpObject.getString("capacity");
+                if (!StringUtils.isEmpty(capacityVal)) {
+                    double maxFlowVal = 0D;
+                    for (String time : time2Type2ValMap.keySet()) {
+                        String flowVal = time2Type2ValMap.getOrDefault(time, new HashMap<>()).get("flow");
+                        if (StrUtils.getDouble(flowVal, 0D) > maxFlowVal) {
+                            maxFlowVal = StrUtils.getDouble(flowVal, 0D);
+                        }
+                    }
+                    tmpObject.put("psnl", DigitalUtils.nPoint(maxFlowVal / StrUtils.getDouble(capacityVal, 0D), 2));
+                } else {
+                    tmpObject.put("psnl", "");
+                }
+                // 计算 淤积风险
+                int yjfxCount = 0;
+                for (String time : time2Type2ValMap.keySet()) {
+                    String velVal = time2Type2ValMap.getOrDefault(time, new HashMap<>()).get("vel");
+                    if (StrUtils.getDouble(velVal, 0D) < 0.6) {
+                        yjfxCount++;
+                    }
+                }
+                if (yjfxCount == time2Type2ValMap.size()) {
+                    tmpObject.put("yjfx", 1);
+                } else if (yjfxCount > time2Type2ValMap.size() / 2) {
+                    tmpObject.put("yjfx", 2);
+                } else if (yjfxCount > 0 && yjfxCount <= time2Type2ValMap.size() / 2) {
+                    tmpObject.put("yjfx", 3);
+                } else if (yjfxCount == 0) {
+                    tmpObject.put("yjfx", 4);
+                }
                 for (Map.Entry<String, Map<String, String>> entry1 : time2Type2ValMap.entrySet()) {
-                    tmpObject.put(entry1.getKey(), entry1.getValue());
+                    String time = entry1.getKey();
+                    for (Map.Entry<String, String> entry2 : entry1.getValue().entrySet()) {
+                        tmpObject.put(entry2.getKey() + " " + time, entry2.getValue());
+                    }
                 }
             }
             // 输出内容到文件
             FileWriter fileWriter = new FileWriter(outputFileName);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            String outStr = JSONObject.toJSONString(jsonObject);
+            String outStr = JSON.toJSONString(jsonObject, JSONWriter.Feature.LargeObject);
             bufferedWriter.write(outStr);
             bufferedWriter.close();
             fileWriter.close();

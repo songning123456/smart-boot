@@ -62,6 +62,6 @@ mybatis-plus:
 biz:
   # 是否开启定时任务
   scheduled:
-    enable: true
+    enable: false
     # 每个小时10分钟执行
     hourCron: 0 10 * * * *
