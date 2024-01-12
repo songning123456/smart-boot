@@ -65,6 +65,7 @@ public class SqlController {
                     if (queryMapList.isEmpty()) {
                         break;
                     }
+                    log.info("同步{}数据开始!", time);
                     List<Integer> idList = queryMapList.stream().map(item -> Integer.parseInt(StrUtils.getString(item.get("id")))).collect(Collectors.toList());
                     DataSourceTemplate.execute("pg-db", () -> {
                         transactionTemplate.execute(transactionStatus -> {
