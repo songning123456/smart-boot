@@ -1,4 +1,4 @@
-package com.sonin.modules.sql.controller;
+package com.sonin.modules.demo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sonin.aop.annotation.CustomExceptionAnno;
