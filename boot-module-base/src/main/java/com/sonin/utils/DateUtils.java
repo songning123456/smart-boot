@@ -416,20 +416,6 @@ public class DateUtils {
 
     /**
      * <pre>
-     * 某个月的天数
-     * </pre>
-     *
-     * @param year
-     * @param month
-     * @author sonin
-     * @Description: TODO(这里描述这个方法的需求变更情况)
-     */
-    public static int lengthOfSomeMonth(int year, int month) {
-        return YearMonth.of(year, month).lengthOfMonth();
-    }
-
-    /**
-     * <pre>
      * 获取环比时间
      * </pre>
      *
@@ -445,6 +431,20 @@ public class DateUtils {
             hbEndTime = DateUtils.date2Str(DateUtils.prevDay(DateUtils.strToDate(hbEndTime, BaseConstant.dateFormat)), BaseConstant.dateFormat);
         }
         return new String[]{hbStartTime, hbEndTime};
+    }
+
+    /**
+     * <pre>
+     * 某个月的天数
+     * </pre>
+     *
+     * @param year
+     * @param month
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static int lengthOfSomeMonth(int year, int month) {
+        return YearMonth.of(year, month).lengthOfMonth();
     }
 
 }
