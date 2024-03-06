@@ -8,18 +8,19 @@ import java.math.MathContext;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * <pre>
- * 字符串工具类
+ * 工具类
  * </pre>
  *
  * @author sonin
  * @version 1.0 2022/4/25 13:25
  */
-public class StrUtils {
+public class ConvertUtils {
 
     public static boolean isEmpty(Object object) {
         if (object == null) {
@@ -32,7 +33,7 @@ public class StrUtils {
     }
 
     public static boolean isNotEmpty(Object object) {
-        return object != null && !object.equals("") && !object.equals("null");
+        return object != null && !"".equals(object) && !"null".equals(object);
     }
 
     public static String decode(String strIn, String sourceCode, String targetCode) {
@@ -52,7 +53,7 @@ public class StrUtils {
 
     private static String code2code(String strIn, String sourceCode, String targetCode) {
         String strOut;
-        if (strIn == null || (strIn.trim()).equals("")) {
+        if (strIn == null || "".equals(strIn.trim())) {
             return strIn;
         }
         try {
@@ -69,7 +70,7 @@ public class StrUtils {
     }
 
     public static int getInt(String s, int defaultVal) {
-        if (s == null || s.equals("")) {
+        if (s == null || "".equals(s)) {
             return (defaultVal);
         }
         try {
@@ -80,7 +81,7 @@ public class StrUtils {
     }
 
     public static int getInt(String s) {
-        if (s == null || s.equals("")) {
+        if (s == null || "".equals(s)) {
             return 0;
         }
         try {
@@ -91,7 +92,7 @@ public class StrUtils {
     }
 
     public static int getInt(String s, Integer df) {
-        if (s == null || s.equals("")) {
+        if (s == null || "".equals(s)) {
             return df;
         }
         try {
@@ -124,7 +125,7 @@ public class StrUtils {
     }
 
     public static double getDouble(String s, double defaultVal) {
-        if (s == null || s.equals("")) {
+        if (s == null || "".equals(s)) {
             return (defaultVal);
         }
         try {
@@ -195,7 +196,7 @@ public class StrUtils {
             return "";
         }
         String result = object.toString().trim();
-        return (result.equals("null") ? "" : result);
+        return ("null".equals(result) ? "" : result);
     }
 
     public static String getString(int i) {
@@ -254,7 +255,7 @@ public class StrUtils {
      * @return
      */
     public static boolean isIn(String substring, String[] source) {
-        if (source == null || source.length == 0) {
+        if (source == null) {
             return false;
         }
         for (String aSource : source) {
@@ -353,6 +354,39 @@ public class StrUtils {
 
     public static String UUID(String str) {
         return UUID.nameUUIDFromBytes(str.getBytes()).toString().replaceAll("-", "");
+    }
+
+    /**
+     * 计算保留n位小数
+     *
+     * @return
+     */
+    public static String nPoint(Object src, int n) {
+        if (src == null) {
+            return String.format("%." + n + "f", 0D);
+        } else if (src instanceof Double) {
+            return String.format("%." + n + "f", src);
+        } else if (src instanceof String) {
+            if (isNumeric(src.toString())) {
+                return String.format("%." + n + "f", Double.parseDouble("" + src));
+            } else {
+                return String.format("%." + n + "f", 0D);
+            }
+        }
+        return "" + src;
+    }
+
+    /**
+     * <pre>
+     * 生成int类型的随机数 [min, max)
+     * </pre>
+     * @param min
+     * @param max
+     * @author sonin
+     * @Description: TODO(这里描述这个方法的需求变更情况)
+     */
+    public static int intRandom(int min, int max) {
+        return ThreadLocalRandom.current().nextInt(min, max);
     }
 
 }
