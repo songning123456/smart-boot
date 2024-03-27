@@ -7,8 +7,7 @@ import com.sonin.core.entity.CaseWhen;
 import com.sonin.core.mpp.DataSourceTemplate;
 import com.sonin.modules.base.service.IBaseService;
 import com.sonin.utils.DateUtils;
-import com.sonin.utils.DigitalUtils;
-import com.sonin.utils.StrUtils;
+import com.sonin.utils.ConvertUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -98,7 +97,7 @@ public class BootApplicationTest {
                 if (i == 0) {
                     for (int colIndex = startCol; colIndex < csvRecord.size(); colIndex++) {
                         String configCode = csvRecord.get(colIndex);
-                        String id = StrUtils.UUID(configType + configCode);
+                        String id = ConvertUtils.UUID(configType + configCode);
                         index2IdMap.put(colIndex, id);
                         Map<String, Object> entityMap0 = new HashMap<String, Object>() {{
                             put("id", id);
@@ -108,7 +107,7 @@ public class BootApplicationTest {
                         baseService.insert("model_config", entityMap0, com.sonin.modules.base.constant.BaseConstant.INSERT_IGNORE);
                     }
                 } else {
-                    String time = StrUtils.getString(csvRecord.get(0));
+                    String time = ConvertUtils.getString(csvRecord.get(0));
                     // todo 下一行待删除
                     time = "2023-12-15 00:00:00";
                     int ts = DateUtils.dateStr2Sec(time, BaseConstant.dateFormat).intValue();
@@ -116,7 +115,7 @@ public class BootApplicationTest {
                     for (int colIndex = startCol; colIndex < csvRecord.size(); colIndex++) {
                         String cellValue = csvRecord.get(colIndex);
                         Map<String, Object> entityMap = new HashMap<>();
-                        String id = StrUtils.UUID(index2IdMap.get(colIndex) + ts);
+                        String id = ConvertUtils.UUID(index2IdMap.get(colIndex) + ts);
                         entityMap.put("id", id);
                         entityMap.put("ts", ts);
                         entityMap.put("config_id", index2IdMap.get(colIndex));
@@ -163,7 +162,7 @@ public class BootApplicationTest {
                 long finalTs = ts;
                 historyDataList.add(new HashMap<String, Object>() {{
                     put("nm", nm);
-                    put("v", DigitalUtils.intRandom(0, 100));
+                    put("v", ConvertUtils.intRandom(0, 100));
                     put("ts", finalTs);
                 }});
             }
@@ -174,8 +173,8 @@ public class BootApplicationTest {
                 countDataList.add(new HashMap<String, Object>() {{
                     put("id", finalIndex);
                     put("nm", nm);
-                    put("v", DigitalUtils.intRandom(0, 100));
-                    put("ts", StrUtils.getString(hourTs));
+                    put("v", ConvertUtils.intRandom(0, 100));
+                    put("ts", ConvertUtils.getString(hourTs));
                 }});
                 index++;
             }
@@ -236,24 +235,24 @@ public class BootApplicationTest {
         List<String> timeList = DateUtils.intervalByHour(startTime, endTime, BaseConstant.dateFormat.substring(0, 14));
         // 查询depart_id => device_id 转换关系
         List<Map<String, Object>> deviceMapList = baseService.queryForList("select depart_id, device_id from sys_factory_device", new QueryWrapper<>());
-        Map<String, String> depart2DeviceMap = deviceMapList.stream().collect(Collectors.toMap(item -> StrUtils.getString(item.get("depart_id")), item -> StrUtils.getString(item.get("device_id")), (v1, v2) -> v2));
+        Map<String, String> depart2DeviceMap = deviceMapList.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("depart_id")), item -> ConvertUtils.getString(item.get("device_id")), (v1, v2) -> v2));
         JdbcTemplate pgDB = (JdbcTemplate) SpringContext.getBean("pg-db");
         for (String time : timeList) {
             String tableSuffix = time.substring(0, 10).replaceAll("-", "");
             String tmpStartTime = time + "00:00";
-            String tmpStartTs = StrUtils.getString(DateUtils.dateStr2Sec(tmpStartTime, BaseConstant.dateFormat));
+            String tmpStartTs = ConvertUtils.getString(DateUtils.dateStr2Sec(tmpStartTime, BaseConstant.dateFormat));
             String tmpEndTime = time + "59:59";
-            String tmpEndTs = StrUtils.getString(DateUtils.dateStr2Sec(tmpEndTime, BaseConstant.dateFormat));
+            String tmpEndTs = ConvertUtils.getString(DateUtils.dateStr2Sec(tmpEndTime, BaseConstant.dateFormat));
             Map<String, String[]> nm2InfoMap = new LinkedHashMap<>();
             Map<String, List<String>> nm2ValListMap = new LinkedHashMap<>();
             // 查询这一个小时的所有数据(按照时间升序)
             List<Map<String, Object>> queryMapList = pgDB.queryForList("select nm, v, ts, factoryname, type from xsinsert" + tableSuffix + " where ts >= ? and ts <= ? order by ts asc", tmpStartTs, tmpEndTs);
             for (Map<String, Object> item : queryMapList) {
-                String nm = StrUtils.getString(item.get("nm"));
-                String v = StrUtils.getString(item.get("v"));
-                String ts = StrUtils.getString(item.get("ts"));
-                String factoryName = StrUtils.getString(item.get("factoryname"));
-                String type = StrUtils.getString(item.get("type"));
+                String nm = ConvertUtils.getString(item.get("nm"));
+                String v = ConvertUtils.getString(item.get("v"));
+                String ts = ConvertUtils.getString(item.get("ts"));
+                String factoryName = ConvertUtils.getString(item.get("factoryname"));
+                String type = ConvertUtils.getString(item.get("type"));
                 nm2InfoMap.put(nm, new String[]{type, factoryName});
                 nm2ValListMap.putIfAbsent(nm, new ArrayList<>());
                 nm2ValListMap.get(nm).add(v);
@@ -273,15 +272,15 @@ public class BootApplicationTest {
                 Double val = null;
                 if ("3".equals(type) && valList.size() > 1) {
                     // 求差
-                    val = StrUtils.getDouble(valList.get(valList.size() - 1), 0D) - StrUtils.getDouble(valList.get(0), 0D);
+                    val = ConvertUtils.getDouble(valList.get(valList.size() - 1), 0D) - ConvertUtils.getDouble(valList.get(0), 0D);
                 } else if ("4".equals(type)) {
                     // 求平均
-                    val = valList.stream().mapToDouble(item -> StrUtils.getDouble(item, 0D)).average().getAsDouble();
+                    val = valList.stream().mapToDouble(item -> ConvertUtils.getDouble(item, 0D)).average().getAsDouble();
                 }
                 if (val != null) {
                     // 先查询此nm, ts是否有值，无值才补录
                     Map<String, Object> countQueryMap = pgDB.queryForMap("select count(*) as total from " + tableName + " where nm = ? and ts = ?", nm, tmpStartTs);
-                    double total = StrUtils.getDouble(countQueryMap.get("total"), 0D);
+                    double total = ConvertUtils.getDouble(countQueryMap.get("total"), 0D);
                     if (total == 0) {
                         try {
                             pgDB.update("insert into " + tableName + "(nm, v, ts, createtime, factoryname, devicename, type, gatewaycode) values(?, ?, ?, ?, ?, ?, ?, ?)", nm, val, tmpStartTs, Long.parseLong(tmpStartTs), factoryName, "custom", type, factoryName);
