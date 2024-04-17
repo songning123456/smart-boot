@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <groupId>com.sonin</groupId>
-    <artifactId>smart-boot</artifactId>
+    <artifactId>smart-boot-biz-hxw</artifactId>
     <version>1.0.0</version>
     <name>smart-boot</name>
     <description>smart-boot project for Spring Boot</description>
