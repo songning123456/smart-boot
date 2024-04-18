@@ -43,7 +43,7 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://47.99.177.15:3306/hxsens?characterEncoding=UTF-8&useUnicode=true&useSSL=false&connectTimeout=60000000&socketTimeout=1800000
+          url: jdbc:mysql://47.99.177.15:3306/hxsens?characterEncoding=UTF-8&useUnicode=true&useSSL=false&connectTimeout=60000000&socketTimeout=1800000&serverTimezone=Asia/Shanghai
           username: root
           password: hxsens9871234
           driver-class-name: com.mysql.cj.jdbc.Driver

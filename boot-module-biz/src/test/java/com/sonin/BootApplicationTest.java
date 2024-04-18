@@ -34,10 +34,10 @@ public class BootApplicationTest {
 
     @Test
     public void jobTest() {
-        String jobType = "day";
+        String jobType = "hour";
         if ("hour".equals(jobType)) {
-            // Date nowDate = DateUtils.prevHour(new Date());
-            Date nowDate = DateUtils.strToDate("2024-04-17 11:18:02", BaseConstant.dateFormat);
+            Date nowDate = DateUtils.prevHour(new Date());
+            // Date nowDate = DateUtils.strToDate("2024-04-17 11:18:02", BaseConstant.dateFormat);
             String nowDateStr = DateUtils.date2Str(nowDate, BaseConstant.dateFormat);
             String startTime = nowDateStr.substring(0, 14) + "00:00";
             String endTime = nowDateStr.substring(0, 14) + "59:59";
