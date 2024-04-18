@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -75,6 +72,11 @@ public class ScheduleServiceImpl implements IScheduleService {
     public void generateDataFunc(String startTime, String endTime) {
         long startTs = DateUtils.dateStr2Sec(startTime, BaseConstant.dateFormat).longValue();
         long endTs = DateUtils.dateStr2Sec(endTime, BaseConstant.dateFormat).longValue();
+        // 默认小时格式
+        String dateFormat = "hour";
+        if (endTs - startTs == 3600 * 24 - 1) {
+            dateFormat = "day";
+        }
         QueryWrapper<?> queryWrapper0 = new QueryWrapper<>();
         // 点位类型，如果设定diff，则求差值；否则就直接取最新一条数据。
         queryWrapper0.eq("sys_dict.dict_code", "point_type").eq("sys_dict_item.description", "diff");
@@ -102,6 +104,7 @@ public class ScheduleServiceImpl implements IScheduleService {
         List<Map<String, Object>> insertMapList = new ArrayList<>();
         for (Map<String, Object> item : queryMapList1) {
             insertMap = new HashMap<>(item);
+            // 求diff
             eqmNo = ConvertUtils.getString(item.get("eqm_no"));
             for (int i = 1; i <= 8; i++) {
                 dataTypeVar = "datatype" + i;
@@ -113,14 +116,18 @@ public class ScheduleServiceImpl implements IScheduleService {
                     insertMap.put(dataType, dataValueCur - dataValuePrev);
                 }
             }
+            // 修改时间
+            String createTime = DateUtils.date2Str((Date) item.get("create_time"), BaseConstant.dateFormat);
+            if ("hour".equals(dateFormat)) {
+                createTime = createTime.substring(0, 15) + "00:00";
+            } else {
+                createTime = createTime.substring(0, 11) + " 00:00:00";
+            }
+            insertMap.put("create_time", DateUtils.strToDate(createTime, BaseConstant.dateFormat));
+            insertMap.put("update_time", DateUtils.strToDate(createTime, BaseConstant.dateFormat));
             insertMapList.add(insertMap);
         }
         if (!insertMapList.isEmpty()) {
-            // 默认小时格式
-            String dateFormat = "hour";
-            if (endTs - startTs == 3600 * 24 - 1) {
-                dateFormat = "day";
-            }
             baseService.insertBatch("dcs_history_info_" + dateFormat, insertMapList, com.sonin.modules.base.constant.BaseConstant.REPLACE);
         }
     }
