@@ -94,7 +94,7 @@ public class ScheduleServiceImpl implements IScheduleService {
         }
         Map<String, Map<String, Object>> eqmNo2EntityMap1 = queryMapList1.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("eqm_no")), item -> item, (v1, v2) -> v1));
         // 2. diff：查询前一段时间最后一条数据
-        String sqlPrev = diffSqlFunc(viewName, DateUtils.sec2DateStr(DateUtils.strToDate(startTime, BaseConstant.dateFormat).getTime() / 1000 - 3600 * 24 * 32, BaseConstant.dateFormat), DateUtils.sec2DateStr(DateUtils.strToDate(startTime, BaseConstant.dateFormat).getTime() / 1000 - 1, BaseConstant.dateFormat));
+        String sqlPrev = diffSqlFunc(viewName, DateUtils.sec2DateStr(DateUtils.strToDate(startTime, BaseConstant.dateFormat).getTime() / 1000 - 3600L * 24 * (Integer.parseInt(viewDays) + 1), BaseConstant.dateFormat), DateUtils.sec2DateStr(DateUtils.strToDate(startTime, BaseConstant.dateFormat).getTime() / 1000 - 1, BaseConstant.dateFormat));
         QueryWrapper<?> queryWrapper2 = new QueryWrapper<>();
         queryWrapper2.in("t1.eqm_no", eqmNo2EntityMap1.keySet()).orderByDesc("t1.create_time");
         List<Map<String, Object>> queryMapList2 = baseService.queryForList(sqlPrev, queryWrapper2);
