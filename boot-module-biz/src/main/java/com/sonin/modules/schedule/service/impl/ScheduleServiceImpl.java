@@ -142,6 +142,8 @@ public class ScheduleServiceImpl implements IScheduleService {
             }
             insertMap.put("create_time", DateUtils.strToDate(createTime, BaseConstant.dateFormat));
             insertMap.put("update_time", DateUtils.strToDate(createTime, BaseConstant.dateFormat));
+            // 设置ID
+            insertMap.put("id", ConvertUtils.UUID(entry.getKey() + createTime));
             insertMapList.add(insertMap);
         }
         if (!insertMapList.isEmpty()) {
