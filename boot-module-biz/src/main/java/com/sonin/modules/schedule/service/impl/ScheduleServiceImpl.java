@@ -38,7 +38,7 @@ public class ScheduleServiceImpl implements IScheduleService {
 
     @Override
     public void generateViewFunc(String endTime) {
-        String schema = masterUrl.substring(masterUrl.lastIndexOf("/") + 1, masterUrl.indexOf("?"));
+        String schema = masterUrl.split("/")[3].split("\\?")[0];
         String tablePrefix = "dcs_history_info_";
         // 判断视图是否存在
         QueryWrapper<?> queryWrapper0 = new QueryWrapper<>();
@@ -75,51 +75,68 @@ public class ScheduleServiceImpl implements IScheduleService {
         // 默认小时格式
         String dateFormat = "hour";
         if (endTs - startTs == 3600 * 24 - 1) {
+            // 日格式
             dateFormat = "day";
         }
         QueryWrapper<?> queryWrapper0 = new QueryWrapper<>();
-        // 点位类型，如果设定diff，则求差值；否则就直接取最新一条数据。
+        // 点位类型，如果设定diff，则求差值；否则取平均值。
         queryWrapper0.eq("sys_dict.dict_code", "point_type").eq("sys_dict_item.description", "diff");
         List<Map<String, Object>> queryMapList0 = baseService.queryForList("select sys_dict_item.item_value from sys_dict inner join sys_dict_item on sys_dict.id = sys_dict_item.dict_id", queryWrapper0);
         List<String> diffPointList = queryMapList0.stream().map(item -> ConvertUtils.getString(item.get("item_value"))).collect(Collectors.toList());
-        // 查询当前时间最后一条数据
+        // 1. diff：查询当前时间最后一条数据
         String tableCur = "dcs_history_info_" + endTime.substring(0, 10).replaceAll("-", "");
-        String sqlCur = sqlFunc(tableCur);
+        String sqlCur = diffSqlFunc(tableCur, startTime, endTime);
         QueryWrapper<?> queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.ge("t1.create_time", startTime).le("t1.create_time", endTime);
+        queryWrapper1.orderByDesc("t1.create_time");
         List<Map<String, Object>> queryMapList1 = baseService.queryForList(sqlCur, queryWrapper1);
         if (queryMapList1.isEmpty()) {
             return;
         }
-        List<String> eqmNoList = queryMapList1.stream().map(item -> ConvertUtils.getString(item.get("eqm_no"))).collect(Collectors.toList());
-        // 查询前一段时间最后一条数据
-        String sqlPrev = sqlFunc(viewName);
+        Map<String, Map<String, Object>> eqmNo2EntityMap1 = queryMapList1.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("eqm_no")), item -> item, (v1, v2) -> v1));
+        // 2. diff：查询前一段时间最后一条数据
+        String sqlPrev = diffSqlFunc(viewName, DateUtils.sec2DateStr(DateUtils.strToDate(startTime, BaseConstant.dateFormat).getTime() / 1000 - 3600 * 24 * 32, BaseConstant.dateFormat), DateUtils.sec2DateStr(DateUtils.strToDate(startTime, BaseConstant.dateFormat).getTime() / 1000 - 1, BaseConstant.dateFormat));
         QueryWrapper<?> queryWrapper2 = new QueryWrapper<>();
-        queryWrapper2.lt("t1.create_time", startTime).in("t1.eqm_no", eqmNoList).orderByDesc("t1.create_time");
+        queryWrapper2.in("t1.eqm_no", eqmNo2EntityMap1.keySet()).orderByDesc("t1.create_time");
         List<Map<String, Object>> queryMapList2 = baseService.queryForList(sqlPrev, queryWrapper2);
         Map<String, Map<String, Object>> eqmNo2EntityMap2 = queryMapList2.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("eqm_no")), item -> item, (v1, v2) -> v1));
-        String eqmNo, dataTypeVar, dataType, dataValueVar;
-        double dataValueCur, dataValuePrev;
+        // 3. 求均值
+        QueryWrapper<?> queryWrapper3 = new QueryWrapper<>();
+        queryWrapper3.ge("create_time", startTime).le("create_time", endTime).groupBy("eqm_no");
+        List<Map<String, Object>> queryMapList3 = baseService.queryForList(avgSqlFunc(tableCur), queryWrapper3);
+        Map<String, Map<String, Object>> eqmNo2EntityMap3 = queryMapList3.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("eqm_no")), item -> item, (v1, v2) -> v1));
+        // 合并 diff 和 avg 结果
+        String dataTypeVar, dataValueVar;
         Map<String, Object> insertMap;
         List<Map<String, Object>> insertMapList = new ArrayList<>();
-        for (Map<String, Object> item : queryMapList1) {
-            insertMap = new HashMap<>(item);
-            // 求diff
-            eqmNo = ConvertUtils.getString(item.get("eqm_no"));
+        for (Map.Entry<String, Map<String, Object>> entry : eqmNo2EntityMap1.entrySet()) {
+            insertMap = new HashMap<>(entry.getValue());
             for (int i = 1; i <= 8; i++) {
                 dataTypeVar = "datatype" + i;
-                dataType = ConvertUtils.getString(item.get(dataTypeVar));
-                if (diffPointList.contains(dataType)) {
-                    dataValueVar = "datavalue" + i;
-                    dataValueCur = ConvertUtils.getDouble(item.get(dataValueVar), 0D);
-                    dataValuePrev = ConvertUtils.getDouble(eqmNo2EntityMap2.getOrDefault(eqmNo, new HashMap<>()).getOrDefault(dataValueVar, "0"), 0D);
-                    insertMap.put(dataType, dataValueCur - dataValuePrev);
+                dataValueVar = "datavalue" + i;
+                // 对所有数据值null处理
+                insertMap.put(dataValueVar, null);
+                // type=null，则忽略处理
+                if (entry.getValue().get(dataTypeVar) == null) {
+                    continue;
+                }
+                // 求差值
+                if (diffPointList.contains(ConvertUtils.getString(entry.getValue().get(dataTypeVar)))) {
+                    if (entry.getValue().get(dataValueVar) == null || eqmNo2EntityMap2.getOrDefault(entry.getKey(), new HashMap<>()).get(dataValueVar) == null) {
+                        continue;
+                    }
+                    insertMap.put(dataValueVar, ConvertUtils.getDouble(entry.getValue().get(dataValueVar), 0D) - ConvertUtils.getDouble(eqmNo2EntityMap2.getOrDefault(entry.getKey(), new HashMap<>()).get(dataValueVar), 0D));
+                } else {
+                    // 求均值
+                    if (eqmNo2EntityMap3.get(entry.getKey()).get(dataValueVar) == null) {
+                        continue;
+                    }
+                    insertMap.put(dataValueVar, eqmNo2EntityMap3.get(entry.getKey()).get(dataValueVar));
                 }
             }
             // 修改时间
-            String createTime = DateUtils.date2Str((Date) item.get("create_time"), BaseConstant.dateFormat);
+            String createTime = DateUtils.date2Str((Date) entry.getValue().get("create_time"), BaseConstant.dateFormat);
             if ("hour".equals(dateFormat)) {
-                createTime = createTime.substring(0, 15) + "00:00";
+                createTime = createTime.substring(0, 14) + "00:00";
             } else {
                 createTime = createTime.substring(0, 11) + " 00:00:00";
             }
@@ -132,8 +149,18 @@ public class ScheduleServiceImpl implements IScheduleService {
         }
     }
 
-    private String sqlFunc(String tableName) {
-        return "SELECT t1.* FROM " + tableName + " t1 INNER JOIN ( SELECT eqm_no, MAX(create_time) as max_date FROM " + tableName + " GROUP BY eqm_no ) t2 ON t1.eqm_no = t2.eqm_no AND t1.create_time = t2.max_date";
+    private String diffSqlFunc(String tableName, String startTime, String endTime) {
+        String t1 = "(select * from " + tableName + " where create_time >= '" + startTime + "' and create_time <= '" + endTime + "') as t1";
+        String t2 = "(SELECT eqm_no, MAX(create_time) as max_date FROM " + tableName + " where create_time >= '" + startTime + "' and create_time <= '" + endTime + "' GROUP BY eqm_no) as t2";
+        return "select t1.* from " + t1 + " inner join " + t2 + " ON t1.eqm_no = t2.eqm_no AND t1.create_time = t2.max_date";
+    }
+
+    private String avgSqlFunc(String tableName) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 1; i <= 8; i++) {
+            stringBuilder.append(",sum(datavalue").append(i).append(") / count(*) as datavalue").append(i);
+        }
+        return "select eqm_no" + stringBuilder + " from " + tableName;
     }
 
 }

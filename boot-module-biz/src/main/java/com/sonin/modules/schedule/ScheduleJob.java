@@ -23,6 +23,21 @@ public class ScheduleJob {
     @Autowired
     private IScheduleService scheduleService;
 
+    @Scheduled(cron = "${biz.scheduled.minuteCron}")
+    public void minuteJob() {
+        log.info("~~~ 开始执行{}定时任务 ~~~", "minute");
+        Date nowDate = new Date();
+        String nowDateStr = DateUtils.date2Str(nowDate, BaseConstant.dateFormat);
+        // 小时
+        String startTime0 = nowDateStr.substring(0, 14) + "00:00";
+        String endTime0 = nowDateStr.substring(0, 14) + "59:59";
+        scheduleService.generateDataFunc(startTime0, endTime0);
+        // 天
+        String startTime1 = nowDateStr.substring(0, 11) + "00:00:00";
+        String endTime1 = nowDateStr.substring(0, 11) + "23:59:59";
+        scheduleService.generateDataFunc(startTime1, endTime1);
+    }
+
     /**
      * 每个小时1min执行
      */
