@@ -425,10 +425,11 @@ public class DateUtils {
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
     public static String[] hbTime(String startTime, String endTime) {
-        String hbStartTime = DateUtils.date2Str(DateUtils.prevMonth(DateUtils.strToDate(startTime, BaseConstant.dateFormat)), BaseConstant.dateFormat);
-        String hbEndTime = DateUtils.date2Str(DateUtils.prevMonth(DateUtils.strToDate(endTime, BaseConstant.dateFormat)), BaseConstant.dateFormat);
+        String format = BaseConstant.dateFormat.substring(0, startTime.length());
+        String hbStartTime = DateUtils.date2Str(DateUtils.prevMonth(DateUtils.strToDate(startTime, format)), format);
+        String hbEndTime = DateUtils.date2Str(DateUtils.prevMonth(DateUtils.strToDate(endTime, format)), format);
         while (!hbStartTime.split("-")[1].equals(hbEndTime.split("-")[1])) {
-            hbEndTime = DateUtils.date2Str(DateUtils.prevDay(DateUtils.strToDate(hbEndTime, BaseConstant.dateFormat)), BaseConstant.dateFormat);
+            hbEndTime = DateUtils.date2Str(DateUtils.prevDay(DateUtils.strToDate(hbEndTime, format)), format);
         }
         return new String[]{hbStartTime, hbEndTime};
     }
