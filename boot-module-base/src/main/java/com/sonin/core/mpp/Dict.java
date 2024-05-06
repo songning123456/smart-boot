@@ -2,7 +2,7 @@ package com.sonin.core.mpp;
 
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.sonin.core.callback.IDictCallback;
-import com.sonin.core.constant.BaseConstant;
+import com.sonin.core.constant.BusinessConstant;
 import com.sonin.utils.DateUtils;
 import com.sonin.utils.ReflectUtils;
 
@@ -81,7 +81,7 @@ public class Dict implements IBase {
             targetMap.put(srcFieldName, srcFieldValue);
             // 默认解析Date格式
             if (srcFieldValue instanceof Date) {
-                targetFieldValue = DateUtils.date2Str((Date) srcFieldValue, BaseConstant.dateFormat);
+                targetFieldValue = DateUtils.date2Str((Date) srcFieldValue, BusinessConstant.dateFormat);
                 targetMap.put(srcFieldName, targetFieldValue);
             }
             targetFieldName = dictMap.get(srcFieldName);

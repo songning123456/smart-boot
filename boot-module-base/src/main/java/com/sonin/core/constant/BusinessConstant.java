@@ -8,7 +8,7 @@ package com.sonin.core.constant;
  * @author sonin
  * @version 1.0 2023/3/9 10:12
  */
-public interface BaseConstant {
+public interface BusinessConstant {
 
     String dateFormat = "yyyy-MM-dd HH:mm:ss";
 

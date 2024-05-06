@@ -2,7 +2,7 @@ package com.sonin.modules.demo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sonin.aop.annotation.CustomExceptionAnno;
-import com.sonin.core.constant.BaseConstant;
+import com.sonin.core.constant.BusinessConstant;
 import com.sonin.core.mpp.DataSourceTemplate;
 import com.sonin.core.vo.Result;
 import com.sonin.modules.base.service.IBaseService;
@@ -50,11 +50,11 @@ public class SqlController {
         if (StringUtils.isEmpty(startTime) || StringUtils.isEmpty(endTime)) {
             result.error500("请输入时间范围");
         } else {
-            List<String> timeList = DateUtils.intervalByMonth(startTime, endTime, BaseConstant.dateFormat.substring(0, 7));
+            List<String> timeList = DateUtils.intervalByMonth(startTime, endTime, BusinessConstant.dateFormat.substring(0, 7));
             for (String time : timeList) {
-                String startTs = ConvertUtils.getString(DateUtils.dateStr2Sec(time + "-01 00:00:00", BaseConstant.dateFormat));
+                String startTs = ConvertUtils.getString(DateUtils.dateStr2Sec(time + "-01 00:00:00", BusinessConstant.dateFormat));
                 int days = DateUtils.lengthOfSomeMonth(Integer.parseInt(time.split("-")[0]), Integer.parseInt(time.split("-")[1]));
-                String endTs = ConvertUtils.getString(DateUtils.dateStr2Sec(time + "-" + days + " 23:59:59", BaseConstant.dateFormat));
+                String endTs = ConvertUtils.getString(DateUtils.dateStr2Sec(time + "-" + days + " 23:59:59", BusinessConstant.dateFormat));
                 String targetTableName = "ten_minute_count" + time.replaceAll("-", "");
                 while (true) {
                     QueryWrapper<?> queryWrapper0 = new QueryWrapper<>();

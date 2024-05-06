@@ -1,6 +1,6 @@
 package com.sonin.utils;
 
-import com.sonin.core.constant.BaseConstant;
+import com.sonin.core.constant.BusinessConstant;
 
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
@@ -425,7 +425,7 @@ public class DateUtils {
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
     public static String[] hbTime(String startTime, String endTime) {
-        String format = BaseConstant.dateFormat.substring(0, startTime.length());
+        String format = BusinessConstant.dateFormat.substring(0, startTime.length());
         String hbStartTime = DateUtils.date2Str(DateUtils.prevMonth(DateUtils.strToDate(startTime, format)), format);
         String hbEndTime = DateUtils.date2Str(DateUtils.prevMonth(DateUtils.strToDate(endTime, format)), format);
         while (!hbStartTime.split("-")[1].equals(hbEndTime.split("-")[1])) {
