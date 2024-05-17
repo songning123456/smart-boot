@@ -448,4 +448,16 @@ public class DateUtils {
         return YearMonth.of(year, month).lengthOfMonth();
     }
 
+    /**
+     * 根据某个日期获取这个月的[开始时间,结束时间]范围
+     *
+     * @param date
+     * @return
+     */
+    public static String[] dateStrRange(Date date) {
+        String dateStr = date2Str(date, BusinessConstant.dateFormat);
+        int dayLength = lengthOfSomeMonth(Integer.parseInt(dateStr.substring(0, 4)), Integer.parseInt(dateStr.substring(5, 7)));
+        return new String[]{dateStr.substring(0, 8) + "01" + BusinessConstant.startTimeSuffix, dateStr.substring(0, 8) + dayLength + BusinessConstant.endTimeSuffix};
+    }
+
 }
