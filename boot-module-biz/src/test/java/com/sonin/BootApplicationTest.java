@@ -1,7 +1,7 @@
 package com.sonin;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.sonin.core.constant.BaseConstant;
+import com.sonin.core.constant.BusinessConstant;
 import com.sonin.core.context.SpringContext;
 import com.sonin.core.entity.CaseWhen;
 import com.sonin.core.mpp.DataSourceTemplate;
@@ -110,7 +110,7 @@ public class BootApplicationTest {
                     String time = ConvertUtils.getString(csvRecord.get(0));
                     // todo 下一行待删除
                     time = "2023-12-15 00:00:00";
-                    int ts = DateUtils.dateStr2Sec(time, BaseConstant.dateFormat).intValue();
+                    int ts = DateUtils.dateStr2Sec(time, BusinessConstant.dateFormat).intValue();
                     // 从第2列开始读取指标数据(0: Time; 1: Seconds)
                     for (int colIndex = startCol; colIndex < csvRecord.size(); colIndex++) {
                         String cellValue = csvRecord.get(colIndex);
@@ -152,8 +152,8 @@ public class BootApplicationTest {
         String startTime = yearMonthDayStr + " 00:00:00";
         String endTime = yearMonthDayStr + " 23:59:59";
         String countTable = "ffs_count";
-        long startTs = DateUtils.strToDate(startTime, BaseConstant.dateFormat).getTime() / 1000;
-        long endTs = DateUtils.strToDate(endTime, BaseConstant.dateFormat).getTime() / 1000;
+        long startTs = DateUtils.strToDate(startTime, BusinessConstant.dateFormat).getTime() / 1000;
+        long endTs = DateUtils.strToDate(endTime, BusinessConstant.dateFormat).getTime() / 1000;
         List<Map<String, Object>> historyDataList = new ArrayList<>();
         List<Map<String, Object>> countDataList = new ArrayList<>();
         int index = 0;
@@ -167,8 +167,8 @@ public class BootApplicationTest {
                 }});
             }
             for (long ts = startTs; ts <= endTs; ts += 3600) {
-                String hourStr = DateUtils.sec2DateStr(ts, BaseConstant.dateFormat.substring(0, 13)) + ":00:00";
-                Long hourTs = DateUtils.dateStr2Sec(hourStr, BaseConstant.dateFormat);
+                String hourStr = DateUtils.sec2DateStr(ts, BusinessConstant.dateFormat.substring(0, 13)) + ":00:00";
+                Long hourTs = DateUtils.dateStr2Sec(hourStr, BusinessConstant.dateFormat);
                 int finalIndex = index;
                 countDataList.add(new HashMap<String, Object>() {{
                     put("id", finalIndex);
@@ -232,7 +232,7 @@ public class BootApplicationTest {
     public void xsinsert2countTest() {
         String startTime = "2023-12-09 00:00:00";
         String endTime = "2023-12-14 23:59:59";
-        List<String> timeList = DateUtils.intervalByHour(startTime, endTime, BaseConstant.dateFormat.substring(0, 14));
+        List<String> timeList = DateUtils.intervalByHour(startTime, endTime, BusinessConstant.dateFormat.substring(0, 14));
         // 查询depart_id => device_id 转换关系
         List<Map<String, Object>> deviceMapList = baseService.queryForList("select depart_id, device_id from sys_factory_device", new QueryWrapper<>());
         Map<String, String> depart2DeviceMap = deviceMapList.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("depart_id")), item -> ConvertUtils.getString(item.get("device_id")), (v1, v2) -> v2));
@@ -240,9 +240,9 @@ public class BootApplicationTest {
         for (String time : timeList) {
             String tableSuffix = time.substring(0, 10).replaceAll("-", "");
             String tmpStartTime = time + "00:00";
-            String tmpStartTs = ConvertUtils.getString(DateUtils.dateStr2Sec(tmpStartTime, BaseConstant.dateFormat));
+            String tmpStartTs = ConvertUtils.getString(DateUtils.dateStr2Sec(tmpStartTime, BusinessConstant.dateFormat));
             String tmpEndTime = time + "59:59";
-            String tmpEndTs = ConvertUtils.getString(DateUtils.dateStr2Sec(tmpEndTime, BaseConstant.dateFormat));
+            String tmpEndTs = ConvertUtils.getString(DateUtils.dateStr2Sec(tmpEndTime, BusinessConstant.dateFormat));
             Map<String, String[]> nm2InfoMap = new LinkedHashMap<>();
             Map<String, List<String>> nm2ValListMap = new LinkedHashMap<>();
             // 查询这一个小时的所有数据(按照时间升序)
