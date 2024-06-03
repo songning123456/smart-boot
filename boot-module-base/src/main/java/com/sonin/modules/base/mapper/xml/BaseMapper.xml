@@ -22,7 +22,7 @@
          delete from ${tableName} ${ew.customSqlSegment}
     </delete>
 
-    <insert id="insert">
+    <insert id="insert" useGeneratedKeys="false">
         ${insertType} into ${tableName}
         <foreach collection="ew.keys" item="key" open="(" close=")" separator=",">
             ${key}
@@ -33,7 +33,7 @@
         </foreach>
     </insert>
 
-    <insert id="insertBatch">
+    <insert id="insertBatch" useGeneratedKeys="false">
         ${insertType} into ${tableName}
         <foreach collection="keys" item="key" open="(" close=")" separator=",">
             ${key}
