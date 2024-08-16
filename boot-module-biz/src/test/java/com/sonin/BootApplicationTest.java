@@ -1,5 +1,6 @@
 package com.sonin;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sonin.core.constant.BusinessConstant;
 import com.sonin.core.context.SpringContext;
@@ -24,6 +25,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -68,6 +72,43 @@ public class BootApplicationTest {
             }
         }
         System.out.println(stringBuilder.toString());
+    }
+
+    /**
+     * 读取文件内容并修改
+     */
+    @Test
+    public void readAndReplaceTest() {
+        File folder = new File("E:\\Project\\kingtrol\\sk-se-boot-dev-factory-base\\sk-module-biz\\src\\main\\java\\com\\skua\\modules\\equip\\entity");
+        if (folder.exists() && folder.isDirectory()) {
+            // 获取文件夹下的所有文件
+            File[] files = folder.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    // 只处理文件，不包括子文件夹
+                    if (file.isFile()) {
+                        try {
+                            Path filePath = Paths.get(file.getAbsolutePath());
+                            // 1. 读取文件内容
+                            List<String> lines = Files.readAllLines(filePath);
+                            for (int i = 0; i < lines.size(); i++) {
+                                String curLine = lines.get(i);
+                                if (curLine.contains("private")) {
+                                    String[] contentArray = curLine.replaceAll(";", "").split(" ");
+                                    String column = StrUtil.toUnderlineCase(contentArray[contentArray.length - 1]);
+                                    String updateLine = "@TableField(\"" + column + "\") " + curLine;
+                                    lines.set(i, updateLine);
+                                }
+                            }
+                            // 3. 将修改后的内容写回到文件
+                            Files.write(filePath, lines);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
