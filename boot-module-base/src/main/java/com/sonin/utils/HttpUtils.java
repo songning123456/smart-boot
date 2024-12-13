@@ -142,7 +142,7 @@ public class HttpUtils {
         return result;
     }
 
-    public static String doPost(String url, Map<String, String> headerMap, Map<String, Object> params) {
+    public static String doPost(String url, Map<String, String> headerMap, Map<String, Object> paramsMap) {
         String result = "";
         try {
             CloseableHttpClient client = null;
@@ -154,7 +154,7 @@ public class HttpUtils {
                 for (Map.Entry<String, String> item : headerMap.entrySet()) {
                     httpPost.addHeader(item.getKey(), item.getValue());
                 }
-                httpPost.setEntity(new StringEntity(objectMapper.writeValueAsString(params), ContentType.create("text/json", "UTF-8")));
+                httpPost.setEntity(new StringEntity(objectMapper.writeValueAsString(paramsMap), ContentType.create("text/json", "UTF-8")));
                 client = HttpClients.createDefault();
                 response = client.execute(httpPost);
                 HttpEntity entity = response.getEntity();

@@ -44,15 +44,15 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:13306/leakage_svc_changle?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&useSSL=false&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+          url: jdbc:mysql://127.0.0.1:23306/leakage_svc_changle?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&useSSL=false&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
           username: root
           password: root@Abc123456!
           driver-class-name: com.mysql.cj.jdbc.Driver
         ck-ds:
           driver-class-name: ru.yandex.clickhouse.ClickHouseDriver
-          url: jdbc:clickhouse://127.0.0.1:8123/leakage_olap_changle
+          url: jdbc:clickhouse://127.0.0.1:28123/leakage_olap_changle
           username: root
-          password: root
+          password: root@Abc123456!
 
 mybatis-plus:
   mapper-locations: classpath*:com/sonin/modules/**/xml/*Mapper.xml
