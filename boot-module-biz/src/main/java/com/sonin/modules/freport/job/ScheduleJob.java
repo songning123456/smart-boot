@@ -30,7 +30,7 @@ public class ScheduleJob {
     /**
      * 报表重复数据 钉钉推送
      */
-    @Scheduled(cron = "${biz.scheduled.task00}")
+    @Scheduled(cron = "${biz.scheduled.task60min}")
     public void reportDuplicateDingdingTask() {
         // 查询最近一个月的重复数据
         Date now = new Date();
