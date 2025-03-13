@@ -44,18 +44,22 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:23306/leakage_svc_changle?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&useSSL=false&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+          url: jdbc:mysql://189.200.0.176:13306/zhsw-hongcheng?characterEncoding=UTF-8&useUnicode=true&useSSL=false&rewriteBatchedStatements=true
           username: root
-          password: root@Abc123456!
-          driver-class-name: com.mysql.cj.jdbc.Driver
-        ck-ds:
-          driver-class-name: ru.yandex.clickhouse.ClickHouseDriver
-          url: jdbc:clickhouse://127.0.0.1:28123/leakage_olap_changle
-          username: root
-          password: root@Abc123456!
+          password: hcsy2020!
+          driver-class-name: com.mysql.jdbc.Driver
 
 mybatis-plus:
   mapper-locations: classpath*:com/sonin/modules/**/xml/*Mapper.xml
   # 是否打印控制台
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+biz:
+  # 是否开启定时任务
+  scheduled:
+    enable: true
+    # 每天的整点执行
+    task00: 0 0 0 * * ?
+    # 每隔xx分钟执行一次
+    task1min: 0 */1 * * * *
