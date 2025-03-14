@@ -365,6 +365,9 @@ public class ConvertUtils {
         if (src == null) {
             return String.format("%." + n + "f", 0D);
         } else if (src instanceof Double) {
+            if (Double.isNaN((Double) src) || Double.isInfinite((Double) src)) {
+                return null;
+            }
             return String.format("%." + n + "f", src);
         } else if (src instanceof String) {
             if (isNumeric(src.toString())) {
