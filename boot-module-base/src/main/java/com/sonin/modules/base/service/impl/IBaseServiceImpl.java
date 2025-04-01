@@ -58,9 +58,7 @@ public class IBaseServiceImpl implements IBaseService {
     @Override
     public Integer insert(String tableName, Map<String, Object> ew, String insertType) {
         // 设置主键ID
-        if (ew.containsKey(BaseConstant.ID) && ew.get(BaseConstant.ID) == null) {
-            ew.put(BaseConstant.ID, sequenceService.nextId());
-        }
+        idInsertFunc(ew);
         return baseMapper.insert(tableName, ew, insertType);
     }
 
@@ -74,7 +72,7 @@ public class IBaseServiceImpl implements IBaseService {
         Map<String, Object> ew = new HashMap<>();
         // entity => map
         try {
-            Class clazz = entity.getClass();
+            Class<?> clazz = entity.getClass();
             Field[] fields;
             while (!BaseConstant.OBJECT_CLASS_NAME.equals(clazz.getName())) {
                 fields = clazz.getDeclaredFields();
@@ -92,9 +90,7 @@ public class IBaseServiceImpl implements IBaseService {
             e.printStackTrace();
         }
         // 设置主键ID
-        if (ew.containsKey(BaseConstant.ID) && ew.get(BaseConstant.ID) == null) {
-            ew.put(BaseConstant.ID, sequenceService.nextId());
-        }
+        idInsertFunc(ew);
         return baseMapper.insert(tableName, ew, insertType);
     }
 
@@ -108,8 +104,10 @@ public class IBaseServiceImpl implements IBaseService {
         if (dataList == null || dataList.isEmpty()) {
             return 0;
         }
-        // 获取第一条数据的keys
-        List<String> keys = new ArrayList<>(dataList.get(0).keySet());
+        // 获取所有key
+        Set<String> keysSet = new HashSet<>();
+        dataList.forEach(map -> keysSet.addAll(map.keySet()));
+        List<String> keys = new ArrayList<>(keysSet);
         // 排序
         keys.sort(String::compareTo);
         List<Map> ewList = new ArrayList<>();
@@ -120,9 +118,7 @@ public class IBaseServiceImpl implements IBaseService {
                 ew.put(key, data.get(key));
             }
             // 设置主键ID
-            if (ew.containsKey(BaseConstant.ID) && ew.get(BaseConstant.ID) == null) {
-                ew.put(BaseConstant.ID, sequenceService.nextId());
-            }
+            idInsertFunc(ew);
             ewList.add(ew);
         }
         return baseMapper.insertBatch(tableName, keys, ewList, insertType);
@@ -163,15 +159,25 @@ public class IBaseServiceImpl implements IBaseService {
                     clazz = clazz.getSuperclass();
                 }
                 // 设置主键ID
-                if (ew.containsKey(BaseConstant.ID) && ew.get(BaseConstant.ID) == null) {
-                    ew.put(BaseConstant.ID, sequenceService.nextId());
-                }
+                idInsertFunc(ew);
                 ewList.add(ew);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return baseMapper.insertBatch(tableName, keys, ewList, insertType);
+    }
+
+    /**
+     * ID插入处理
+     *
+     * @param ew
+     * @return
+     */
+    private void idInsertFunc(Map<String, Object> ew) {
+        if (ew.containsKey(BaseConstant.ID) && (ew.get(BaseConstant.ID) == null || "".equals(ew.get(BaseConstant.ID)))) {
+            ew.put(BaseConstant.ID, sequenceService.nextId());
+        }
     }
 
 }
