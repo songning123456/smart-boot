@@ -44,15 +44,10 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:23306/leakage_svc_changle?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&useSSL=false&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+          url: jdbc:mysql://47.104.23.94:13306/sn_demo?characterEncoding=UTF-8&useUnicode=true&useSSL=false&connectTimeout=6000000&socketTimeout=6000000&rewriteBatchedStatements=true
           username: root
-          password: root@Abc123456!
+          password: Kingtroldata1111@
           driver-class-name: com.mysql.cj.jdbc.Driver
-        ck-ds:
-          driver-class-name: ru.yandex.clickhouse.ClickHouseDriver
-          url: jdbc:clickhouse://127.0.0.1:28123/leakage_olap_changle
-          username: root
-          password: root@Abc123456!
 
 mybatis-plus:
   mapper-locations: classpath*:com/sonin/modules/**/xml/*Mapper.xml

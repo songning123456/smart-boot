@@ -245,4 +245,32 @@ public class BootApplicationTest {
         System.out.println("end");
     }
 
+    /**
+     * <pre>
+     * mysql中insert、insert ignore、replace插入测试
+     * </pre>
+     *
+     * @param
+     * @return void
+     * @throws
+     * @Author sonin
+     * @Description: TODO
+     */
+    @Test
+    public void mppTest() {
+        Map<String, Object> entityMap0 = new HashMap<>();
+        entityMap0.put("id", "");
+        entityMap0.put("name", "sonin0");
+        Map<String, Object> entityMap1 = new HashMap<>();
+        entityMap1.put("id", "");
+        entityMap1.put("name", "sonin1");
+        Map<String, Object> entityMap2 = new HashMap<>();
+        entityMap2.put("id", "");
+        entityMap2.put("name", "sonin2");
+        // insert测试
+        baseService.insert("demo_001", entityMap0, BaseConstant.INSERT);
+        // insertBatch测试
+        baseService.insertBatch("demo_001", Arrays.asList(entityMap1, entityMap2), BaseConstant.INSERT);
+    }
+
 }
