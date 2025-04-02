@@ -10,18 +10,29 @@ package com.sonin.modules.base.constant;
  */
 public interface BaseConstant {
 
-    // mysql插入数据类型insert
+    /**
+     * mysql插入数据类型insert
+     */
     String INSERT = "insert";
 
-    // mysql插入数据类型insert ignore
+    /**
+     * mysql插入数据类型insert ignore
+     */
     String INSERT_IGNORE = "insert ignore";
 
-    // mysql插入数据类型replace
+    /**
+     * mysql插入数据类型replace
+     */
     String REPLACE = "replace";
 
-    // 主键ID字段
+    /**
+     * 主键ID字段
+     */
     String ID = "id";
 
+    /**
+     * Java原始对象类型
+     */
     String OBJECT_CLASS_NAME = "java.lang.Object";
 
 }

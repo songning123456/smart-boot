@@ -3,13 +3,14 @@ package com.sonin.modules.base.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.common.base.CaseFormat;
+import com.sonin.modules.base.component.UniqueIdService;
 import com.sonin.modules.base.constant.BaseConstant;
 import com.sonin.modules.base.mapper.BaseMapper;
 import com.sonin.modules.base.service.IBaseService;
-import com.sonin.modules.sequence.service.impl.SequenceService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -20,29 +21,31 @@ import java.util.*;
 @Service
 public class IBaseServiceImpl implements IBaseService {
 
-    @Autowired
+    @Resource
     private BaseMapper baseMapper;
-    @Autowired
-    private SequenceService sequenceService;
+    @Resource
+    private UniqueIdService uniqueIdService;
+    @Value("${custom.mpp.page-size:100}")
+    private Long pageSize;
 
     @Override
-    public Map<String, Object> queryForMap(String sqlSelect, Wrapper<?> queryWrapper) {
-        return baseMapper.queryForMap(sqlSelect, queryWrapper);
+    public Map<String, Object> queryForMap(String sqlSelect, Wrapper<?> wrapper) {
+        return baseMapper.queryForMap(sqlSelect, wrapper);
     }
 
     @Override
-    public IPage<Map<String, Object>> queryForPage(IPage<?> page, String sqlSelect, Wrapper<?> queryWrapper) {
-        return baseMapper.queryForPage(page, sqlSelect, queryWrapper);
+    public IPage<Map<String, Object>> queryForPage(IPage<?> page, String sqlSelect, Wrapper<?> wrapper) {
+        return baseMapper.queryForPage(page, sqlSelect, wrapper);
     }
 
     @Override
-    public List<Map<String, Object>> queryForList(String sqlSelect, Wrapper<?> queryWrapper) {
-        return baseMapper.queryForList(sqlSelect, queryWrapper);
+    public List<Map<String, Object>> queryForList(String sqlSelect, Wrapper<?> wrapper) {
+        return baseMapper.queryForList(sqlSelect, wrapper);
     }
 
     @Override
-    public Integer update(String tableName, Wrapper<?> updateWrapper) {
-        return baseMapper.update(tableName, updateWrapper);
+    public Integer update(String tableName, Wrapper<?> wrapper) {
+        return baseMapper.update(tableName, wrapper);
     }
 
     @Override
@@ -52,13 +55,15 @@ public class IBaseServiceImpl implements IBaseService {
 
     @Override
     public Integer insert(String tableName, Map<String, Object> ew) {
+        // 设置主键ID
+        IDFunc(ew);
         return insert(tableName, ew, BaseConstant.INSERT);
     }
 
     @Override
     public Integer insert(String tableName, Map<String, Object> ew, String insertType) {
         // 设置主键ID
-        idInsertFunc(ew);
+        IDFunc(ew);
         return baseMapper.insert(tableName, ew, insertType);
     }
 
@@ -90,7 +95,7 @@ public class IBaseServiceImpl implements IBaseService {
             e.printStackTrace();
         }
         // 设置主键ID
-        idInsertFunc(ew);
+        IDFunc(ew);
         return baseMapper.insert(tableName, ew, insertType);
     }
 
@@ -118,7 +123,7 @@ public class IBaseServiceImpl implements IBaseService {
                 ew.put(key, data.get(key));
             }
             // 设置主键ID
-            idInsertFunc(ew);
+            IDFunc(ew);
             ewList.add(ew);
         }
         return baseMapper.insertBatch(tableName, keys, ewList, insertType);
@@ -159,7 +164,7 @@ public class IBaseServiceImpl implements IBaseService {
                     clazz = clazz.getSuperclass();
                 }
                 // 设置主键ID
-                idInsertFunc(ew);
+                IDFunc(ew);
                 ewList.add(ew);
             }
         } catch (Exception e) {
@@ -174,9 +179,9 @@ public class IBaseServiceImpl implements IBaseService {
      * @param ew
      * @return
      */
-    private void idInsertFunc(Map<String, Object> ew) {
+    private void IDFunc(Map<String, Object> ew) {
         if (ew.containsKey(BaseConstant.ID) && (ew.get(BaseConstant.ID) == null || "".equals(ew.get(BaseConstant.ID)))) {
-            ew.put(BaseConstant.ID, sequenceService.nextId());
+            ew.put(BaseConstant.ID, uniqueIdService.nextId());
         }
     }
 

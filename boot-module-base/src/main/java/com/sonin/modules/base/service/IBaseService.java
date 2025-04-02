@@ -12,13 +12,13 @@ import java.util.Map;
  */
 public interface IBaseService {
 
-    Map<String, Object> queryForMap(String sqlSelect, Wrapper<?> queryWrapper);
+    Map<String, Object> queryForMap(String sqlSelect, Wrapper<?> wrapper);
 
-    IPage<Map<String, Object>> queryForPage(IPage<?> page, String sqlSelect, Wrapper<?> queryWrapper);
+    IPage<Map<String, Object>> queryForPage(IPage<?> page, String sqlSelect, Wrapper<?> wrapper);
 
-    List<Map<String, Object>> queryForList(String sqlSelect, Wrapper<?> queryWrapper);
+    List<Map<String, Object>> queryForList(String sqlSelect, Wrapper<?> wrapper);
 
-    Integer update(String tableName, Wrapper<?> updateWrapper);
+    Integer update(String tableName, Wrapper<?> wrapper);
 
     Integer delete(String tableName, Wrapper<?> wrapper);
 

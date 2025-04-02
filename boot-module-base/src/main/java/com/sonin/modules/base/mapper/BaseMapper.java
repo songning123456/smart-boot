@@ -14,15 +14,15 @@ import java.util.Map;
  */
 public interface BaseMapper {
 
-    Map<String, Object> queryForMap(@Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> queryWrapper);
+    Map<String, Object> queryForMap(@Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> ew);
 
-    IPage<Map<String, Object>> queryForPage(IPage<?> page, @Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> queryWrapper);
+    IPage<Map<String, Object>> queryForPage(IPage<?> page, @Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> ew);
 
-    List<Map<String, Object>> queryForList(@Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> queryWrapper);
+    List<Map<String, Object>> queryForList(@Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> ew);
 
-    int update(@Param("tableName") String tableName, @Param(Constants.WRAPPER) Wrapper<?> updateWrapper);
+    int update(@Param("tableName") String tableName, @Param(Constants.WRAPPER) Wrapper<?> ew);
 
-    int delete(@Param("tableName") String tableName, @Param(Constants.WRAPPER) Wrapper<?> wrapper);
+    int delete(@Param("tableName") String tableName, @Param(Constants.WRAPPER) Wrapper<?> ew);
 
     int insert(@Param("tableName") String tableName, @Param(Constants.WRAPPER) Map ew, @Param("insertType") String insertType);
 

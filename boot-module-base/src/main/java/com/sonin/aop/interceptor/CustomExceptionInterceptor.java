@@ -9,10 +9,12 @@ import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
+
 /**
  * <pre>
  * 自定义异常处理逻辑类
  * </pre>
+ *
  * @author sonin
  * @version V0.1, 2022年4月13日 下午4:34:22
  */
@@ -24,6 +26,7 @@ public class CustomExceptionInterceptor {
      * <pre>
      * 将所有注解@CustomExceptionAnno作为切入点
      * </pre>
+     *
      * @author Li Yuanyuan, 2022年4月13日 下午4:35:21
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
@@ -70,12 +73,12 @@ public class CustomExceptionInterceptor {
         String targetName = joinPoint.getTarget().getClass().getName();
         String methodName = joinPoint.getSignature().getName();
         Object[] arguments = joinPoint.getArgs();
-        Class targetClass = Class.forName(targetName);
+        Class<?> targetClass = Class.forName(targetName);
         Method[] methods = targetClass.getMethods();
         StringBuilder descStringBuilder = new StringBuilder();
         for (Method method : methods) {
             if (method.getName().equals(methodName)) {
-                Class[] clazz = method.getParameterTypes();
+                Class<?>[] clazz = method.getParameterTypes();
                 if (clazz.length == arguments.length) {
                     descStringBuilder.append(method.getAnnotation(CustomExceptionAnno.class).description());
                     break;
