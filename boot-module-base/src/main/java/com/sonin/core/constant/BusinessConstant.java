@@ -20,4 +20,6 @@ public interface BusinessConstant {
 
     String sumSuffix = "Sum";
 
+    String dictText = "_dictText";
+
 }
