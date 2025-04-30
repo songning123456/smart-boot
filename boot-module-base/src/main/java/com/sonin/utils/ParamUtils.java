@@ -4,6 +4,7 @@ import com.sonin.core.constant.BusinessConstant;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 请求参数工具类
@@ -13,6 +14,14 @@ import java.util.List;
  */
 public class ParamUtils {
 
+    /**
+     * 时间范围参数处理
+     *
+     * @param startTime
+     * @param endTime
+     * @param timeType
+     * @return
+     */
     public static List<String> timeRangeParamFunc(String startTime, String endTime, String timeType) {
         List<String> timeList = new ArrayList<>(), intervalTimeList;
         if ("day".equalsIgnoreCase(timeType)) {
@@ -37,6 +46,32 @@ public class ParamUtils {
             }
         }
         return timeList;
+    }
+
+    /**
+     * 统一保留小数位数
+     *
+     * @param paramMap
+     * @param nPoint
+     */
+    public static void retainDecimalFunc(Map<String, Object> paramMap, int nPoint) {
+        for (Map.Entry<String, Object> entry : paramMap.entrySet()) {
+            if (entry.getValue() instanceof List) {
+                ((List) entry.getValue()).forEach(item -> {
+                    if (item instanceof Map) {
+                        retainDecimalFunc((Map<String, Object>) item, nPoint);
+                    } else {
+                        if (ConvertUtils.isNumeric(ConvertUtils.getString(item))) {
+                            paramMap.put(entry.getKey(), ConvertUtils.nPoint(item, nPoint));
+                        }
+                    }
+                });
+            } else {
+                if (ConvertUtils.isNumeric(ConvertUtils.getString(entry.getValue()))) {
+                    paramMap.put(entry.getKey(), ConvertUtils.nPoint(entry.getValue(), nPoint));
+                }
+            }
+        }
     }
 
 }
