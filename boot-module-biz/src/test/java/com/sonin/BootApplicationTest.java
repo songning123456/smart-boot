@@ -268,9 +268,15 @@ public class BootApplicationTest {
         entityMap2.put("id", "");
         entityMap2.put("name", "sonin2");
         // insert测试
-        baseService.insert("demo_001", entityMap0, BaseConstant.INSERT);
+        // baseService.insert("demo_001", entityMap0, BaseConstant.INSERT);
         // insertBatch测试
-        baseService.insertBatch("demo_001", Arrays.asList(entityMap1, entityMap2), BaseConstant.INSERT);
+        // baseService.insertBatch("demo_001", Arrays.asList(entityMap1, entityMap2), BaseConstant.INSERT);
+        // queryForString测试
+        // 返回count(*)的结果集
+        String res = baseService.queryForString("select count(*) from demo_001", new QueryWrapper<>());
+        // 查询结果有多条记录报错，查询结果有且仅有一条记录则返货主键id
+        String res2 = baseService.queryForString("select * from demo_001", new QueryWrapper<>().last("limit 1"));
+        System.out.println("");
     }
 
 }

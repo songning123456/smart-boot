@@ -14,6 +14,8 @@ import java.util.Map;
  */
 public interface BaseMapper {
 
+    String queryForString(@Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> ew);
+
     Map<String, Object> queryForMap(@Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> ew);
 
     IPage<Map<String, Object>> queryForPage(IPage<?> page, @Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> ew);

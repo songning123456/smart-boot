@@ -7,7 +7,6 @@ import com.sonin.modules.base.component.UniqueIdService;
 import com.sonin.modules.base.constant.BaseConstant;
 import com.sonin.modules.base.mapper.BaseMapper;
 import com.sonin.modules.base.service.IBaseService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,8 +24,11 @@ public class IBaseServiceImpl implements IBaseService {
     private BaseMapper baseMapper;
     @Resource
     private UniqueIdService uniqueIdService;
-    @Value("${custom.mpp.page-size:100}")
-    private Long pageSize;
+
+    @Override
+    public String queryForString(String sqlSelect, Wrapper<?> wrapper) {
+        return baseMapper.queryForString(sqlSelect, wrapper);
+    }
 
     @Override
     public Map<String, Object> queryForMap(String sqlSelect, Wrapper<?> wrapper) {

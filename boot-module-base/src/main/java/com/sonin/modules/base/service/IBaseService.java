@@ -12,6 +12,8 @@ import java.util.Map;
  */
 public interface IBaseService {
 
+    String queryForString(String sqlSelect, Wrapper<?> wrapper);
+
     Map<String, Object> queryForMap(String sqlSelect, Wrapper<?> wrapper);
 
     IPage<Map<String, Object>> queryForPage(IPage<?> page, String sqlSelect, Wrapper<?> wrapper);
