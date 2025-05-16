@@ -14,7 +14,7 @@ set MODULE_RES_DIR=src\main\resources
 set MODULE_TARGET_DIR=target
 
 REM 工程模块名称
-set PROJECT_NAME=smart-boot-biz-empty
+set PROJECT_NAME=smart-boot-biz-ljps
 
 REM 修改maven命令路径
 set MVN_CMD=mvn

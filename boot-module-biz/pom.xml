@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>smart-boot</artifactId>
+        <artifactId>smart-boot-biz-ljps</artifactId>
         <groupId>com.sonin</groupId>
         <version>1.0.0</version>
     </parent>
@@ -41,7 +41,7 @@
     </dependencies>
 
     <build>
-        <finalName>smart-boot-biz-empty</finalName>
+        <finalName>smart-boot-biz-ljps</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
