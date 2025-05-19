@@ -10,16 +10,20 @@ package com.sonin.core.constant;
  */
 public interface BusinessConstant {
 
-    String dateFormat = "yyyy-MM-dd HH:mm:ss";
+    String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    String startTimeSuffix = " 00:00:00";
+    String START_TIME_SUFFIX = " 00:00:00";
 
-    String endTimeSuffix = " 23:59:59";
+    String END_TIME_SUFFIX = " 23:59:59";
 
-    String countSuffix = "Count";
+    String COUNT_SUFFIX = "_count";
 
-    String sumSuffix = "Sum";
+    String SUM_SUFFIX = "_sum";
 
-    String dictText = "_dictText";
+    String DICT_TEXT = "_dictText";
+
+    String TB_SUFFIX = "_tb";
+
+    String HB_SUFFIX = "_hb";
 
 }
