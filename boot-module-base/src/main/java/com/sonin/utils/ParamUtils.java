@@ -25,23 +25,23 @@ public class ParamUtils {
     public static List<String> timeRangeParamFunc(String startTime, String endTime, String timeType) {
         List<String> timeList = new ArrayList<>(), intervalTimeList;
         if ("day".equalsIgnoreCase(timeType)) {
-            intervalTimeList = DateUtils.intervalByDay(startTime, endTime, BusinessConstant.dateFormat.substring(0, 10));
+            intervalTimeList = DateUtils.intervalByDay(startTime, endTime, BusinessConstant.DATE_FORMAT.substring(0, 10));
             for (String intervalTime : intervalTimeList) {
-                timeList.add(intervalTime + BusinessConstant.startTimeSuffix + "~" + intervalTime + BusinessConstant.endTimeSuffix);
+                timeList.add(intervalTime + BusinessConstant.START_TIME_SUFFIX + "~" + intervalTime + BusinessConstant.END_TIME_SUFFIX);
             }
         } else if ("month".equalsIgnoreCase(timeType)) {
-            intervalTimeList = DateUtils.intervalByMonth(startTime, endTime, BusinessConstant.dateFormat.substring(0, 7));
+            intervalTimeList = DateUtils.intervalByMonth(startTime, endTime, BusinessConstant.DATE_FORMAT.substring(0, 7));
             for (String intervalTime : intervalTimeList) {
-                String tmpStartTime = intervalTime + "-01" + BusinessConstant.startTimeSuffix;
+                String tmpStartTime = intervalTime + "-01" + BusinessConstant.START_TIME_SUFFIX;
                 int days = DateUtils.lengthOfSomeMonth(Integer.parseInt(intervalTime.split("-")[0]), Integer.parseInt(intervalTime.split("-")[1]));
-                String tmpEndTime = intervalTime + "-" + days + BusinessConstant.endTimeSuffix;
+                String tmpEndTime = intervalTime + "-" + days + BusinessConstant.END_TIME_SUFFIX;
                 timeList.add(tmpStartTime + "~" + tmpEndTime);
             }
         } else if ("year".equalsIgnoreCase(timeType)) {
-            intervalTimeList = DateUtils.intervalByYear(startTime, endTime, BusinessConstant.dateFormat.substring(0, 4));
+            intervalTimeList = DateUtils.intervalByYear(startTime, endTime, BusinessConstant.DATE_FORMAT.substring(0, 4));
             for (String intervalTime : intervalTimeList) {
-                String tmpStartTime = intervalTime + "-01-01" + BusinessConstant.startTimeSuffix;
-                String tmpEndTime = intervalTime + "-12-31" + BusinessConstant.endTimeSuffix;
+                String tmpStartTime = intervalTime + "-01-01" + BusinessConstant.START_TIME_SUFFIX;
+                String tmpEndTime = intervalTime + "-12-31" + BusinessConstant.END_TIME_SUFFIX;
                 timeList.add(tmpStartTime + "~" + tmpEndTime);
             }
         }

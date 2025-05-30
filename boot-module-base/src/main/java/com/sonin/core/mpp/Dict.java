@@ -81,7 +81,7 @@ public class Dict implements IBase {
             targetMap.put(srcFieldName, srcFieldValue);
             // 默认解析Date格式
             if (srcFieldValue instanceof Date) {
-                targetFieldValue = DateUtils.date2Str((Date) srcFieldValue, BusinessConstant.dateFormat);
+                targetFieldValue = DateUtils.date2Str((Date) srcFieldValue, BusinessConstant.DATE_FORMAT);
                 targetMap.put(srcFieldName, targetFieldValue);
             }
             targetFieldName = dictMap.get(srcFieldName);

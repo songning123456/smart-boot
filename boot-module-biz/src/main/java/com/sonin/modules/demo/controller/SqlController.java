@@ -50,11 +50,11 @@ public class SqlController {
         if (StringUtils.isEmpty(startTime) || StringUtils.isEmpty(endTime)) {
             result.error500("请输入时间范围");
         } else {
-            List<String> timeList = DateUtils.intervalByMonth(startTime, endTime, BusinessConstant.dateFormat.substring(0, 7));
+            List<String> timeList = DateUtils.intervalByMonth(startTime, endTime, BusinessConstant.DATE_FORMAT.substring(0, 7));
             for (String time : timeList) {
-                String startTs = ConvertUtils.getString(DateUtils.dateStr2Sec(time + "-01 00:00:00", BusinessConstant.dateFormat));
+                String startTs = ConvertUtils.getString(DateUtils.dateStr2Sec(time + "-01 00:00:00", BusinessConstant.DATE_FORMAT));
                 int days = DateUtils.lengthOfSomeMonth(Integer.parseInt(time.split("-")[0]), Integer.parseInt(time.split("-")[1]));
-                String endTs = ConvertUtils.getString(DateUtils.dateStr2Sec(time + "-" + days + " 23:59:59", BusinessConstant.dateFormat));
+                String endTs = ConvertUtils.getString(DateUtils.dateStr2Sec(time + "-" + days + " 23:59:59", BusinessConstant.DATE_FORMAT));
                 String targetTableName = "ten_minute_count" + time.replaceAll("-", "");
                 while (true) {
                     QueryWrapper<?> queryWrapper0 = new QueryWrapper<>();

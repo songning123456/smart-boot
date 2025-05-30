@@ -425,7 +425,7 @@ public class DateUtils {
      * @Description: TODO(这里描述这个方法的需求变更情况)
      */
     public static String[] hbTime(String startTime, String endTime) {
-        String format = BusinessConstant.dateFormat.substring(0, startTime.length());
+        String format = BusinessConstant.DATE_FORMAT.substring(0, startTime.length());
         String hbStartTime = DateUtils.date2Str(DateUtils.prevMonth(DateUtils.strToDate(startTime, format)), format);
         String hbEndTime = DateUtils.date2Str(DateUtils.prevMonth(DateUtils.strToDate(endTime, format)), format);
         while (!hbStartTime.split("-")[1].equals(hbEndTime.split("-")[1])) {
@@ -455,9 +455,9 @@ public class DateUtils {
      * @return
      */
     public static String[] dateStrRange(Date date) {
-        String dateStr = date2Str(date, BusinessConstant.dateFormat);
+        String dateStr = date2Str(date, BusinessConstant.DATE_FORMAT);
         int dayLength = lengthOfSomeMonth(Integer.parseInt(dateStr.substring(0, 4)), Integer.parseInt(dateStr.substring(5, 7)));
-        return new String[]{dateStr.substring(0, 8) + "01" + BusinessConstant.startTimeSuffix, dateStr.substring(0, 8) + dayLength + BusinessConstant.endTimeSuffix};
+        return new String[]{dateStr.substring(0, 8) + "01" + BusinessConstant.START_TIME_SUFFIX, dateStr.substring(0, 8) + dayLength + BusinessConstant.END_TIME_SUFFIX};
     }
 
 }

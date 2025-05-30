@@ -147,7 +147,7 @@ public class BootApplicationTest {
                     String time = ConvertUtils.getString(csvRecord.get(0));
                     // todo 下一行待删除
                     time = "2023-12-15 00:00:00";
-                    int ts = DateUtils.dateStr2Sec(time, BusinessConstant.dateFormat).intValue();
+                    int ts = DateUtils.dateStr2Sec(time, BusinessConstant.DATE_FORMAT).intValue();
                     // 从第2列开始读取指标数据(0: Time; 1: Seconds)
                     for (int colIndex = startCol; colIndex < csvRecord.size(); colIndex++) {
                         String cellValue = csvRecord.get(colIndex);
