@@ -55,3 +55,8 @@ mybatis-plus:
   configuration:
     call-setters-on-nulls: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+biz:
+  scheduled:
+    # 是否开启定时任务配置
+    enable: false

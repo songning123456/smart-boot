@@ -77,6 +77,12 @@
             <artifactId>clickhouse-jdbc</artifactId>
             <version>0.1.53</version>
         </dependency>
+        <!-- SQL Server驱动 -->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>8.4.1.jre8</version>
+        </dependency>
     </dependencies>
 
 </project>
