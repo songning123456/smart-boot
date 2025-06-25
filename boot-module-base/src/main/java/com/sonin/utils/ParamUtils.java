@@ -1,10 +1,11 @@
 package com.sonin.utils;
 
 import com.sonin.core.constant.BusinessConstant;
+import com.sonin.core.context.SpringContext;
+import com.sonin.core.entity.MapDFS;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 请求参数工具类
@@ -46,6 +47,30 @@ public class ParamUtils {
             }
         }
         return timeList;
+    }
+
+    /**
+     * 机构 根据某一层级获取所有子级(包括本级)
+     *
+     * @param parentId
+     * @return
+     */
+    public static Set<String> getChildDepartIdFunc(String parentId) {
+        JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
+        MapDFS mapDFS = new MapDFS();
+        List<Map<String, Object>> tree = mapDFS.buildTree(masterDB.queryForList("select id, parent_id as parentId from sys_depart"));
+        LinkedList<LinkedList<Map<String, Object>>> routeList = mapDFS.getRouteList(tree);
+        Set<String> childIdSet = new HashSet<>();
+        for (LinkedList<Map<String, Object>> route : routeList) {
+            for (int i = 0; i < route.size(); i++) {
+                if (parentId.equals(route.get(i).get("id"))) {
+                    for (int j = i; j < route.size(); j++) {
+                        childIdSet.add(ConvertUtils.getString(route.get(j).get("id")));
+                    }
+                }
+            }
+        }
+        return childIdSet;
     }
 
     /**
