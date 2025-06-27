@@ -12,4 +12,6 @@ public interface IThirdDataService {
 
     void handleCountDataFunc(Map<String, Object> paramMap) throws Exception;
 
+    void handleCommonCountDataFunc(Map<String, Object> paramMap) throws Exception;
+
 }

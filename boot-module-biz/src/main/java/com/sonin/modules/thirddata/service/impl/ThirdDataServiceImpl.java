@@ -136,9 +136,9 @@ public class ThirdDataServiceImpl implements IThirdDataService {
         // 业务
         if (beanListConfig != null && beanListConfig.getValue() != null && !beanListConfig.getValue().isEmpty()) {
             List<String> hourList = DateUtils.intervalByHour(startTime, endTime, BusinessConstant.dateFormat.replaceAll(":mm:ss", ""));
-            for (int i = 0; i < hourList.size() - 1; i++) {
+            for (int i = 0; i < hourList.size(); i++) {
                 startTime = hourList.get(i) + ":00:00";
-                endTime = hourList.get(i + 1) + ":00:00";
+                endTime = hourList.get(i) + ":59:59";
                 Long startTs = DateUtils.dateStr2Sec(startTime, BusinessConstant.dateFormat);
                 Long endTs = DateUtils.dateStr2Sec(endTime, BusinessConstant.dateFormat);
                 String yearMonthDay = startTime.split(" ")[0].replaceAll("-", "");
@@ -146,7 +146,7 @@ public class ThirdDataServiceImpl implements IThirdDataService {
                 for (ThirdCode thirdCode : beanListConfig.getValue()) {
                     String nm = thirdCode.getTargetCode();
                     String tableName = nm.split("_")[0].toLowerCase() + "_count";
-                    List<Map<String, Object>> queryMapList = BaseFactory.JOIN().select("ts", "v").from(clazz).where().ge(true, "ts", String.valueOf(startTs)).lt(true, "ts", String.valueOf(endTs)).eq(true, "nm", nm).orderBy(true, true, "ts").queryForList("pg-db");
+                    List<Map<String, Object>> queryMapList = BaseFactory.JOIN().select("ts", "v").from(clazz).where().ge(true, "ts", String.valueOf(startTs)).le(true, "ts", String.valueOf(endTs)).eq(true, "nm", nm).orderBy(true, true, "ts").queryForList("pg-db");
                     Double v = null;
                     if ("avg".equals(thirdCode.getType()) && !queryMapList.isEmpty()) {
                         v = queryMapList.stream().mapToDouble(item -> Double.parseDouble(ConvertUtils.getString(item.get("v")))).average().getAsDouble();
@@ -177,6 +177,56 @@ public class ThirdDataServiceImpl implements IThirdDataService {
                         });
                     }
                 }
+            }
+        }
+    }
+
+    @Override
+    public void handleCommonCountDataFunc(Map<String, Object> paramMap) throws Exception {
+        // 请求参数
+        String startTime = ConvertUtils.getString(paramMap.get("startTime"));
+        String endTime = ConvertUtils.getString(paramMap.get("endTime"));
+        String nm = ConvertUtils.getString(paramMap.get("nm"));
+        String type = ConvertUtils.getString(paramMap.get("type"));
+        List<String> hourList = DateUtils.intervalByHour(startTime, endTime, BusinessConstant.dateFormat.replaceAll(":mm:ss", ""));
+        // 遍历时间
+        for (int i = 0; i < hourList.size() - 1; i++) {
+            startTime = hourList.get(i) + ":00:00";
+            endTime = hourList.get(i + 1) + ":00:00";
+            Long startTs = DateUtils.dateStr2Sec(startTime, BusinessConstant.dateFormat);
+            Long endTs = DateUtils.dateStr2Sec(endTime, BusinessConstant.dateFormat);
+            String yearMonthDay = startTime.split(" ")[0].replaceAll("-", "");
+            Class clazz = JavassistFactory.create().similarClassName("Xsinsert").className("Xsinsert" + yearMonthDay).buildClass();
+            String tableName = nm.split("_")[0].toLowerCase() + "_count";
+            List<Map<String, Object>> queryMapList = BaseFactory.JOIN().select("ts", "v").from(clazz).where().ge(true, "ts", String.valueOf(startTs)).lt(true, "ts", String.valueOf(endTs)).eq(true, "nm", nm).orderBy(true, true, "ts").queryForList("pg-db");
+            Double v = null;
+            if ("avg".equals(type) && !queryMapList.isEmpty()) {
+                v = queryMapList.stream().mapToDouble(item -> Double.parseDouble(ConvertUtils.getString(item.get("v")))).average().getAsDouble();
+            } else if ("diff".equals(type) && queryMapList.size() >= 2) {
+                v = ConvertUtils.getDouble(ConvertUtils.getString(queryMapList.get(queryMapList.size() - 1).get("v")), 0D) - ConvertUtils.getDouble(ConvertUtils.getString(queryMapList.get(0).get("v")), 0D);
+            }
+            if (v != null) {
+                UpdateWrapper<?> updateWrapper = new UpdateWrapper<>().set("v", v).eq("ts", String.valueOf(startTs)).eq("nm", nm);
+                Double finalV = v;
+                DataSourceTemplate.execute("pg-db", () -> {
+                    transactionTemplate.execute(transactionStatus -> {
+                        int successTotal = baseService.update(tableName, updateWrapper);
+                        if (successTotal == 0) {
+                            baseService.insert(tableName, new HashMap<String, Object>() {{
+                                put("nm", nm);
+                                put("v", finalV);
+                                put("ts", startTs);
+                                put("createtime", startTs);
+                                put("factoryname", nm.split("_")[0]);
+                                put("devicename", "third");
+                                put("type", "avg");
+                                put("gatewaycode", nm.split("_")[0]);
+                            }});
+                        }
+                        return 1;
+                    });
+                    return 1;
+                });
             }
         }
     }
