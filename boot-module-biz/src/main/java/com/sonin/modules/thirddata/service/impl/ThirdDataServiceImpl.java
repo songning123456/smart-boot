@@ -167,7 +167,7 @@ public class ThirdDataServiceImpl implements IThirdDataService {
                                         put("createtime", startTs);
                                         put("factoryname", nm.split("_")[0]);
                                         put("devicename", "third");
-                                        put("type", "avg");
+                                        put("type", thirdCode.getType());
                                         put("gatewaycode", nm.split("_")[0]);
                                     }});
                                 }
