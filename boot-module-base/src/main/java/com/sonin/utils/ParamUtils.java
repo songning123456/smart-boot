@@ -86,17 +86,48 @@ public class ParamUtils {
                     if (item instanceof Map) {
                         retainDecimalFunc((Map<String, Object>) item, nPoint);
                     } else {
-                        if (ConvertUtils.isNumeric(ConvertUtils.getString(item))) {
+                        if (ConvertUtils.isNumeric(ConvertUtils.getString(item)) && ConvertUtils.getString(entry.getValue()).length() < 10) {
                             paramMap.put(entry.getKey(), ConvertUtils.nPoint(item, nPoint));
                         }
                     }
                 });
             } else {
-                if (ConvertUtils.isNumeric(ConvertUtils.getString(entry.getValue()))) {
+                if (ConvertUtils.isNumeric(ConvertUtils.getString(entry.getValue())) && ConvertUtils.getString(entry.getValue()).length() < 10) {
                     paramMap.put(entry.getKey(), ConvertUtils.nPoint(entry.getValue(), nPoint));
                 }
             }
         }
+    }
+
+    /**
+     * 根据id查找子树
+     *
+     * @param tree 树形结构列表
+     * @param id   目标节点的id
+     * @return 匹配节点及其子树，如果未找到则返回 null
+     */
+    public static List<Map<String, Object>> findSubtreeById(List<Map<String, Object>> tree, String id) {
+        if (tree == null || tree.isEmpty()) {
+            return null;
+        }
+        for (Map<String, Object> node : tree) {
+            // 先判断当前节点是否匹配
+            if (id.equals(node.get("id"))) {
+                // 找到匹配节点，返回以该节点为根的子树（包含自身）
+                List<Map<String, Object>> result = new ArrayList<>();
+                // 复制节点，避免修改原数据
+                result.add(new HashMap<>(node));
+                return result;
+            }
+            // 递归查找子节点
+            List<Map<String, Object>> children = (List<Map<String, Object>>) node.get("children");
+            List<Map<String, Object>> subtree = findSubtreeById(children, id);
+            if (subtree != null) {
+                return subtree;
+            }
+        }
+        // 未找到匹配节点
+        return null;
     }
 
 }
