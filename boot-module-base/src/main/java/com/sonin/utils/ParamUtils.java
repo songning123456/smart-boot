@@ -74,6 +74,39 @@ public class ParamUtils {
     }
 
     /**
+     * 通用 根据某一层级获取所有子级(包括本级)
+     *
+     * @param parentId
+     * @return
+     */
+    public static Set<String> getChildrenIdFunc(String parentId, String tableName, Map<String, String> columnMap) {
+        JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
+        List<String> columnList = new ArrayList<>();
+        if (columnMap != null && !columnMap.isEmpty()) {
+            for (Map.Entry<String, String> entry : columnMap.entrySet()) {
+                columnList.add(entry.getKey() + " as " + entry.getValue());
+            }
+        } else {
+            columnList.add("id");
+            columnList.add("parent_id as parentId");
+        }
+        MapDFS mapDFS = new MapDFS();
+        List<Map<String, Object>> tree = mapDFS.buildTree(masterDB.queryForList("select " + String.join(",", columnList) + " from " + tableName));
+        LinkedList<LinkedList<Map<String, Object>>> routeList = mapDFS.getRouteList(tree);
+        Set<String> childrenIdSet = new HashSet<>();
+        for (LinkedList<Map<String, Object>> route : routeList) {
+            for (int i = 0; i < route.size(); i++) {
+                if (parentId.equals(route.get(i).get("id"))) {
+                    for (int j = i; j < route.size(); j++) {
+                        childrenIdSet.add(ConvertUtils.getString(route.get(j).get("id")));
+                    }
+                }
+            }
+        }
+        return childrenIdSet;
+    }
+
+    /**
      * 统一保留小数位数
      *
      * @param paramMap
@@ -82,12 +115,12 @@ public class ParamUtils {
     public static void retainDecimalFunc(Map<String, Object> paramMap, int nPoint) {
         for (Map.Entry<String, Object> entry : paramMap.entrySet()) {
             if (entry.getValue() instanceof List) {
-                ((List) entry.getValue()).forEach(item -> {
-                    if (item instanceof Map) {
-                        retainDecimalFunc((Map<String, Object>) item, nPoint);
+                ((List) entry.getValue()).forEach(value -> {
+                    if (value instanceof Map) {
+                        retainDecimalFunc((Map<String, Object>) value, nPoint);
                     } else {
-                        if (ConvertUtils.isNumeric(ConvertUtils.getString(item)) && ConvertUtils.getString(entry.getValue()).length() < 10) {
-                            paramMap.put(entry.getKey(), ConvertUtils.nPoint(item, nPoint));
+                        if (ConvertUtils.isNumeric(ConvertUtils.getString(value)) && ConvertUtils.getString(entry.getValue()).length() < 10) {
+                            paramMap.put(entry.getKey(), ConvertUtils.nPoint(value, nPoint));
                         }
                     }
                 });
@@ -128,6 +161,36 @@ public class ParamUtils {
         }
         // 未找到匹配节点
         return null;
+    }
+
+    /**
+     * 过滤树形结构
+     *
+     * @param tree 原始树形结构
+     * @return 过滤后的树形结构
+     */
+    public static List<Map<String, Object>> filterTreeByDepartType(List<Map<String, Object>> tree, List<String> ignoreDepartTypeList) {
+        if (tree == null || tree.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Map<String, Object>> filteredTree = new ArrayList<>();
+        for (Map<String, Object> node : tree) {
+            // 检查当前节点的departType
+            String departType = ConvertUtils.getString(node.get("departType"));
+            // 如果是需要过滤的类型，则跳过当前节点及其子树
+            if (ignoreDepartTypeList.contains(departType)) {
+                continue;
+            }
+            // 复制当前节点，避免修改原数据
+            Map<String, Object> filteredNode = new HashMap<>(node);
+            // 递归处理子节点
+            List<Map<String, Object>> children = (List<Map<String, Object>>) node.get("children");
+            List<Map<String, Object>> filteredChildren = filterTreeByDepartType(children, ignoreDepartTypeList);
+            filteredNode.put("children", filteredChildren);
+            // 将处理后的节点添加到结果集中
+            filteredTree.add(filteredNode);
+        }
+        return filteredTree;
     }
 
 }
