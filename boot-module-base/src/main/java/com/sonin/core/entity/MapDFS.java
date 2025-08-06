@@ -32,6 +32,7 @@ public class MapDFS {
     private List<String> parentList = new ArrayList<String>() {{
         add("");
         add("null");
+        add("root");
     }};
 
     public MapDFS() {
