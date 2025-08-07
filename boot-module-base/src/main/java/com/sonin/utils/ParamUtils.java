@@ -112,20 +112,20 @@ public class ParamUtils {
      * @param paramMap
      * @param nPoint
      */
-    public static void retainDecimalFunc(Map<String, Object> paramMap, int nPoint) {
+    public static void retainDecimalFunc(Map<String, Object> paramMap, int nPoint, List<String> columnList) {
         for (Map.Entry<String, Object> entry : paramMap.entrySet()) {
             if (entry.getValue() instanceof List) {
                 ((List) entry.getValue()).forEach(value -> {
                     if (value instanceof Map) {
-                        retainDecimalFunc((Map<String, Object>) value, nPoint);
+                        retainDecimalFunc((Map<String, Object>) value, nPoint, columnList);
                     } else {
-                        if (ConvertUtils.isNumeric(ConvertUtils.getString(value)) && ConvertUtils.getString(entry.getValue()).length() < 10) {
+                        if (columnList.contains(entry.getKey())) {
                             paramMap.put(entry.getKey(), ConvertUtils.nPoint(value, nPoint));
                         }
                     }
                 });
             } else {
-                if (ConvertUtils.isNumeric(ConvertUtils.getString(entry.getValue())) && ConvertUtils.getString(entry.getValue()).length() < 10) {
+                if (columnList.contains(entry.getKey())) {
                     paramMap.put(entry.getKey(), ConvertUtils.nPoint(entry.getValue(), nPoint));
                 }
             }
