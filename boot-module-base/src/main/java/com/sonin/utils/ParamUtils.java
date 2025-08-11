@@ -193,4 +193,49 @@ public class ParamUtils {
         return filteredTree;
     }
 
+    /**
+     * Mysql生成时间间隔数据
+     * Mysql5.7.32版本最多支持659条数据
+     * SELECT min(help_topic_id), max(help_topic_id) FROM mysql.help_topic;
+     *
+     * @param timeType
+     * @return
+     */
+    public static String timeIntervalFunc(String timeType, String startTime, String endTime) {
+        String timeSql = "SELECT DATE_FORMAT(DATE_ADD('{startTime}', INTERVAL t.help_topic_id {timeType}), '{dateFormat}') AS time FROM mysql.help_topic t WHERE t.help_topic_id <= TIMESTAMPDIFF({timeType}, '{startTime}', '{endTime}') ORDER BY time asc";
+        String dateFormat = "";
+        if ("year".equals(timeType.toLowerCase())) {
+            dateFormat = "%Y";
+            startTime = startTime.substring(0, 10);
+            endTime = endTime.substring(0, 10);
+        } else if ("month".equals(timeType.toLowerCase())) {
+            dateFormat = "%Y-%m";
+            startTime = startTime.substring(0, 10);
+            endTime = endTime.substring(0, 10);
+        } else if ("day".equals(timeType.toLowerCase())) {
+            dateFormat = "%Y-%m-%d";
+            startTime = startTime.substring(0, 10);
+            endTime = endTime.substring(0, 10);
+        } else if ("hour".equals(timeType.toLowerCase())) {
+            dateFormat = "%Y-%m-%d %H";
+            startTime = startTime.substring(0, 13);
+            endTime = endTime.substring(0, 13);
+        }
+        timeType = timeType.toUpperCase();
+        timeSql = timeSql.replaceAll("\\{startTime}", startTime)
+                .replaceAll("\\{endTime}", endTime)
+                .replaceAll("\\{timeType}", timeType)
+                .replaceAll("\\{dateFormat}", dateFormat);
+        return timeSql;
+    }
+
+    public static void main(String[] args) {
+        String sql1 = ParamUtils.timeIntervalFunc("year", "2025-01-01 00:00:00", "2025-12-31 23:59:59");
+        String sql2 = ParamUtils.timeIntervalFunc("month", "2025-01-01 00:00:00", "2025-12-31 23:59:59");
+        String sql3 = ParamUtils.timeIntervalFunc("day", "2025-01-01 00:00:00", "2025-12-31 23:59:59");
+        String sql4 = ParamUtils.timeIntervalFunc("hour", "2025-01-01 00:00:00", "2025-12-31 23:59:59");
+        System.out.println("");
+
+    }
+
 }
