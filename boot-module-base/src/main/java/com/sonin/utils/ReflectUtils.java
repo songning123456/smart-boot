@@ -1,6 +1,6 @@
 package com.sonin.utils;
 
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.toolkit.ClassUtils;
@@ -11,12 +11,10 @@ import com.google.common.base.CaseFormat;
 import com.sonin.core.mpp.IBase;
 import org.apache.ibatis.reflection.property.PropertyNamer;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <pre>
@@ -27,6 +25,47 @@ import java.util.Map;
  * @version 1.0 2022/11/14 15:19
  */
 public class ReflectUtils {
+
+    /**
+     * 解决HttpServletRequest中字段多余T时，转换结果异常问题(e.g：_t=xxx)
+     * e.g: EquipmentRepairVO equipmentRepairVO = BeanUtil.mapToBean(request.getParameterMap(), EquipmentRepairVO.class, true);
+     *
+     * @param httpServletRequest
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    public static <T> T request2BeanFunc(HttpServletRequest httpServletRequest, Class<T> clazz) {
+        if (httpServletRequest == null || clazz == null) {
+            throw new IllegalArgumentException("Request and class cannot be null");
+        }
+        // 获取所有请求参数
+        Map<String, String[]> paramMap = httpServletRequest.getParameterMap();
+        // 创建新的Map用于存储过滤后的参数
+        Map<String, String> filteredMap = new HashMap<>(paramMap.size());
+        // 获取T及其父类的所有字段名
+        Set<String> fieldNameSet = new HashSet<>();
+        Class<?> currentClass = clazz;
+        while (currentClass != null && currentClass != Object.class) {
+            Field[] fieldArr = currentClass.getDeclaredFields();
+            for (Field field : fieldArr) {
+                fieldNameSet.add(field.getName());
+            }
+            currentClass = currentClass.getSuperclass();
+        }
+        // 只保留T中存在的字段
+        for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+            if (fieldNameSet.contains(entry.getKey())) {
+                filteredMap.put(entry.getKey(), entry.getValue()[0]);
+            }
+        }
+        try {
+            // 使用过滤后的Map进行转换
+            return BeanUtil.mapToBean(filteredMap, clazz, true);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to convert request to bean: " + clazz.getName(), e);
+        }
+    }
 
     /**
      * <pre>
