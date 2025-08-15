@@ -197,12 +197,12 @@ public class ParamUtils {
      * Mysql生成时间间隔数据
      * Mysql5.7.32版本最多支持659条数据
      * SELECT min(help_topic_id), max(help_topic_id) FROM mysql.help_topic;
-     *
+     * 优化：利用自连接生成足够大的数字序列 659 * 659 = 434281
      * @param timeType
      * @return
      */
     public static String timeIntervalFunc(String timeType, String startTime, String endTime) {
-        String timeSql = "SELECT DATE_FORMAT(DATE_ADD('{startTime}', INTERVAL t.help_topic_id {timeType}), '{dateFormat}') AS time FROM mysql.help_topic t WHERE t.help_topic_id <= TIMESTAMPDIFF({timeType}, '{startTime}', '{endTime}') ORDER BY time asc";
+        String timeSql = "SELECT DATE_FORMAT(DATE_ADD('{startTime}', INTERVAL (aaa.help_topic_id + bbb.help_topic_id * 1000) {timeType}), '{dateFormat}') AS time FROM mysql.help_topic as aaa JOIN mysql.help_topic bbb on 1=1 WHERE (aaa.help_topic_id + bbb.help_topic_id * 1000) <= TIMESTAMPDIFF({timeType}, '{startTime}', '{endTime}') ORDER BY time asc";
         String dateFormat = "";
         if ("year".equals(timeType.toLowerCase())) {
             dateFormat = "%Y";
