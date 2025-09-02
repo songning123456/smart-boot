@@ -1,0 +1,84 @@
+package com.sonin;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.sonin.core.context.SpringContext;
+import com.sonin.modules.base.service.IBaseService;
+import com.sonin.utils.ConvertUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * <pre>
+ * Spring Test
+ * </pre>
+ *
+ * @author sonin
+ * @version 1.0 2022/4/25 16:30
+ */
+@Slf4j
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = BootApplication.class)
+@ActiveProfiles("zhongtie")
+public class ZhongtieBootApplicationTest {
+
+    @Autowired
+    private IBaseService baseService;
+
+    @Test
+    public void updateSysDepartTest() {
+        String step = "3";
+        // 1. 更新机构
+        if ("1".equals(step)) {
+            // 查询为空的机构
+            QueryWrapper<?> queryWrapper0_0 = new QueryWrapper<>();
+            queryWrapper0_0.apply("(depart_name_en is null or depart_name_en = '')");
+            List<Map<String, Object>> queryMapList0_0 = baseService.queryForList("select * from sys_depart", queryWrapper0_0);
+            // 查询不为空的总数
+            QueryWrapper<?> queryWrapper0_1 = new QueryWrapper<>();
+            queryWrapper0_1.apply("(depart_name_en is not null and depart_name_en != '')");
+            String countStr0_1 = baseService.queryForString("select count(*) from sys_depart", queryWrapper0_1);
+            int count0_1 = Integer.parseInt(countStr0_1);
+            int index = 1;
+            for (Map<String, Object> item : queryMapList0_0) {
+                String id = ConvertUtils.getString(item.get("id"));
+                UpdateWrapper<?> updateWrapper0 = new UpdateWrapper<>();
+                updateWrapper0.set("depart_name_en", count0_1 + index)
+                        .eq("id", id);
+                baseService.update("sys_depart", updateWrapper0);
+                index++;
+            }
+        } else if ("2".equals(step)) {
+            // 2. 更新 equip_info 中的 attr3
+            String updateSql = "update equip_info, sys_depart set equip_info.attr3 = sys_depart.depart_name_en where equip_info.factory_id = sys_depart.id";
+            JdbcTemplate masterDB = (JdbcTemplate) SpringContext.getBean("master");
+            masterDB.execute(updateSql);
+        } else if ("3".equals(step)) {
+            // 3. 找出设备台账里equip_code以null开始的数据并更新
+            QueryWrapper<?> queryWrapper0 = new QueryWrapper<>();
+            queryWrapper0.like("equip_code", "null-");
+            List<Map<String, Object>> queryMapList0 = baseService.queryForList("select * from equip_info", queryWrapper0);
+            for (Map<String, Object> item : queryMapList0) {
+                String id = ConvertUtils.getString(item.get("id"));
+                String attr3 = ConvertUtils.getString(item.get("attr3"));
+                String equipCode = ConvertUtils.getString(item.get("equip_code"));
+                String tempEquipCode = equipCode.replace("null", attr3);
+                UpdateWrapper<?> updateWrapper0 = new UpdateWrapper<>();
+                updateWrapper0.set("equip_code", tempEquipCode)
+                        .eq("id", id);
+                baseService.update("equip_info", updateWrapper0);
+            }
+        }
+    }
+
+}
