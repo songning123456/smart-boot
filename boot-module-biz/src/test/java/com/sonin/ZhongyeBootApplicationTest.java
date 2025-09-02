@@ -312,7 +312,8 @@ public class ZhongyeBootApplicationTest {
     @Test
     public void equipmentSparepartTest() throws Exception {
         // excel文件全路径
-        String fileName = "E:\\Company\\kingtrol\\034-中冶\\物料信息导入20250704\\物料信息- 导入类别v1.xlsx";
+//        String fileName = "E:\\Company\\kingtrol\\034-中冶\\物料信息导入20250704\\物料信息- 导入类别v1.xlsx";
+        String fileName = "E:\\Company\\kingtrol\\034-中冶\\物料信息导入20250704\\物料信息- 导入类别wh_v1.xlsx";
         FileInputStream fileInputStream = null;
         Workbook workbook = null;
         try {
@@ -350,7 +351,7 @@ public class ZhongyeBootApplicationTest {
                 entityMap.put("remark", "20250704新增");
                 entityMapList.add(entityMap);
             }
-            baseService.insertBatch("equipment_sparepart_supplies_newadd20250704", entityMapList, BaseConstant.INSERT_IGNORE);
+            baseService.insertBatch("equipment_sparepart_supplies", entityMapList, BaseConstant.INSERT_IGNORE);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
