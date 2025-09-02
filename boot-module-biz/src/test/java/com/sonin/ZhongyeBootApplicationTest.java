@@ -314,6 +314,7 @@ public class ZhongyeBootApplicationTest {
         // excel文件全路径
 //        String fileName = "E:\\Company\\kingtrol\\034-中冶\\物料信息导入20250704\\物料信息- 导入类别v1.xlsx";
         String fileName = "E:\\Company\\kingtrol\\034-中冶\\物料信息导入20250704\\物料信息- 导入类别wh_v1.xlsx";
+        String remarkPrefix = "20250902";
         FileInputStream fileInputStream = null;
         Workbook workbook = null;
         try {
@@ -334,7 +335,7 @@ public class ZhongyeBootApplicationTest {
             List<Map<String, Object>> entityMapList = new ArrayList<>();
             for (Row row: sheet0) {
                 String sparepart_type = ConvertUtils.getString(row.getCell(1));
-                if (!sparepart_type.startsWith("18")) {
+                if (!sparepart_type.startsWith("18") && !sparepart_type.startsWith("16")) {
                     continue;
                 }
                 String sparepart_name = ConvertUtils.getString(row.getCell(3));
@@ -348,7 +349,7 @@ public class ZhongyeBootApplicationTest {
                 entityMap.put("sparepart_code", sparepart_code);
                 entityMap.put("specification", specification);
                 entityMap.put("measuring_unit", measuring_unit);
-                entityMap.put("remark", "20250704新增");
+                entityMap.put("remark", remarkPrefix + "新增");
                 entityMapList.add(entityMap);
             }
             baseService.insertBatch("equipment_sparepart_supplies", entityMapList, BaseConstant.INSERT_IGNORE);
