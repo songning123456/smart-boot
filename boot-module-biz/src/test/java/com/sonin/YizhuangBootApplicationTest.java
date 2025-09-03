@@ -69,12 +69,12 @@ public class YizhuangBootApplicationTest {
 //             add("工作交接班记录");
 //             add("标厂汇总总表");
 //             add("中控运行填报报表");
-//             add("中控运行记录表");
+             add("中控运行记录表");
 //             add("MF清洗报表");
 //             add("RO清洗报表");
 //            add("能耗日数据");
 //            add("能耗日报表(标厂)");
-            add("水质水量日数据(标厂)");
+//            add("水质水量日数据(标厂)");
         }};
         Map<String, List<String>> reportName2DataItemListMap = new LinkedHashMap<>();
         reportName2DataItemListMap.put("南区污水厂物料能耗日报", new ArrayList<String>() {{
@@ -448,52 +448,54 @@ public class YizhuangBootApplicationTest {
 //            add("接班人");
 //            add("班长");
 //            add("班次");
-            add("进水累计");
-            add("出水累计");
+//            add("进水累计");
+//            add("出水累计");
+            add("泥量");
         }});
         reportName2DataItemListMap.put("中控运行记录表", new ArrayList<String>() {{
-            add("一期膜风机运行时间MAB401");
-            add("一期膜风机运行时间MAB402");
-            add("一期膜风机运行时间MAB403");
-            add("二期膜风机运行时间MAB501");
-            add("二期膜风机运行时间MAB502");
-            add("二期膜风机运行时间MAB503");
-            add("一期生物池风机运行时间AB701");
-            add("一期生物池风机运行时间AB702");
-            add("一期生物池风机运行时间AB703");
-            add("二期生物池风机运行时间AB801");
-            add("二期生物池风机运行时间AB802");
-            add("二期生物池风机运行时间AB803");
-            add("曝气风机运行时间RB101");
-            add("曝气风机运行时间RB102");
-            add("一期粗格栅间提升泵运行时间P101A");
-            add("一期粗格栅间提升泵运行时间P101B");
-            add("一期粗格栅间提升泵运行时间P101C");
-            add("二期粗格栅间提升泵运行时间P201A");
-            add("二期粗格栅间提升泵运行时间P201B");
-            add("二期粗格栅间提升泵运行时间P201C");
-            add("进水累计");
-            add("出水累计");
-            add("外供水累计");
-            add("厂区回用水累计");
-            add("光伏发电");
-            add("1#计量柜");
-            add("2#计量柜");
-            add("201+202总耗电量");
-            add("一期除磷絮凝剂使用量合计");
-            add("一期葡萄糖使用量合计");
-            add("一期次氯酸钠使用量合计");
-            add("一期柠檬酸使用量合计");
-            add("二期除磷絮凝剂使用量合计");
-            add("二期葡萄糖使用量合计");
-            add("二期次氯酸钠使用量合计");
-            add("二期柠檬酸使用量合计");
-            add("脱泥药剂");
-            add("PAM");
-            add("备注");
-            add("接班人");
-            add("班长");
-            add("班次");
+//            add("一期膜风机运行时间MAB401");
+//            add("一期膜风机运行时间MAB402");
+//            add("一期膜风机运行时间MAB403");
+//            add("二期膜风机运行时间MAB501");
+//            add("二期膜风机运行时间MAB502");
+//            add("二期膜风机运行时间MAB503");
+//            add("一期生物池风机运行时间AB701");
+//            add("一期生物池风机运行时间AB702");
+//            add("一期生物池风机运行时间AB703");
+//            add("二期生物池风机运行时间AB801");
+//            add("二期生物池风机运行时间AB802");
+//            add("二期生物池风机运行时间AB803");
+//            add("曝气风机运行时间RB101");
+//            add("曝气风机运行时间RB102");
+//            add("一期粗格栅间提升泵运行时间P101A");
+//            add("一期粗格栅间提升泵运行时间P101B");
+//            add("一期粗格栅间提升泵运行时间P101C");
+//            add("二期粗格栅间提升泵运行时间P201A");
+//            add("二期粗格栅间提升泵运行时间P201B");
+//            add("二期粗格栅间提升泵运行时间P201C");
+//            add("进水累计");
+//            add("出水累计");
+//            add("外供水累计");
+//            add("厂区回用水累计");
+//            add("光伏发电");
+//            add("1#计量柜");
+//            add("2#计量柜");
+//            add("201+202总耗电量");
+//            add("一期除磷絮凝剂使用量合计");
+//            add("一期葡萄糖使用量合计");
+//            add("一期次氯酸钠使用量合计");
+//            add("一期柠檬酸使用量合计");
+//            add("二期除磷絮凝剂使用量合计");
+//            add("二期葡萄糖使用量合计");
+//            add("二期次氯酸钠使用量合计");
+//            add("二期柠檬酸使用量合计");
+//            add("脱泥药剂");
+//            add("PAM");
+//            add("备注");
+//            add("接班人");
+//            add("班长");
+//            add("班次");
+            add("泥量");
         }});
         reportName2DataItemListMap.put("MF清洗报表", new ArrayList<String>() {{
             add("MF1#");
@@ -794,7 +796,7 @@ public class YizhuangBootApplicationTest {
 //            add("汇总报表");
 //            add("成本控制表");
             add("能耗日报表(污水厂)");
-            add("能耗日报表(标厂)");
+//            add("能耗日报表(标厂)");
         }};
         for (String curSheetName : sheetNameList) {
             XSSFSheet curSheet = workbook.getSheet(curSheetName);
@@ -823,7 +825,7 @@ public class YizhuangBootApplicationTest {
                     continue;
                 }
                 Map<String, Object> entityMap = new HashMap<>();
-                entityMap.put("id", ConvertUtils.UUID(targetItemId));
+                entityMap.put("id", targetItemId);
                 entityMap.put("src_report_id", srcReportId);
                 entityMap.put("src_item_id", srcItemId);
                 entityMap.put("src_date_format", srcDateFormat);
@@ -845,18 +847,26 @@ public class YizhuangBootApplicationTest {
         FileInputStream fileInputStream = new FileInputStream(new File(filePath));
         XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
         List<String> sheetNameList = new ArrayList<String>() {{
-            add("水质水量(标厂)");
+            // add("水质水量(标厂)");
+            // add("水质水量(污水厂)");
+            add("中控运行填报");
         }};
         for (String curSheetName : sheetNameList) {
             XSSFSheet curSheet = workbook.getSheet(curSheetName);
             // 从第1行开始，过滤标题行
             List<Map<String, Object>> entityMapList = new ArrayList<>();
+            Map<String, String> srcItemId2SyncTypeMap = new HashMap<>();
             for (int i = 1; i <= curSheet.getLastRowNum(); i++) {
                 Row curRow = curSheet.getRow(i);
+                if (curRow == null) {
+                    continue;
+                }
+                // 原始数据项ID
                 String srcItemId = ConvertUtils.getString(curRow.getCell(2));
                 if (StringUtils.isEmpty(srcItemId)) {
                     continue;
                 }
+                // 目标数据项ID
                 String targetItemId = ConvertUtils.getString(curRow.getCell(5));
                 // 查询target_report_id
                 List<Map<String, Object>> tmpReportIdQueryMapList = baseService.queryForList("select distinct report_id from f_report_item", new QueryWrapper<>().eq("id", targetItemId));
@@ -866,17 +876,41 @@ public class YizhuangBootApplicationTest {
                 if (!syncFlag.equals("是")) {
                     continue;
                 }
+                // 目标同步类型
+                String syncType = ConvertUtils.getString(curRow.getCell(8));
+                if (StringUtils.isNotEmpty(syncType)) {
+                    srcItemId2SyncTypeMap.put(srcItemId, syncType);
+                }
+                // 源表类型
+                String srcTableType = ConvertUtils.getString(curRow.getCell(9));
+                if (StringUtils.isEmpty(srcTableType)) {
+                    srcTableType = "count";
+                }
                 Map<String, Object> entityMap = new HashMap<>();
-                entityMap.put("id", ConvertUtils.UUID(targetItemId));
+                entityMap.put("id", targetItemId);
                 entityMap.put("src_item_id", srcItemId);
+                entityMap.put("src_table_type", srcTableType);
                 entityMap.put("target_item_id", targetItemId);
                 entityMap.put("target_report_id", targetReportId);
                 entityMap.put("target_date_format", targetDateFormat);
                 entityMap.put("create_by", curSheetName);
                 entityMapList.add(entityMap);
             }
+            Date now = new Date();
             if (!entityMapList.isEmpty()) {
-                baseService.insertBatch("f_report_itemv_convert", entityMapList, BaseConstant.REPLACE);
+                transactionTemplate.execute(transactionStatus -> {
+                    baseService.insertBatch("f_report_itemv_convert", entityMapList, BaseConstant.REPLACE);
+                    for (Map.Entry<String, String> entry : srcItemId2SyncTypeMap.entrySet()) {
+                        UpdateWrapper<?> tmpUpdateWrapper = new UpdateWrapper<>();
+                        tmpUpdateWrapper.set("compute_type", entry.getValue())
+                                .set("update_time", now)
+                                .set("update_by", "convert")
+                                .eq("id", entry.getKey());
+                        baseService.update("sys_monitor_metric_info", tmpUpdateWrapper);
+                    }
+                    return 1;
+                });
+
             }
         }
     }
