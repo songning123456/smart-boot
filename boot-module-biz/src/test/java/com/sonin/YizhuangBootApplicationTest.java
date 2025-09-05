@@ -69,12 +69,12 @@ public class YizhuangBootApplicationTest {
 //             add("工作交接班记录");
 //             add("标厂汇总总表");
 //             add("中控运行填报报表");
-             add("中控运行记录表");
+//             add("中控运行记录表");
 //             add("MF清洗报表");
 //             add("RO清洗报表");
 //            add("能耗日数据");
 //            add("能耗日报表(标厂)");
-//            add("水质水量日数据(标厂)");
+            add("水质水量日数据(标厂)");
         }};
         Map<String, List<String>> reportName2DataItemListMap = new LinkedHashMap<>();
         reportName2DataItemListMap.put("南区污水厂物料能耗日报", new ArrayList<String>() {{
@@ -583,17 +583,19 @@ public class YizhuangBootApplicationTest {
             add("草酸");
         }});
         reportName2DataItemListMap.put("水质水量日数据(标厂)", new ArrayList<String>() {{
-            add("进水余氯");
-            add("进水流量");
-            add("进水温度");
-            add("进水TOC");
-            add("进水PH");
-            add("进水流量累计值");
-            add("总出水TOC");
-            add("总出水余氯");
-            add("总出水PH");
-            add("总出水管A流量累计值");
-            add("总出水管B流量累计值");
+//            add("进水余氯");
+//            add("进水流量");
+//            add("进水温度");
+//            add("进水TOC");
+//            add("进水PH");
+//            add("进水流量累计值");
+//            add("总出水TOC");
+//            add("总出水余氯");
+//            add("总出水PH");
+//            add("总出水管A流量累计值");
+//            add("总出水管B流量累计值");
+            add("进水量");
+            add("出水量");
         }});
         long curSec = System.currentTimeMillis() / 1000;
         // 封装结果集
@@ -843,13 +845,13 @@ public class YizhuangBootApplicationTest {
 
     @Test
     public void reportItemvConvertExcelTest() throws Exception {
-        String filePath = "E:\\Company\\kingtrol\\037-亦庄\\报表数据同步\\报表数据同步v2.xlsx";
+        String filePath = "E:\\Company\\kingtrol\\037-亦庄\\报表数据同步\\报表数据同步v3.xlsx";
         FileInputStream fileInputStream = new FileInputStream(new File(filePath));
         XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
         List<String> sheetNameList = new ArrayList<String>() {{
-            // add("水质水量(标厂)");
+             add("水质水量(标厂)");
             // add("水质水量(污水厂)");
-            add("中控运行填报");
+            // add("中控运行填报");
         }};
         for (String curSheetName : sheetNameList) {
             XSSFSheet curSheet = workbook.getSheet(curSheetName);
@@ -877,9 +879,9 @@ public class YizhuangBootApplicationTest {
                     continue;
                 }
                 // 目标同步类型
-                String syncType = ConvertUtils.getString(curRow.getCell(8));
-                if (StringUtils.isNotEmpty(syncType)) {
-                    srcItemId2SyncTypeMap.put(srcItemId, syncType);
+                String srcConvertType = ConvertUtils.getString(curRow.getCell(8));
+                if (StringUtils.isNotEmpty(srcConvertType)) {
+                    srcItemId2SyncTypeMap.put(srcItemId, srcConvertType);
                 }
                 // 源表类型
                 String srcTableType = ConvertUtils.getString(curRow.getCell(9));
@@ -894,23 +896,12 @@ public class YizhuangBootApplicationTest {
                 entityMap.put("target_report_id", targetReportId);
                 entityMap.put("target_date_format", targetDateFormat);
                 entityMap.put("create_by", curSheetName);
+                entityMap.put("src_convert_type", srcConvertType);
                 entityMapList.add(entityMap);
             }
             Date now = new Date();
             if (!entityMapList.isEmpty()) {
-                transactionTemplate.execute(transactionStatus -> {
-                    baseService.insertBatch("f_report_itemv_convert", entityMapList, BaseConstant.REPLACE);
-                    for (Map.Entry<String, String> entry : srcItemId2SyncTypeMap.entrySet()) {
-                        UpdateWrapper<?> tmpUpdateWrapper = new UpdateWrapper<>();
-                        tmpUpdateWrapper.set("compute_type", entry.getValue())
-                                .set("update_time", now)
-                                .set("update_by", "convert")
-                                .eq("id", entry.getKey());
-                        baseService.update("sys_monitor_metric_info", tmpUpdateWrapper);
-                    }
-                    return 1;
-                });
-
+                baseService.insertBatch("f_report_itemv_convert", entityMapList, BaseConstant.REPLACE);
             }
         }
     }
