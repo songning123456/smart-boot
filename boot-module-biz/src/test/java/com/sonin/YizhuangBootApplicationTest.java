@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sonin.core.constant.BusinessConstant;
 import com.sonin.core.entity.MapDFS;
+import com.sonin.core.mpp.DataSourceTemplate;
 import com.sonin.modules.base.constant.BaseConstant;
 import com.sonin.modules.base.service.IBaseService;
 import com.sonin.utils.ConvertUtils;
@@ -67,14 +68,15 @@ public class YizhuangBootApplicationTest {
 //             add("微滤清洗记录表");
 //             add("变电室运行记录表");
 //             add("工作交接班记录");
-//             add("标厂汇总总表");
+//            add("标厂汇总总表");
 //             add("中控运行填报报表");
-//             add("中控运行记录表");
+            add("中控运行记录表");
 //             add("MF清洗报表");
 //             add("RO清洗报表");
 //            add("能耗日数据");
 //            add("能耗日报表(标厂)");
-            add("水质水量日数据(标厂)");
+//            add("水质水量日数据(标厂)");
+//            add("生产药剂填报报表");
         }};
         Map<String, List<String>> reportName2DataItemListMap = new LinkedHashMap<>();
         reportName2DataItemListMap.put("南区污水厂物料能耗日报", new ArrayList<String>() {{
@@ -337,24 +339,27 @@ public class YizhuangBootApplicationTest {
             add("记录人");
         }});
         reportName2DataItemListMap.put("变电室运行记录表", new ArrayList<String>() {{
-            add("1#计量柜电量kWh");
-            add("2#计量柜电量kWh");
-            add("401_1#变压器温度");
-            add("401_电量kWh");
-            add("401_总电流（A）");
-            add("401_电压（V）");
-            add("401_电流A");
-            add("401_电流B");
-            add("401_电流C");
-            add("402_2#变压器温度");
-            add("402_电量kWh");
-            add("402_总电流（A）");
-            add("402_电压（V）");
-            add("402_电流A");
-            add("402_电流B");
-            add("402_电流C");
-            add("记录人");
-            add("班长");
+//            add("1#计量柜电量kWh");
+//            add("2#计量柜电量kWh");
+//            add("401_1#变压器温度");
+//            add("401_电量kWh");
+//            add("401_总电流（A）");
+//            add("401_电压（V）");
+//            add("401_电流A");
+//            add("401_电流B");
+//            add("401_电流C");
+//            add("402_2#变压器温度");
+//            add("402_电量kWh");
+//            add("402_总电流（A）");
+//            add("402_电压（V）");
+//            add("402_电流A");
+//            add("402_电流B");
+//            add("402_电流C");
+//            add("记录人");
+//            add("班长");
+            add("生活用电模块");
+            add("水源热泵用电量");
+            add("综合楼用电量");
         }});
         reportName2DataItemListMap.put("工作交接班记录", new ArrayList<String>() {{
             add("总进水");
@@ -370,37 +375,41 @@ public class YizhuangBootApplicationTest {
             add("柠檬酸消耗");
         }});
         reportName2DataItemListMap.put("标厂汇总总表", new ArrayList<String>() {{
-            add("进水量");
-            add("用电量");
-            add("总产水量");
-            add("一期产水量");
-            add("二期产水量");
-            add("供水量");
-            add("RO1#运行时间");
-            add("RO2#运行时间");
-            add("RO3#运行时间");
-            add("RO4#运行时间");
-            add("RO5#运行时间");
-            add("RO6#运行时间");
-            add("RO7#运行时间");
-            add("RO8#运行时间");
-            add("RO9#运行时间");
-            add("RO10#运行时间");
-            add("总时间");
-            add("生产药剂_次氯酸钠");
-            add("生产药剂_非氧化杀菌剂");
-            add("生产药剂_（一期）阻垢剂");
-            add("生产药剂_（二期）阻垢剂");
-            add("生产药剂_（一期）还原剂");
-            add("生产药剂_（二期）还原剂");
-            add("生产药剂_液碱");
-            add("膜清洗情况_次氯酸钠");
-            add("膜清洗情况_液碱");
-            add("膜清洗情况_草酸");
-            add("膜清洗情况_柠檬酸");
-            add("膜清洗情况_EDTA");
-            add("保安过滤器更换");
-            add("保安过滤器浸泡");
+//            add("进水量");
+//            add("用电量");
+//            add("总产水量");
+//            add("一期产水量");
+//            add("二期产水量");
+//            add("供水量");
+//            add("RO1#运行时间");
+//            add("RO2#运行时间");
+//            add("RO3#运行时间");
+//            add("RO4#运行时间");
+//            add("RO5#运行时间");
+//            add("RO6#运行时间");
+//            add("RO7#运行时间");
+//            add("RO8#运行时间");
+//            add("RO9#运行时间");
+//            add("RO10#运行时间");
+//            add("总时间");
+//            add("生产药剂_次氯酸钠");
+//            add("生产药剂_非氧化杀菌剂");
+//            add("生产药剂_（一期）阻垢剂");
+//            add("生产药剂_（二期）阻垢剂");
+//            add("生产药剂_（一期）还原剂");
+//            add("生产药剂_（二期）还原剂");
+//            add("生产药剂_液碱");
+//            add("膜清洗情况_次氯酸钠");
+//            add("膜清洗情况_液碱");
+//            add("膜清洗情况_草酸");
+//            add("膜清洗情况_柠檬酸");
+//            add("膜清洗情况_EDTA");
+//            add("保安过滤器更换");
+//            add("保安过滤器浸泡");
+//            add("盐酸");
+            add("吨水药剂费");
+            add("吨水耗电量");
+            add("回收率");
         }});
         reportName2DataItemListMap.put("中控运行填报报表", new ArrayList<String>() {{
 //            add("外供水累计");
@@ -495,7 +504,15 @@ public class YizhuangBootApplicationTest {
 //            add("接班人");
 //            add("班长");
 //            add("班次");
-            add("泥量");
+//            add("泥量");
+            add("一期除磷絮凝剂密度");
+            add("一期葡萄糖密度");
+            add("一期次氯酸钠密度");
+            add("一期柠檬酸密度");
+            add("二期除磷絮凝剂密度");
+            add("二期葡萄糖密度");
+            add("二期次氯酸钠密度");
+            add("二期柠檬酸密度");
         }});
         reportName2DataItemListMap.put("MF清洗报表", new ArrayList<String>() {{
             add("MF1#");
@@ -594,8 +611,21 @@ public class YizhuangBootApplicationTest {
 //            add("总出水PH");
 //            add("总出水管A流量累计值");
 //            add("总出水管B流量累计值");
-            add("进水量");
-            add("出水量");
+//            add("进水量");
+//            add("出水量");
+//            add("进水电导");
+//            add("出水电导");
+            add("出水流量累计值");
+        }});
+        reportName2DataItemListMap.put("生产药剂填报报表", new ArrayList<String>() {{
+//            add("次氯酸钠");
+//            add("非氧化杀菌剂");
+//            add("（一期）阻垢剂");
+//            add("（二期）阻垢剂");
+//            add("（一期）还原剂");
+//            add("（二期）还原剂");
+//            add("液碱");
+//            add("盐酸");
         }});
         long curSec = System.currentTimeMillis() / 1000;
         // 封装结果集
@@ -789,15 +819,15 @@ public class YizhuangBootApplicationTest {
 
     @Test
     public void reportItemvSyncExcelTest() throws Exception {
-        String filePath = "E:\\Company\\kingtrol\\037-亦庄\\报表数据同步\\报表数据同步v2.xlsx";
+        String filePath = "E:\\Company\\kingtrol\\037-亦庄\\报表数据同步\\报表数据同步v3.xlsx";
         FileInputStream fileInputStream = new FileInputStream(new File(filePath));
         XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
         List<String> sheetNameList = new ArrayList<String>() {{
 //            add("能耗日报表");
 //            add("中控运行记录");
 //            add("汇总报表");
-//            add("成本控制表");
-            add("能耗日报表(污水厂)");
+            add("成本控制表");
+//            add("能耗日报表(污水厂)");
 //            add("能耗日报表(标厂)");
         }};
         for (String curSheetName : sheetNameList) {
@@ -849,9 +879,10 @@ public class YizhuangBootApplicationTest {
         FileInputStream fileInputStream = new FileInputStream(new File(filePath));
         XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
         List<String> sheetNameList = new ArrayList<String>() {{
-             add("水质水量(标厂)");
+//            add("水质水量(标厂)");
             // add("水质水量(污水厂)");
             // add("中控运行填报");
+            add("汇总报表");
         }};
         for (String curSheetName : sheetNameList) {
             XSSFSheet curSheet = workbook.getSheet(curSheetName);
@@ -878,8 +909,8 @@ public class YizhuangBootApplicationTest {
                 if (!syncFlag.equals("是")) {
                     continue;
                 }
-                // 目标同步类型
-                String srcConvertType = ConvertUtils.getString(curRow.getCell(8));
+                // 原始同步类型
+                String srcConvertType = ConvertUtils.getString(curRow.getCell(4));
                 if (StringUtils.isNotEmpty(srcConvertType)) {
                     srcItemId2SyncTypeMap.put(srcItemId, srcConvertType);
                 }
@@ -892,16 +923,16 @@ public class YizhuangBootApplicationTest {
                 entityMap.put("id", targetItemId);
                 entityMap.put("src_item_id", srcItemId);
                 entityMap.put("src_table_type", srcTableType);
+                entityMap.put("src_convert_type", srcConvertType);
                 entityMap.put("target_item_id", targetItemId);
                 entityMap.put("target_report_id", targetReportId);
                 entityMap.put("target_date_format", targetDateFormat);
                 entityMap.put("create_by", curSheetName);
-                entityMap.put("src_convert_type", srcConvertType);
                 entityMapList.add(entityMap);
             }
             Date now = new Date();
             if (!entityMapList.isEmpty()) {
-                baseService.insertBatch("f_report_itemv_convert", entityMapList, BaseConstant.REPLACE);
+                baseService.insertBatch("f_report_itemv_convert", entityMapList, BaseConstant.INSERT);
             }
         }
     }
@@ -1492,6 +1523,62 @@ public class YizhuangBootApplicationTest {
             updateWrapper0.set("data_id", ConvertUtils.UUID(dataTime))
                     .eq("id", id);
             baseService.update("f_report_itemv", updateWrapper0);
+        }
+    }
+
+    @Test
+    public void insertDefaultCountTest() {
+        // 请求参数
+        String startTimeParam = "2025-01-01 00:00:00";
+        String endTimeParam = "2025-09-10 23:59:59";
+        List<String> timeList = DateUtils.intervalByHour(startTimeParam, endTimeParam, BusinessConstant.DATE_FORMAT.substring(0, 13));
+        String startTs = ConvertUtils.getString(DateUtils.dateStr2Sec(startTimeParam, BusinessConstant.DATE_FORMAT));
+        String endTs = ConvertUtils.getString(DateUtils.dateStr2Sec(endTimeParam, BusinessConstant.DATE_FORMAT));
+        Map<String, String> assignDictMap = new LinkedHashMap<String, String>() {{
+            put("ZERO_", "0");
+        }};
+        // 查询需要赋值的数据项
+        List<Map<String, Object>> entityMapList = new ArrayList<>();
+        // 遍历
+        for (Map.Entry<String, String> entry : assignDictMap.entrySet()) {
+            QueryWrapper<?> assignQueryWrapper = new QueryWrapper<>();
+            assignQueryWrapper.likeRight("src_item_id", entry.getKey());
+            List<Map<String, Object>> assignQueryMapList = baseService.queryForList("select * from f_report_itemv_convert", assignQueryWrapper);
+            List<String> assignNmList = assignQueryMapList.stream().map(item -> ConvertUtils.getString(item.get("src_item_id"))).collect(Collectors.toList());
+            if (!assignNmList.isEmpty()) {
+                // 查询 已经存在的数据
+                QueryWrapper<?> existQueryWrapper = new QueryWrapper<>();
+                existQueryWrapper.ge("ts", startTs)
+                        .le("ts", endTs)
+                        .in("nm", assignNmList);
+                List<Map<String, Object>> existQueryMapList = DataSourceTemplate.execute("pg-db", () -> baseService.queryForList("select * from default_count", existQueryWrapper));
+                List<String> existNmTsList = existQueryMapList.stream().map(item -> ConvertUtils.getString(item.get("nm")) + "=>" + ConvertUtils.getString(item.get("ts"))).collect(Collectors.toList());
+                for (String time : timeList) {
+                    String tmpTs = ConvertUtils.getString(DateUtils.dateStr2Sec(time + ":00:00", BusinessConstant.DATE_FORMAT));
+                    for (String assignNm : assignNmList) {
+                        if (!existNmTsList.contains(assignNm + "=>" + tmpTs)) {
+                            Map<String, Object> entityMap = new HashMap<>();
+                            entityMap.put("nm", assignNm);
+                            entityMap.put("ts", tmpTs);
+                            entityMap.put("v", entry.getValue());
+                            entityMapList.add(entityMap);
+                        }
+                    }
+                }
+            }
+        }
+        // 插入PG
+        if (!entityMapList.isEmpty()) {
+            List<List<Map<String, Object>>> partitionList = ListUtils.partition(entityMapList, 100);
+            DataSourceTemplate.execute("pg-db", () -> {
+                transactionTemplate.execute(transactionStatus -> {
+                    for (List<Map<String, Object>> partition : partitionList) {
+                        baseService.insertBatch("default_count", partition);
+                    }
+                    return 1;
+                });
+                return 1;
+            });
         }
     }
 

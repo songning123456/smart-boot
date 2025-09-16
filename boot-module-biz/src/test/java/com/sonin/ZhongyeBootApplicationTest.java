@@ -8,6 +8,7 @@ import com.sonin.modules.base.constant.BaseConstant;
 import com.sonin.modules.base.service.IBaseService;
 import com.sonin.utils.ConvertUtils;
 import com.sonin.utils.DateUtils;
+import com.sonin.utils.ExpressionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -15,6 +16,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +26,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -362,6 +365,57 @@ public class ZhongyeBootApplicationTest {
             }
             if (fileInputStream != null) {
                 fileInputStream.close();
+            }
+        }
+    }
+
+    @Test
+    public void reportItemvSyncExcelTest() throws Exception {
+        String filePath = "E:\\Company\\kingtrol\\034-中冶\\报表数据同步\\报表数据同步v1.xlsx";
+        FileInputStream fileInputStream = new FileInputStream(new File(filePath));
+        XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+        List<String> sheetNameList = new ArrayList<String>() {{
+            add("碳中和");
+        }};
+        for (String curSheetName : sheetNameList) {
+            XSSFSheet curSheet = workbook.getSheet(curSheetName);
+            // 从第1行开始，过滤标题行
+            List<Map<String, Object>> entityMapList = new ArrayList<>();
+            for (int i = 1; i <= curSheet.getLastRowNum(); i++) {
+                Row curRow = curSheet.getRow(i);
+                // String srcReportId = ConvertUtils.getString(curRow.getCell(1));
+                String srcItemId = ConvertUtils.getString(curRow.getCell(2));
+                if (StringUtils.isEmpty(srcItemId)) {
+                    continue;
+                }
+                if (!srcItemId.contains("{")) {
+                    srcItemId = "{" + srcItemId + "}";
+                }
+                // 查询src_report_id
+                List<String> tmpSrcItemIdList = ExpressionUtils.parseExpression(srcItemId);
+                List<Map<String, Object>> tmpReportIdQueryMapList = baseService.queryForList("select distinct report_id from f_report_item", new QueryWrapper<>().in("id", tmpSrcItemIdList));
+                String srcReportId = tmpReportIdQueryMapList.stream().map(item -> ConvertUtils.getString(item.get("report_id"))).collect(Collectors.joining(","));
+                String srcDateFormat = ConvertUtils.getString(curRow.getCell(3));
+                String srcSyncType = ConvertUtils.getString(curRow.getCell(4));
+                String targetItemId = ConvertUtils.getString(curRow.getCell(5));
+                String targetDateFormat = ConvertUtils.getString(curRow.getCell(6));
+                String syncFlag = ConvertUtils.getString(curRow.getCell(7));
+                if (!syncFlag.equals("是")) {
+                    continue;
+                }
+                Map<String, Object> entityMap = new HashMap<>();
+                entityMap.put("id", targetItemId);
+                entityMap.put("src_report_id", srcReportId);
+                entityMap.put("src_item_id", srcItemId);
+                entityMap.put("src_date_format", srcDateFormat);
+                entityMap.put("src_sync_type", srcSyncType);
+                entityMap.put("target_item_id", targetItemId);
+                entityMap.put("target_date_format", targetDateFormat);
+                entityMap.put("create_by", curSheetName);
+                entityMapList.add(entityMap);
+            }
+            if (!entityMapList.isEmpty()) {
+                baseService.insertBatch("f_report_itemv_sync", entityMapList, BaseConstant.REPLACE);
             }
         }
     }

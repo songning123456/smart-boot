@@ -26,4 +26,11 @@ public interface BusinessConstant {
 
     String HB_SUFFIX = "_hb";
 
+    /**
+     * (本期数值−去年同期数值)/去年同期数值
+     */
+    String TB_PERCENTAGE_SUFFIX = "_tb_percentage";
+
+    String HB_PERCENTAGE_SUFFIX = "_hb_percentage";
+
 }
