@@ -1,4 +1,4 @@
-package com.sonin.modules.config;
+package com.sonin.modules.mpp.config;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.net.NetUtil;
