@@ -4,8 +4,8 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.sonin.modules.base.constant.BaseConstant;
-import com.sonin.modules.base.service.IBaseService;
+import com.sonin.modules.mpp.constant.MPPConstant;
+import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
 import com.sonin.utils.ExpressionUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ import com.aspose.words.*;
 public class JinguBootApplicationTest {
 
     @Autowired
-    private IBaseService baseService;
+    private IMPPService baseService;
 
     /**
      * 读取excel
@@ -127,7 +127,7 @@ public class JinguBootApplicationTest {
             dataMap0.put("score_desc_id", scoreOne);
             dataMap0.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("evaluate_score", dataMap0, BaseConstant.INSERT_IGNORE);
+            baseService.insert("evaluate_score", dataMap0, MPPConstant.INSERT_IGNORE);
             // 2
             Map<String, Object> dataMap1 = new HashMap<>();
             dataMap1.put("id", ConvertUtils.UUID(scoreTwo + scoreOne));
@@ -136,7 +136,7 @@ public class JinguBootApplicationTest {
             dataMap1.put("score_desc_id", scoreTwo);
             dataMap1.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("evaluate_score", dataMap1, BaseConstant.INSERT_IGNORE);
+            baseService.insert("evaluate_score", dataMap1, MPPConstant.INSERT_IGNORE);
             // 3
             Map<String, Object> dataMap2 = new HashMap<>();
             dataMap2.put("id", ConvertUtils.UUID(scoreThree + scoreTwo + scoreOne));
@@ -145,7 +145,7 @@ public class JinguBootApplicationTest {
             dataMap2.put("score_desc_id", scoreThree);
             dataMap1.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("evaluate_score", dataMap2, BaseConstant.INSERT_IGNORE);
+            baseService.insert("evaluate_score", dataMap2, MPPConstant.INSERT_IGNORE);
             // 4
             Map<String, Object> dataMap3 = new HashMap<>();
             dataMap3.put("id", ConvertUtils.UUID(scoreThreeElement + scoreThree + scoreTwo + scoreOne));
@@ -156,14 +156,14 @@ public class JinguBootApplicationTest {
             dataMap3.put("score_remark", scoreThreeRule);
             dataMap3.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("evaluate_score", dataMap3, BaseConstant.INSERT_IGNORE);
+            baseService.insert("evaluate_score", dataMap3, MPPConstant.INSERT_IGNORE);
         }
         baseService.insert("evaluate_score", new HashMap<String, Object>() {{
             put("id", rootId);
             put("score_time", scoreTime);
             put("score_desc_id", "root");
             put("order_num", 0);
-        }}, BaseConstant.INSERT_IGNORE);
+        }}, MPPConstant.INSERT_IGNORE);
     }
 
     /**
@@ -245,7 +245,7 @@ public class JinguBootApplicationTest {
             dataMap0.put("qualitative_desc_id", dictMap.get(one));
             dataMap0.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap0, BaseConstant.INSERT_IGNORE);
+            baseService.insert("carbon_qualitative", dataMap0, MPPConstant.INSERT_IGNORE);
             // 2
             Map<String, Object> dataMap1 = new HashMap<>();
             dataMap1.put("id", ConvertUtils.UUID(two + one));
@@ -254,7 +254,7 @@ public class JinguBootApplicationTest {
             dataMap1.put("qualitative_desc_id", dictMap.get(two));
             dataMap1.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap1, BaseConstant.INSERT_IGNORE);
+            baseService.insert("carbon_qualitative", dataMap1, MPPConstant.INSERT_IGNORE);
             // 3
             Map<String, Object> dataMap2 = new HashMap<>();
             dataMap2.put("id", ConvertUtils.UUID(three + two + one));
@@ -266,7 +266,7 @@ public class JinguBootApplicationTest {
             }
             dataMap1.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap2, BaseConstant.INSERT_IGNORE);
+            baseService.insert("carbon_qualitative", dataMap2, MPPConstant.INSERT_IGNORE);
             // 4
             if (StringUtils.isEmpty(four)) {
                 continue;
@@ -279,14 +279,14 @@ public class JinguBootApplicationTest {
             dataMap3.put("qualitative_value", value);
             dataMap3.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap3, BaseConstant.INSERT_IGNORE);
+            baseService.insert("carbon_qualitative", dataMap3, MPPConstant.INSERT_IGNORE);
         }
         baseService.insert("carbon_qualitative", new HashMap<String, Object>() {{
             put("id", rootId);
             put("qualitative_time", qualitativeTime);
             put("qualitative_desc_id", "root");
             put("order_num", 0);
-        }}, BaseConstant.INSERT_IGNORE);
+        }}, MPPConstant.INSERT_IGNORE);
     }
 
     @Test
@@ -317,7 +317,7 @@ public class JinguBootApplicationTest {
             dataMap0.put("qualitative_desc_id", one);
             dataMap0.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap0, BaseConstant.INSERT_IGNORE);
+            baseService.insert("carbon_qualitative", dataMap0, MPPConstant.INSERT_IGNORE);
             // 2
             Map<String, Object> dataMap1 = new HashMap<>();
             dataMap1.put("id", two + one);
@@ -326,7 +326,7 @@ public class JinguBootApplicationTest {
             dataMap1.put("qualitative_desc_id", two);
             dataMap1.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap1, BaseConstant.INSERT_IGNORE);
+            baseService.insert("carbon_qualitative", dataMap1, MPPConstant.INSERT_IGNORE);
             // 3
             Map<String, Object> dataMap2 = new HashMap<>();
             dataMap2.put("id", three + two + one);
@@ -338,7 +338,7 @@ public class JinguBootApplicationTest {
             }
             dataMap1.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap2, BaseConstant.INSERT_IGNORE);
+            baseService.insert("carbon_qualitative", dataMap2, MPPConstant.INSERT_IGNORE);
             // 4
             if (StringUtils.isEmpty(four)) {
                 continue;
@@ -351,14 +351,14 @@ public class JinguBootApplicationTest {
             dataMap3.put("qualitative_value", value);
             dataMap3.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap3, BaseConstant.INSERT_IGNORE);
+            baseService.insert("carbon_qualitative", dataMap3, MPPConstant.INSERT_IGNORE);
         }
         baseService.insert("carbon_qualitative", new HashMap<String, Object>() {{
             put("id", rootId);
             put("qualitative_time", qualitativeTime);
             put("qualitative_desc_id", "root");
             put("order_num", 0);
-        }}, BaseConstant.INSERT_IGNORE);
+        }}, MPPConstant.INSERT_IGNORE);
     }
 
     /**

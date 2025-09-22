@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.LambdaUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.core.toolkit.support.SerializedLambda;
 import com.google.common.base.CaseFormat;
-import com.sonin.modules.base.service.IBaseService;
+import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.core.context.SpringContext;
 import com.sonin.utils.ReflectUtils;
 import org.apache.ibatis.reflection.property.PropertyNamer;
@@ -587,25 +587,25 @@ public abstract class Base implements IBase {
 
     public Map<String, Object> queryForMap() {
         printLog();
-        IBaseService baseService = SpringContext.getBean(IBaseService.class);
+        IMPPService baseService = SpringContext.getBean(IMPPService.class);
         return baseService.queryForMap(this.prefixSql, this.queryWrapper);
     }
 
     public IPage<Map<String, Object>> queryForPage(IPage<?> page) {
         printLog();
-        IBaseService baseService = SpringContext.getBean(IBaseService.class);
+        IMPPService baseService = SpringContext.getBean(IMPPService.class);
         return baseService.queryForPage(page, this.prefixSql, this.queryWrapper);
     }
 
     public List<Map<String, Object>> queryForList() {
         printLog();
-        IBaseService baseService = SpringContext.getBean(IBaseService.class);
+        IMPPService baseService = SpringContext.getBean(IMPPService.class);
         return baseService.queryForList(this.prefixSql, this.queryWrapper);
     }
 
     public Map<String, Object> queryForMap(String DBName) {
         printLog();
-        IBaseService baseService = SpringContext.getBean(IBaseService.class);
+        IMPPService baseService = SpringContext.getBean(IMPPService.class);
         Map<String, Object> queryMap = null;
         try {
             DynamicDataSourceContextHolder.push(DBName);
@@ -620,7 +620,7 @@ public abstract class Base implements IBase {
 
     public IPage<Map<String, Object>> queryForPage(IPage<?> page, String DBName) {
         printLog();
-        IBaseService baseService = SpringContext.getBean(IBaseService.class);
+        IMPPService baseService = SpringContext.getBean(IMPPService.class);
         IPage<Map<String, Object>> queryMapPage = null;
         try {
             DynamicDataSourceContextHolder.push(DBName);
@@ -635,7 +635,7 @@ public abstract class Base implements IBase {
 
     public List<Map<String, Object>> queryForList(String DBName) {
         printLog();
-        IBaseService baseService = SpringContext.getBean(IBaseService.class);
+        IMPPService baseService = SpringContext.getBean(IMPPService.class);
         List<Map<String, Object>> queryMapList = null;
         try {
             DynamicDataSourceContextHolder.push(DBName);

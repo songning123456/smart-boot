@@ -1,4 +1,4 @@
-package com.sonin.modules.base.service;
+package com.sonin.modules.mpp.service;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -10,7 +10,7 @@ import java.util.Map;
  * @author sonin
  * @date 2022/3/16 15:08
  */
-public interface IBaseService {
+public interface IMPPService {
 
     String queryForString(String sqlSelect, Wrapper<?> wrapper);
 

@@ -2,8 +2,8 @@ package com.sonin;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sonin.core.mpp.DataSourceTemplate;
-import com.sonin.modules.base.constant.BaseConstant;
-import com.sonin.modules.base.service.IBaseService;
+import com.sonin.modules.mpp.constant.MPPConstant;
+import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -32,7 +32,7 @@ import java.util.Map;
 public class LMSBootApplicationTest {
 
     @Autowired
-    private IBaseService baseService;
+    private IMPPService baseService;
 
     /**
      * 插入设备
@@ -57,7 +57,7 @@ public class LMSBootApplicationTest {
             entityMap.put("rtu_sn", "0");
             entityMap.put("communication_method", "4G");
             DataSourceTemplate.execute("master", () -> {
-                baseService.insert("lms_product", entityMap, BaseConstant.INSERT_IGNORE);
+                baseService.insert("lms_product", entityMap, MPPConstant.INSERT_IGNORE);
                 return 1;
             });
         }

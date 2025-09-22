@@ -3,7 +3,7 @@ package com.sonin;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sonin.core.constant.BusinessConstant;
 import com.sonin.core.mpp.DataSourceTemplate;
-import com.sonin.modules.base.service.IBaseService;
+import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
 import com.sonin.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class BishuiyuanBootApplicationTest {
 
     @Autowired
-    private IBaseService baseService;
+    private IMPPService baseService;
 
     /**
      * 删除重复的点位

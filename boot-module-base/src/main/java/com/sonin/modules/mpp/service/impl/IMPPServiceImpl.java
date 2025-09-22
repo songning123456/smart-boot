@@ -1,12 +1,12 @@
-package com.sonin.modules.base.service.impl;
+package com.sonin.modules.mpp.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.common.base.CaseFormat;
-import com.sonin.modules.base.component.UniqueIdService;
-import com.sonin.modules.base.constant.BaseConstant;
-import com.sonin.modules.base.mapper.BaseMapper;
-import com.sonin.modules.base.service.IBaseService;
+import com.sonin.modules.mpp.component.UniqueIdService;
+import com.sonin.modules.mpp.constant.MPPConstant;
+import com.sonin.modules.mpp.mapper.MPPMapper;
+import com.sonin.modules.mpp.service.IMPPService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -18,60 +18,60 @@ import java.util.*;
  * @date 2022/3/16 15:08
  */
 @Service
-public class IBaseServiceImpl implements IBaseService {
+public class IMPPServiceImpl implements IMPPService {
 
     @Resource
-    private BaseMapper baseMapper;
+    private MPPMapper MPPMapper;
     @Resource
     private UniqueIdService uniqueIdService;
 
     @Override
     public String queryForString(String sqlSelect, Wrapper<?> wrapper) {
-        return baseMapper.queryForString(sqlSelect, wrapper);
+        return MPPMapper.queryForString(sqlSelect, wrapper);
     }
 
     @Override
     public Map<String, Object> queryForMap(String sqlSelect, Wrapper<?> wrapper) {
-        return baseMapper.queryForMap(sqlSelect, wrapper);
+        return MPPMapper.queryForMap(sqlSelect, wrapper);
     }
 
     @Override
     public IPage<Map<String, Object>> queryForPage(IPage<?> page, String sqlSelect, Wrapper<?> wrapper) {
-        return baseMapper.queryForPage(page, sqlSelect, wrapper);
+        return MPPMapper.queryForPage(page, sqlSelect, wrapper);
     }
 
     @Override
     public List<Map<String, Object>> queryForList(String sqlSelect, Wrapper<?> wrapper) {
-        return baseMapper.queryForList(sqlSelect, wrapper);
+        return MPPMapper.queryForList(sqlSelect, wrapper);
     }
 
     @Override
     public Integer update(String tableName, Wrapper<?> wrapper) {
-        return baseMapper.update(tableName, wrapper);
+        return MPPMapper.update(tableName, wrapper);
     }
 
     @Override
     public Integer delete(String tableName, Wrapper<?> wrapper) {
-        return baseMapper.delete(tableName, wrapper);
+        return MPPMapper.delete(tableName, wrapper);
     }
 
     @Override
     public Integer insert(String tableName, Map<String, Object> ew) {
         // 设置主键ID
         IDFunc(ew);
-        return insert(tableName, ew, BaseConstant.INSERT);
+        return insert(tableName, ew, MPPConstant.INSERT);
     }
 
     @Override
     public Integer insert(String tableName, Map<String, Object> ew, String insertType) {
         // 设置主键ID
         IDFunc(ew);
-        return baseMapper.insert(tableName, ew, insertType);
+        return MPPMapper.insert(tableName, ew, insertType);
     }
 
     @Override
     public <S> Integer save(String tableName, S entity) {
-        return save(tableName, entity, BaseConstant.INSERT);
+        return save(tableName, entity, MPPConstant.INSERT);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class IBaseServiceImpl implements IBaseService {
         try {
             Class<?> clazz = entity.getClass();
             Field[] fields;
-            while (!BaseConstant.OBJECT_CLASS_NAME.equals(clazz.getName())) {
+            while (!MPPConstant.OBJECT_CLASS_NAME.equals(clazz.getName())) {
                 fields = clazz.getDeclaredFields();
                 for (Field field : fields) {
                     field.setAccessible(true);
@@ -98,12 +98,12 @@ public class IBaseServiceImpl implements IBaseService {
         }
         // 设置主键ID
         IDFunc(ew);
-        return baseMapper.insert(tableName, ew, insertType);
+        return MPPMapper.insert(tableName, ew, insertType);
     }
 
     @Override
     public Integer insertBatch(String tableName, List<Map<String, Object>> dataList) {
-        return insertBatch(tableName, dataList, BaseConstant.INSERT);
+        return insertBatch(tableName, dataList, MPPConstant.INSERT);
     }
 
     @Override
@@ -128,12 +128,12 @@ public class IBaseServiceImpl implements IBaseService {
             IDFunc(ew);
             ewList.add(ew);
         }
-        return baseMapper.insertBatch(tableName, keys, ewList, insertType);
+        return MPPMapper.insertBatch(tableName, keys, ewList, insertType);
     }
 
     @Override
     public <S> Integer saveBatch(String tableName, List<S> dataList) {
-        return saveBatch(tableName, dataList, BaseConstant.INSERT);
+        return saveBatch(tableName, dataList, MPPConstant.INSERT);
     }
 
     @Override
@@ -152,7 +152,7 @@ public class IBaseServiceImpl implements IBaseService {
                 clazz = dataList.get(i).getClass();
                 entity = dataList.get(i);
                 ew = new LinkedHashMap();
-                while (!BaseConstant.OBJECT_CLASS_NAME.equals(clazz.getName())) {
+                while (!MPPConstant.OBJECT_CLASS_NAME.equals(clazz.getName())) {
                     fields = clazz.getDeclaredFields();
                     for (Field field : fields) {
                         field.setAccessible(true);
@@ -172,7 +172,7 @@ public class IBaseServiceImpl implements IBaseService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return baseMapper.insertBatch(tableName, keys, ewList, insertType);
+        return MPPMapper.insertBatch(tableName, keys, ewList, insertType);
     }
 
     /**
@@ -182,8 +182,8 @@ public class IBaseServiceImpl implements IBaseService {
      * @return
      */
     private void IDFunc(Map<String, Object> ew) {
-        if (ew.containsKey(BaseConstant.ID) && (ew.get(BaseConstant.ID) == null || "".equals(ew.get(BaseConstant.ID)))) {
-            ew.put(BaseConstant.ID, uniqueIdService.nextId());
+        if (ew.containsKey(MPPConstant.ID) && (ew.get(MPPConstant.ID) == null || "".equals(ew.get(MPPConstant.ID)))) {
+            ew.put(MPPConstant.ID, uniqueIdService.nextId());
         }
     }
 

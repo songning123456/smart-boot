@@ -1,4 +1,4 @@
-package com.sonin.modules.base.mapper;
+package com.sonin.modules.mpp.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -12,7 +12,7 @@ import java.util.Map;
  * @author sonin
  * @date 2022/3/16 14:19
  */
-public interface BaseMapper {
+public interface MPPMapper {
 
     String queryForString(@Param("sqlSelect") String sqlSelect, @Param(Constants.WRAPPER) Wrapper<?> ew);
 

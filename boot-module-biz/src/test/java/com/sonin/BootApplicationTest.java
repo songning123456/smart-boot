@@ -6,8 +6,8 @@ import com.sonin.core.constant.BusinessConstant;
 import com.sonin.core.context.SpringContext;
 import com.sonin.core.entity.CaseWhen;
 import com.sonin.core.mpp.DataSourceTemplate;
-import com.sonin.modules.base.constant.BaseConstant;
-import com.sonin.modules.base.service.IBaseService;
+import com.sonin.modules.mpp.constant.MPPConstant;
+import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.DateUtils;
 import com.sonin.utils.ConvertUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ import java.util.*;
 public class BootApplicationTest {
 
     @Autowired
-    private IBaseService baseService;
+    private IMPPService baseService;
 
 
     /**
@@ -141,7 +141,7 @@ public class BootApplicationTest {
                             put("config_type", configType);
                             put("config_code", configCode);
                         }};
-                        baseService.insert("model_config", entityMap0, com.sonin.modules.base.constant.BaseConstant.INSERT_IGNORE);
+                        baseService.insert("model_config", entityMap0, MPPConstant.INSERT_IGNORE);
                     }
                 } else {
                     String time = ConvertUtils.getString(csvRecord.get(0));
@@ -159,7 +159,7 @@ public class BootApplicationTest {
                         entityMap.put("v", cellValue);
                         String tableSuffix = time.substring(0, 10).replaceAll("-", "");
                         DataSourceTemplate.execute("ynlj-third", () -> {
-                            baseService.insert("model_data" + tableSuffix, entityMap, com.sonin.modules.base.constant.BaseConstant.INSERT_IGNORE);
+                            baseService.insert("model_data" + tableSuffix, entityMap, MPPConstant.INSERT_IGNORE);
                             return 1;
                         });
                     }
@@ -227,21 +227,21 @@ public class BootApplicationTest {
             put("create_by", "sonin0");
         }};
         // 检查主键，重复会报错，res0=1
-        int res0 = baseService.insert("demo_n", entity0Map, BaseConstant.INSERT);
+        int res0 = baseService.insert("demo_n", entity0Map, MPPConstant.INSERT);
         // 测试insert ignore
         Map<String, Object> entity1Map = new LinkedHashMap<String, Object>() {{
             put("id", "1");
             put("create_by", "sonin1");
         }};
         // 忽略主键相同的数据，res1=0
-        int res1 = baseService.insert("demo_n", entity1Map, BaseConstant.INSERT_IGNORE);
+        int res1 = baseService.insert("demo_n", entity1Map, MPPConstant.INSERT_IGNORE);
         // 测试replace
         Map<String, Object> entity2Map = new LinkedHashMap<String, Object>() {{
             put("id", "1");
             put("create_by", "sonin2");
         }};
         // 若有相同主键则替换，若无则新生成，res2=2
-        int res2 = baseService.insert("demo_n", entity2Map, BaseConstant.REPLACE);
+        int res2 = baseService.insert("demo_n", entity2Map, MPPConstant.REPLACE);
         System.out.println("end");
     }
 

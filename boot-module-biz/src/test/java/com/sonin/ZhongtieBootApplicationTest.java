@@ -3,7 +3,7 @@ package com.sonin;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sonin.core.context.SpringContext;
-import com.sonin.modules.base.service.IBaseService;
+import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import java.util.Map;
 public class ZhongtieBootApplicationTest {
 
     @Autowired
-    private IBaseService baseService;
+    private IMPPService baseService;
 
     @Test
     public void updateSysDepartTest() {

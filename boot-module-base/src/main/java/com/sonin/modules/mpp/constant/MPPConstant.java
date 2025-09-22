@@ -1,4 +1,4 @@
-package com.sonin.modules.base.constant;
+package com.sonin.modules.mpp.constant;
 
 /**
  * <pre>
@@ -8,7 +8,7 @@ package com.sonin.modules.base.constant;
  * @author sonin
  * @version 1.0 2023/12/8 16:23
  */
-public interface BaseConstant {
+public interface MPPConstant {
 
     /**
      * mysql插入数据类型insert

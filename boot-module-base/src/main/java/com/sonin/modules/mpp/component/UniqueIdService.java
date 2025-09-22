@@ -1,4 +1,4 @@
-package com.sonin.modules.base.component;
+package com.sonin.modules.mpp.component;
 
 import cn.hutool.core.lang.Snowflake;
 import org.springframework.beans.factory.annotation.Autowired;

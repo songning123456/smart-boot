@@ -7,13 +7,12 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.sonin.modules.base.constant.BaseConstant;
-import com.sonin.modules.base.service.IBaseService;
+import com.sonin.modules.mpp.constant.MPPConstant;
+import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
 import com.sonin.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -46,7 +45,7 @@ import java.util.stream.Collectors;
 public class SnBootApplicationTest {
 
     @Autowired
-    private IBaseService baseService;
+    private IMPPService baseService;
 
     @Test
     public void readExcelTest() {
@@ -106,7 +105,7 @@ public class SnBootApplicationTest {
                     resMap.put("full_name", fullName);
                 }
             }
-            baseService.insertBatch("sys_demo", resMapList, BaseConstant.INSERT_IGNORE);
+            baseService.insertBatch("sys_demo", resMapList, MPPConstant.INSERT_IGNORE);
             // 关闭资源
             workbook.close();
             file.close();
@@ -143,7 +142,7 @@ public class SnBootApplicationTest {
 //        String tokenStr = HttpUtils.doGet("http://120.24.255.164:5010/api/OAuth/SignInAsync?phone=18921099239&password=123456");
 //        JSON tokenJson = JSONUtil.parse(tokenStr);
 //        String tokenStr0 = ((JSONObject) tokenJson).getJSONObject("data").getStr("token");
-        String tokenStr0 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlMTU0ZTdiMC0zYjIxLTQ1MzItYTU0MC0wMmNlOWNhZTY2NTciLCJuYW1lIjoi5p-z5ZCv5YWJIiwibWVjaGFuaXNtSWQiOiI5MzJjNDNkMy1kM2UwLTRlOTUtODYzMy01YmVjYmMzZjkyN2EiLCJtZWNoYW5pc21OYW1lIjoi5bm_5bee5aSp5L-h5L-d6Zmp5YWs5Lyw5pyJ6ZmQ5YWs5Y-45rGf6IuP5YiG5YWs5Y-4Iiwicm9sZUlkcyI6ImIxOTQ3YmZiLTMwMzYtNDY4NS1iODZjLWM1Mzg4M2UyOGUyZCwyZWVkYzg5OS0zOWE2LTRiNDAtYjc1MS04NTljYTFiM2U2MTMsMDFiZjY3OTktYzNiMC00ODdjLWFjNDItOThkZmJhN2Q5ZjY0LDdlZmRiZTk4LTJhZGUtNGIwZC05ZDIxLWEyNDczNjliYzZjNCIsInBob25lIjoiMTg5MjEwOTkyMzkiLCJuYmYiOjE3NTc2NDM0NzQsImV4cCI6MTc1NzcyOTg3NCwiaXNzIjoiYmxkLnlqeCIsImF1ZCI6ImJsZC55angifQ.a8t3wNlt2p1iBY-VHVdQUNA7sdq4gH6DTH6rwzCPFfc";
+        String tokenStr0 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlMTU0ZTdiMC0zYjIxLTQ1MzItYTU0MC0wMmNlOWNhZTY2NTciLCJuYW1lIjoi5p-z5ZCv5YWJIiwibWVjaGFuaXNtSWQiOiI5MzJjNDNkMy1kM2UwLTRlOTUtODYzMy01YmVjYmMzZjkyN2EiLCJtZWNoYW5pc21OYW1lIjoi5bm_5bee5aSp5L-h5L-d6Zmp5YWs5Lyw5pyJ6ZmQ5YWs5Y-45rGf6IuP5YiG5YWs5Y-4Iiwicm9sZUlkcyI6ImIxOTQ3YmZiLTMwMzYtNDY4NS1iODZjLWM1Mzg4M2UyOGUyZCwyZWVkYzg5OS0zOWE2LTRiNDAtYjc1MS04NTljYTFiM2U2MTMsMDFiZjY3OTktYzNiMC00ODdjLWFjNDItOThkZmJhN2Q5ZjY0LDdlZmRiZTk4LTJhZGUtNGIwZC05ZDIxLWEyNDczNjliYzZjNCIsInBob25lIjoiMTg5MjEwOTkyMzkiLCJuYmYiOjE3NTgyNDQ1NTIsImV4cCI6MTc1ODMzMDk1MiwiaXNzIjoiYmxkLnlqeCIsImF1ZCI6ImJsZC55angifQ.NUOqTmmkzNnp_ai7-_1Hgfz9EYWiJ_NXsZFWyc9_ZJo";
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put("authorization", "Bearer " + tokenStr0);
         String resStr = HttpUtils.doGet("http://120.24.255.164:5010/api/AnXinDcTask/QueryPagerZyAnXinDcTask?FinanceStates=0&FinanceStates=10&FinanceStates=20&CProdTypes=%E8%B4%A3%E4%BB%BB%E4%BF%9D%E9%99%A9&CProdTypes=%E6%84%8F%E5%A4%96%E4%BC%A4%E5%AE%B3%E4%BF%9D%E9%99%A9&personDanger=&page=1&pageSize=1000", headerMap);

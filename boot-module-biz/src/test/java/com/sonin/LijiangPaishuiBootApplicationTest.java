@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sonin.core.constant.BusinessConstant;
 import com.sonin.core.mpp.DataSourceTemplate;
-import com.sonin.modules.base.service.IBaseService;
+import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
 import com.sonin.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ import java.util.Map;
 public class LijiangPaishuiBootApplicationTest {
 
     @Autowired
-    private IBaseService baseService;
+    private IMPPService baseService;
 
     /**
      * 修改count数据

@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sonin.core.constant.BusinessConstant;
 import com.sonin.core.context.SpringContext;
-import com.sonin.modules.base.constant.BaseConstant;
-import com.sonin.modules.base.service.IBaseService;
+import com.sonin.modules.mpp.constant.MPPConstant;
+import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
 import com.sonin.utils.DateUtils;
 import com.sonin.utils.ExpressionUtils;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 public class ZhongyeBootApplicationTest {
 
     @Autowired
-    private IBaseService baseService;
+    private IMPPService baseService;
 
     /**
      * 考试得分排名
@@ -355,7 +355,7 @@ public class ZhongyeBootApplicationTest {
                 entityMap.put("remark", remarkPrefix + "新增");
                 entityMapList.add(entityMap);
             }
-            baseService.insertBatch("equipment_sparepart_supplies", entityMapList, BaseConstant.INSERT_IGNORE);
+            baseService.insertBatch("equipment_sparepart_supplies", entityMapList, MPPConstant.INSERT_IGNORE);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -415,7 +415,7 @@ public class ZhongyeBootApplicationTest {
                 entityMapList.add(entityMap);
             }
             if (!entityMapList.isEmpty()) {
-                baseService.insertBatch("f_report_itemv_sync", entityMapList, BaseConstant.REPLACE);
+                baseService.insertBatch("f_report_itemv_sync", entityMapList, MPPConstant.REPLACE);
             }
         }
     }

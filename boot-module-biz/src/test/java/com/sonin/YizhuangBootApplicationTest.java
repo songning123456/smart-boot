@@ -1,13 +1,12 @@
 package com.sonin;
 
-import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sonin.core.constant.BusinessConstant;
 import com.sonin.core.entity.MapDFS;
 import com.sonin.core.mpp.DataSourceTemplate;
-import com.sonin.modules.base.constant.BaseConstant;
-import com.sonin.modules.base.service.IBaseService;
+import com.sonin.modules.mpp.constant.MPPConstant;
+import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
 import com.sonin.utils.DateUtils;
 import com.sonin.utils.ExpressionUtils;
@@ -47,7 +46,7 @@ import java.util.stream.Collectors;
 public class YizhuangBootApplicationTest {
 
     @Autowired
-    private IBaseService baseService;
+    private IMPPService baseService;
     @Autowired
     private TransactionTemplate transactionTemplate;
 
@@ -659,7 +658,7 @@ public class YizhuangBootApplicationTest {
         List<List<Map<String, Object>>> partitionList = ListUtils.partition(entityMapList, 1000);
         transactionTemplate.executeWithoutResult(transactionStatus -> {
             for (List<Map<String, Object>> partition : partitionList) {
-                baseService.insertBatch("f_data_item", partition, BaseConstant.REPLACE);
+                baseService.insertBatch("f_data_item", partition, MPPConstant.REPLACE);
                 log.info("批量插入数据项: {}", partition.size());
             }
         });
@@ -786,9 +785,9 @@ public class YizhuangBootApplicationTest {
                 equipmentExtMapList.add(equipmentExtMap);
             }
             transactionTemplate.execute(transactionStatus -> {
-                baseService.insertBatch("equipment_info", equipmentInfoMapList, BaseConstant.REPLACE);
-                baseService.insertBatch("equipment_asset", equipmentAssetMapList, BaseConstant.REPLACE);
-                baseService.insertBatch("equipment_ext", equipmentExtMapList, BaseConstant.REPLACE);
+                baseService.insertBatch("equipment_info", equipmentInfoMapList, MPPConstant.REPLACE);
+                baseService.insertBatch("equipment_asset", equipmentAssetMapList, MPPConstant.REPLACE);
+                baseService.insertBatch("equipment_ext", equipmentExtMapList, MPPConstant.REPLACE);
                 return 1;
             });
         }
@@ -819,16 +818,17 @@ public class YizhuangBootApplicationTest {
 
     @Test
     public void reportItemvSyncExcelTest() throws Exception {
-        String filePath = "E:\\Company\\kingtrol\\037-亦庄\\报表数据同步\\报表数据同步v3.xlsx";
+        String filePath = "E:\\Company\\kingtrol\\037-亦庄\\报表数据同步\\报表数据同步v4.xlsx";
         FileInputStream fileInputStream = new FileInputStream(new File(filePath));
         XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
         List<String> sheetNameList = new ArrayList<String>() {{
 //            add("能耗日报表");
 //            add("中控运行记录");
 //            add("汇总报表");
-            add("成本控制表");
+//            add("成本控制表");
 //            add("能耗日报表(污水厂)");
 //            add("能耗日报表(标厂)");
+            add("水务局报表");
         }};
         for (String curSheetName : sheetNameList) {
             XSSFSheet curSheet = workbook.getSheet(curSheetName);
@@ -868,7 +868,7 @@ public class YizhuangBootApplicationTest {
                 entityMapList.add(entityMap);
             }
             if (!entityMapList.isEmpty()) {
-                baseService.insertBatch("f_report_itemv_sync", entityMapList, BaseConstant.REPLACE);
+                baseService.insertBatch("f_report_itemv_sync", entityMapList, MPPConstant.REPLACE);
             }
         }
     }
@@ -932,7 +932,7 @@ public class YizhuangBootApplicationTest {
             }
             Date now = new Date();
             if (!entityMapList.isEmpty()) {
-                baseService.insertBatch("f_report_itemv_convert", entityMapList, BaseConstant.INSERT);
+                baseService.insertBatch("f_report_itemv_convert", entityMapList, MPPConstant.INSERT);
             }
         }
     }
@@ -1183,7 +1183,7 @@ public class YizhuangBootApplicationTest {
                 }
             }
         }
-        baseService.insertBatch("f_report_itemv", entityMapList, BaseConstant.REPLACE);
+        baseService.insertBatch("f_report_itemv", entityMapList, MPPConstant.REPLACE);
     }
 
     /**
@@ -1409,7 +1409,7 @@ public class YizhuangBootApplicationTest {
                 }
             }
         }
-        baseService.insertBatch("f_report_itemv", entityMapList, BaseConstant.REPLACE);
+        baseService.insertBatch("f_report_itemv", entityMapList, MPPConstant.REPLACE);
     }
 
     /**
@@ -1504,7 +1504,7 @@ public class YizhuangBootApplicationTest {
                 }
             }
         }
-        baseService.insertBatch("f_report_itemv", entityMapList, BaseConstant.REPLACE);
+        baseService.insertBatch("f_report_itemv", entityMapList, MPPConstant.REPLACE);
     }
 
     /**
