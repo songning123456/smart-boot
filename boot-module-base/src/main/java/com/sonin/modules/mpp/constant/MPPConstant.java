@@ -2,7 +2,7 @@ package com.sonin.modules.mpp.constant;
 
 /**
  * <pre>
- * base模块基本常量
+ * MPP模块基本常量
  * </pre>
  *
  * @author sonin
