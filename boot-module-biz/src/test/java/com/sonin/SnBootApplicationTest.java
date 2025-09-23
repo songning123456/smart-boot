@@ -12,6 +12,7 @@ import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
 import com.sonin.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -23,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,11 +43,13 @@ import java.util.stream.Collectors;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = BootApplication.class)
-@ActiveProfiles("sn")
+@ActiveProfiles("dev")
 public class SnBootApplicationTest {
 
     @Autowired
-    private IMPPService baseService;
+    private IMPPService mppService;
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     @Test
     public void readExcelTest() {
@@ -62,7 +66,7 @@ public class SnBootApplicationTest {
                 throw new IllegalArgumentException("不支持的文件格式，仅支持.xlsx和.xls格式");
             }
             // 查询所有的区域信息
-            List<Map<String, Object>> sysAreaList = baseService.queryForList("select * from sys_area", new QueryWrapper<>());
+            List<Map<String, Object>> sysAreaList = mppService.queryForList("select * from sys_area", new QueryWrapper<>());
             Map<String, String> areaId2NameDictMap = sysAreaList.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("id")), item -> ConvertUtils.getString(item.get("area_name"))));
             // 查询机构信息
             List<String> columnList1 = new ArrayList<String>() {{
@@ -73,7 +77,7 @@ public class SnBootApplicationTest {
                 add("sys_factory_info.pro_county");
                 add("sys_factory_info.pro_address");
             }};
-            List<Map<String, Object>> queryMapList1 = baseService.queryForList("select " + String.join(",", columnList1) + " from sys_depart left join sys_factory_info on sys_depart.id = sys_factory_info.factory_id", new QueryWrapper<>());
+            List<Map<String, Object>> queryMapList1 = mppService.queryForList("select " + String.join(",", columnList1) + " from sys_depart left join sys_factory_info on sys_depart.id = sys_factory_info.factory_id", new QueryWrapper<>());
             // 获取第一个工作表
             Sheet sheet0 = workbook.getSheetAt(0);
             // 遍历每一行
@@ -105,12 +109,12 @@ public class SnBootApplicationTest {
                     resMap.put("full_name", fullName);
                 }
             }
-            baseService.insertBatch("sys_demo", resMapList, MPPConstant.INSERT_IGNORE);
+            mppService.insertBatch("sys_demo", resMapList, MPPConstant.INSERT_IGNORE);
             // 关闭资源
             workbook.close();
             file.close();
             // 手动处理完 城市生活污水处理厂 白马镇污水处理厂
-            List<Map<String, Object>> queryMapLis2 = baseService.queryForList("select * from sys_demo", new QueryWrapper<>().in("depart_name", Arrays.asList("城市生活污水处理厂", "白马镇污水处理厂")));
+            List<Map<String, Object>> queryMapLis2 = mppService.queryForList("select * from sys_demo", new QueryWrapper<>().in("depart_name", Arrays.asList("城市生活污水处理厂", "白马镇污水处理厂")));
             for (Map<String, Object> tmpMap : queryMapLis2) {
                 String departId = ConvertUtils.getString(tmpMap.get("depart_id"));
                 Optional<Map<String, Object>> tmpOptional = queryMapList1.stream().filter(item -> departId.equals(item.get("id"))).findFirst();
@@ -127,7 +131,7 @@ public class SnBootApplicationTest {
                             .set("pro_address", proAddress)
                             .set("full_name", fullName)
                             .eq("id", tmpMap.get("id"));
-                    baseService.update("sys_demo", updateWrapper2);
+                    mppService.update("sys_demo", updateWrapper2);
                 }
             }
         } catch (Exception e) {
@@ -165,6 +169,106 @@ public class SnBootApplicationTest {
         System.out.println("typeB=" + typeB);
         System.out.println("typeC=" + typeC);
         System.out.println("typeABC=" + (typeA + typeB + typeC));
+    }
+
+    @Test
+    public void yss2Test() {
+        // http://ccx.chezhuweishi.com/#/login
+        // 18921099239，123456
+        String tokenStr0 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiNWQwZDYzMC1kNDM1LTRiMTEtYjBmNi1jMzZmZDJmMjU0ZDciLCJuYW1lIjoi5p-z5ZCv5YWJIiwibWVjaGFuaXNtSWQiOiI0MjBjNWZlZS00OGFmLTQ1MGYtOTljNy05ZWU1YTAzM2YxYmEiLCJyb2xlSWRzIjoiNDU1MjllOGYtNThlOC00MWYwLWI3MjQtZmI4ODIzNmJlOTIwIiwibmJmIjoxNzU4NTMyOTExLCJleHAiOjE3NTg2MTkzMTEsImlzcyI6ImJsZC5jb250cmFjdCIsImF1ZCI6ImJsZC5jb250cmFjdCJ9.s3sTxH9SAuAoltkWZOuMu6_tITC_gniFSvGwZ-YPcHY";
+        Map<String, String> headerMap = new HashMap<>();
+        headerMap.put("authorization", "Bearer " + tokenStr0);
+        String resStr = HttpUtils.doGet("http://47.107.67.160:8009/api/Assets/QueryAssetsType?Word=&AssetsTypes=[]&AssetsStates=[]&CrimeCity=&IsZCPG=true&AssetsCaseType=2&MechanismId=&Operator=&page=1&pageSize=500&startTime=&endTime=&creationStartTime=&creationEndTime=&Mechanism=", headerMap);
+        JSON json = JSONUtil.parse(resStr);
+        JSONArray jsonArray = ((JSONObject) json).getJSONObject("data").getJSONArray("data");
+        List<Map<String, Object>> entityMapList = new ArrayList<>();
+        String notFinishStr = "71H6106010620240318A000001\n" +
+                "71H6106010620240319A000003\n" +
+                "71H6106010620240415A000001\n" +
+                "71H6106010620240410A000004\n" +
+                "8601192024032305000670\n" +
+                "CCX202409010900197753\n" +
+                "RQYC2024310000N0039443\n" +
+                "RQBB2024310000S0004001\n" +
+                "RQBB2024310000N0039149\n" +
+                "RQBB2024310000N0039125\n" +
+                "DSHH4600242400002324\n" +
+                "DSHH480029240000005\n" +
+                "DSHH4100242400000020\n" +
+                "401042000000240008885\n" +
+                "423C70111202420000594\n" +
+                "DSHH4600242400002474\n" +
+                "RQBB2024310000N0041121\n" +
+                "8601012024310067000247\n" +
+                "RQEF2024310000N0041206\n" +
+                "RQYC2024310000N0040343\n" +
+                "RQYC2024310000N0041075\n" +
+                "RQBB2024310000N0040281\n" +
+                "CCX202410040700200303\n" +
+                "CCX202410020500200228\n" +
+                "4220300202422030000007\n" +
+                "4220300202422030000006\n" +
+                "CCX202411140600203135\n" +
+                "CCX202411140100203087\n" +
+                "CCX202501030200206497 \n" +
+                "423B70111202520000076\n" +
+                "91000002800002549596\n" +
+                "423B70111202520000109 \n" +
+                "402022000000251884562\n" +
+                "860119202503230500012\n" +
+                "CCX202506060400217278 \n" +
+                "DSHH4600702500001509\n" +
+                "CCX202507161100220235\n" +
+                "8601192024032305001548\n" +
+                "0761~000405\n" +
+                "DSHH4600702500003329\n" +
+                "71H6108010620250810A000001\n" +
+                "71H6108010620250816A000001\n" +
+                "423B70111202520000329\n" +
+                "71H6108010620250815A000001\n" +
+                "71H6106010620250824A000002\n" +
+                "71H6108010620250820A000001\n" +
+                "71H6108010620250820A000002\n" +
+                "71H6108010620250805A000001\n" +
+                "71H6108010620250822A000001\n" +
+                "71H6108010620250808A000001\n" +
+                "71H6108010620250718A000001\n" +
+                "71H6108010620250715A000001\n" +
+                "71H6108010620250726A000001\n" +
+                "71H6108010620250802A000001\n" +
+                "71H6108010620250807A000001\n" +
+                "71H6108010620250825A000001\n" +
+                "71H6108122920250907A000001\n" +
+                "71H6108010620250906A000001\n" +
+                "71H6108010620250905A000001\n" +
+                "71H6108010620250903A000001\n" +
+                "71H6108010620250831A000001\n" +
+                "8601012025441203000006\n";
+        List<String> notFinishList = Arrays.asList(notFinishStr.split("\n"));
+        for (int i = 0; i < jsonArray.size(); i++) {
+            String id = jsonArray.getJSONObject(i).getStr("id");
+            String inCaseNo = jsonArray.getJSONObject(i).getStr("inCaseNo");
+            if (!notFinishList.contains(inCaseNo)) {
+                continue;
+            }
+            String tmpResStr = HttpUtils.doGet("http://47.107.67.160:8009/api/Assets/QueryAssetsPropertyInsuranceResponse/" + id, headerMap);
+            JSON tmpJSON = JSONUtil.parse(tmpResStr);
+            JSONObject tmpObj = ((JSONObject) tmpJSON).getJSONObject("data").getJSONObject("assets");
+//            String fileNo = tmpObj.getStr("fileNo");
+            String ajxq = tmpObj.getStr("ajxq");
+            entityMapList.add(new HashMap<String, Object>() {{
+                put("id", id);
+                put("in_case_no", inCaseNo);
+                put("ajxq", ajxq);
+            }});
+        }
+        if (!entityMapList.isEmpty()) {
+            List<List<Map<String, Object>>> partitionList = ListUtils.partition(entityMapList, 100);
+            transactionTemplate.execute(transactionStatus -> {
+                partitionList.forEach(partition -> mppService.insertBatch("demo_003", partition));
+                return 1;
+            });
+        }
     }
 
 }
