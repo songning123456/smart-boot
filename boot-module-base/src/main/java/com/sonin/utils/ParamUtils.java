@@ -3,6 +3,7 @@ package com.sonin.utils;
 import com.sonin.core.constant.BusinessConstant;
 import com.sonin.core.context.SpringContext;
 import com.sonin.core.entity.MapDFS;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.*;
@@ -191,6 +192,52 @@ public class ParamUtils {
             filteredTree.add(filteredNode);
         }
         return filteredTree;
+    }
+
+    /**
+     * 获取指定ID的所有父级机构
+     *
+     * @param entityMapList 所有列表(含id和parentId)
+     * @param targetId      目标ID
+     * @return 所有父级部门列表（从直接父级到最顶级）
+     */
+    public static List<String> getAllParentIdFunc(List<Map<String, Object>> entityMapList, String targetId) {
+        // 构建ID到部门的映射，提高查询效率
+        Map<Object, Map<String, Object>> id2EntityMap = new HashMap<>(10);
+        for (Map<String, Object> entityMap : entityMapList) {
+            String tmpId = ConvertUtils.getString(entityMap.get("id"));
+            if (StringUtils.isNotEmpty(tmpId)) {
+                id2EntityMap.put(tmpId, entityMap);
+            }
+        }
+        List<String> parentIdList = new ArrayList<>();
+        String currentId = targetId;
+        // 循环向上查找父级
+        while (true) {
+            // 获取当前ID对应的部门
+            Map<String, Object> currentMap = id2EntityMap.get(currentId);
+            if (currentMap == null) {
+                // 未找到当前部门，终止查找
+                break;
+            }
+            // 获取父级ID
+            String tmpParentId = ConvertUtils.getString(currentMap.get("parentId"));
+            if (StringUtils.isEmpty(tmpParentId)) {
+                // 没有父级ID，终止查找
+                break;
+            }
+            // 查找父级部门
+            Map<String, Object> parentMap = id2EntityMap.get(tmpParentId);
+            if (parentMap == null) {
+                // 未找到父级部门，终止查找
+                break;
+            }
+            // 将父级部门添加到列表
+            parentIdList.add(ConvertUtils.getString(parentMap.get("id")));
+            // 继续查找父级的父级
+            currentId = tmpParentId;
+        }
+        return parentIdList;
     }
 
     /**

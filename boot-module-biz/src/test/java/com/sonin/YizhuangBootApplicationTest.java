@@ -875,27 +875,23 @@ public class YizhuangBootApplicationTest {
 
     @Test
     public void reportItemvConvertExcelTest() throws Exception {
-        String filePath = "E:\\Company\\kingtrol\\037-亦庄\\报表数据同步\\报表数据同步v3.xlsx";
+        String filePath = "E:\\Company\\kingtrol\\037-亦庄\\报表数据同步\\数据同步PG转Mysql.xlsx";
         FileInputStream fileInputStream = new FileInputStream(new File(filePath));
         XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
         List<String> sheetNameList = new ArrayList<String>() {{
-//            add("水质水量(标厂)");
-            // add("水质水量(污水厂)");
-            // add("中控运行填报");
-            add("汇总报表");
+            add("中控运行记录表");
         }};
         for (String curSheetName : sheetNameList) {
             XSSFSheet curSheet = workbook.getSheet(curSheetName);
             // 从第1行开始，过滤标题行
             List<Map<String, Object>> entityMapList = new ArrayList<>();
-            Map<String, String> srcItemId2SyncTypeMap = new HashMap<>();
             for (int i = 1; i <= curSheet.getLastRowNum(); i++) {
                 Row curRow = curSheet.getRow(i);
                 if (curRow == null) {
                     continue;
                 }
-                // 原始数据项ID
-                String srcItemId = ConvertUtils.getString(curRow.getCell(2));
+                // 源PG数据项ID
+                String srcItemId = ConvertUtils.getString(curRow.getCell(1));
                 if (StringUtils.isEmpty(srcItemId)) {
                     continue;
                 }
@@ -904,18 +900,15 @@ public class YizhuangBootApplicationTest {
                 // 查询target_report_id
                 List<Map<String, Object>> tmpReportIdQueryMapList = baseService.queryForList("select distinct report_id from f_report_item", new QueryWrapper<>().eq("id", targetItemId));
                 String targetReportId = tmpReportIdQueryMapList.stream().map(item -> ConvertUtils.getString(item.get("report_id"))).collect(Collectors.joining(","));
-                String targetDateFormat = ConvertUtils.getString(curRow.getCell(6));
-                String syncFlag = ConvertUtils.getString(curRow.getCell(7));
+                String targetDateFormat = ConvertUtils.getString(curRow.getCell(7));
+                String syncFlag = ConvertUtils.getString(curRow.getCell(8));
                 if (!syncFlag.equals("是")) {
                     continue;
                 }
                 // 原始同步类型
-                String srcConvertType = ConvertUtils.getString(curRow.getCell(4));
-                if (StringUtils.isNotEmpty(srcConvertType)) {
-                    srcItemId2SyncTypeMap.put(srcItemId, srcConvertType);
-                }
+                String srcConvertType = ConvertUtils.getString(curRow.getCell(3));
                 // 源表类型
-                String srcTableType = ConvertUtils.getString(curRow.getCell(9));
+                String srcTableType = ConvertUtils.getString(curRow.getCell(2));
                 if (StringUtils.isEmpty(srcTableType)) {
                     srcTableType = "count";
                 }
