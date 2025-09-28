@@ -69,13 +69,14 @@ public class YizhuangBootApplicationTest {
 //             add("工作交接班记录");
 //            add("标厂汇总总表");
 //             add("中控运行填报报表");
-            add("中控运行记录表");
+//            add("中控运行记录表");
 //             add("MF清洗报表");
 //             add("RO清洗报表");
 //            add("能耗日数据");
 //            add("能耗日报表(标厂)");
 //            add("水质水量日数据(标厂)");
 //            add("生产药剂填报报表");
+            add("水质水量日数据(污水厂)");
         }};
         Map<String, List<String>> reportName2DataItemListMap = new LinkedHashMap<>();
         reportName2DataItemListMap.put("南区污水厂物料能耗日报", new ArrayList<String>() {{
@@ -626,6 +627,9 @@ public class YizhuangBootApplicationTest {
 //            add("液碱");
 //            add("盐酸");
         }});
+        reportName2DataItemListMap.put("水质水量日数据(污水厂)", new ArrayList<String>(){{
+            add("外供水量");
+        }});
         long curSec = System.currentTimeMillis() / 1000;
         // 封装结果集
         List<Map<String, Object>> entityMapList = new ArrayList<>();
@@ -926,6 +930,43 @@ public class YizhuangBootApplicationTest {
             Date now = new Date();
             if (!entityMapList.isEmpty()) {
                 baseService.insertBatch("f_report_itemv_convert", entityMapList, MPPConstant.INSERT);
+            }
+        }
+    }
+
+    @Test
+    public void reportItemvDiffExcelTest() throws Exception {
+        String filePath = "E:\\Company\\kingtrol\\037-亦庄\\报表数据同步\\数据同步(diff).xlsx";
+        FileInputStream fileInputStream = new FileInputStream(new File(filePath));
+        XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+        List<String> sheetNameList = new ArrayList<String>() {{
+            add("水质水量日数据(污水厂)");
+        }};
+        for (String curSheetName : sheetNameList) {
+            XSSFSheet curSheet = workbook.getSheet(curSheetName);
+            // 从第1行开始，过滤标题行
+            List<Map<String, Object>> entityMapList = new ArrayList<>();
+            for (int i = 1; i <= curSheet.getLastRowNum(); i++) {
+                Row curRow = curSheet.getRow(i);
+                if (curRow == null) {
+                    continue;
+                }
+                String srcItemId = ConvertUtils.getString(curRow.getCell(1));
+                String targetReportId = ConvertUtils.getString(curRow.getCell(2));
+                String targetItemId = ConvertUtils.getString(curRow.getCell(3));
+                String targetDepartId = ConvertUtils.getString(curRow.getCell(4));
+                Map<String, Object> entityMap = new HashMap<>();
+                entityMap.put("id", targetItemId);
+                entityMap.put("src_item_id", srcItemId);
+                entityMap.put("target_item_id", targetItemId);
+                entityMap.put("target_report_id", targetReportId);
+                entityMap.put("target_depart_id", targetDepartId);
+                entityMap.put("create_by", curSheetName);
+                entityMapList.add(entityMap);
+            }
+            Date now = new Date();
+            if (!entityMapList.isEmpty()) {
+                baseService.insertBatch("f_report_itemv_diff", entityMapList, MPPConstant.INSERT);
             }
         }
     }

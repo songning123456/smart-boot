@@ -8,6 +8,7 @@ import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
 import com.sonin.utils.CoordinateConverter;
 import com.sonin.utils.DateUtils;
+import com.sonin.utils.DistanceCalculatorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -297,7 +298,8 @@ public class LjzssBootApplicationTest {
         // 表后缀
         String tableNameSuffix = "_20250923bak";
         // 要搜索的文件夹路径，可以根据需要修改
-        String folderPath = "E:\\Company\\kingtrol\\035-丽江再生水\\20250923资料";
+//        String folderPath = "E:\\Company\\kingtrol\\035-丽江再生水\\20250923资料";
+        String folderPath = "E:\\Company\\kingtrol\\035-丽江再生水\\20250926资料";
         File folder = new File(folderPath);
         // 检查文件夹是否存在且是一个目录
         if (!folder.exists() || !folder.isDirectory()) {
@@ -422,6 +424,36 @@ public class LjzssBootApplicationTest {
                     .set("mars_longitude", gcjCoord.getLongitude())
                     .eq("id", id);
             mppService.update(tableName, updateWrapper0);
+        }
+    }
+
+    @Test
+    public void calLengthFunc() {
+        // 1. 管线总里程
+        // 查询所有的管井
+        List<Map<String, Object>> pipeMapList = mppService.queryForList("select * from pipenetwork_tubewell", new QueryWrapper<>());
+        Map<String, Double[]> pipeId2InfoMap = pipeMapList.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("id")), item -> new Double[]{ConvertUtils.getDouble(item.get("pro_longitude"), 0D), ConvertUtils.getDouble(item.get("pro_latitude"), 0D)}));
+        // 查询所有的管线信息
+        List<Map<String, Object>> pipeLineMapList = mppService.queryForList("select * from pipenetwork_pipeline_20250926v2", new QueryWrapper<>());
+        for (Map<String, Object> pipeLineMap : pipeLineMapList) {
+            String id = ConvertUtils.getString(pipeLineMap.get("id"));
+            if (id.contains(",")) {
+                String[] tmpIdArr = id.split(",");
+                if  (tmpIdArr.length == 2) {
+                    String startPipeId = tmpIdArr[0];
+                    String endPipeId = tmpIdArr[1];
+                    boolean successFlag = pipeId2InfoMap.containsKey(startPipeId) && pipeId2InfoMap.containsKey(endPipeId) && pipeId2InfoMap.get(startPipeId)[0] != 0D && pipeId2InfoMap.get(startPipeId)[1] != 0D && pipeId2InfoMap.get(endPipeId)[0] != 0D && pipeId2InfoMap.get(endPipeId)[1] != 0D;
+                    if (successFlag) {
+                        // 计算管线长度
+                        double tmpDistance = DistanceCalculatorUtils.calculateDistance(pipeId2InfoMap.get(startPipeId)[1], pipeId2InfoMap.get(startPipeId)[0], pipeId2InfoMap.get(endPipeId)[1], pipeId2InfoMap.get(endPipeId)[0]);
+                        UpdateWrapper<?> updateWrapper0 = new UpdateWrapper<>();
+                        updateWrapper0.set("length", tmpDistance)
+                                .eq("id", id);
+                        mppService.update("pipenetwork_pipeline_20250926v2", updateWrapper0);
+                    }
+
+                }
+            }
         }
     }
 }
