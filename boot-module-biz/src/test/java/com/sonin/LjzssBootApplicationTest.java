@@ -439,7 +439,7 @@ public class LjzssBootApplicationTest {
             String id = ConvertUtils.getString(pipeLineMap.get("id"));
             if (id.contains(",")) {
                 String[] tmpIdArr = id.split(",");
-                if  (tmpIdArr.length == 2) {
+                if (tmpIdArr.length == 2) {
                     String startPipeId = tmpIdArr[0];
                     String endPipeId = tmpIdArr[1];
                     boolean successFlag = pipeId2InfoMap.containsKey(startPipeId) && pipeId2InfoMap.containsKey(endPipeId) && pipeId2InfoMap.get(startPipeId)[0] != 0D && pipeId2InfoMap.get(startPipeId)[1] != 0D && pipeId2InfoMap.get(endPipeId)[0] != 0D && pipeId2InfoMap.get(endPipeId)[1] != 0D;
@@ -456,4 +456,30 @@ public class LjzssBootApplicationTest {
             }
         }
     }
+
+    /**
+     * 批量添加第三方报警配置
+     */
+    @Test
+    public void addThirdAlarmConfigTest() {
+        // 查询所有报警类型
+        QueryWrapper<?> alarmTypeQueryWrapper = new QueryWrapper<>();
+        alarmTypeQueryWrapper.isNotNull("alarm_type_value");
+        List<Map<String, Object>> alarmTypeMapList = mppService.queryForList("select * from third_alarm_type", alarmTypeQueryWrapper);
+        // 遍历
+        List<Map<String, Object>> entityMapList = new ArrayList<>();
+        for (Map<String, Object> item: alarmTypeMapList) {
+            String alarmTypeId = ConvertUtils.getString(item.get("id"));
+            Map<String, Object> entityMap = new HashMap<>();
+            entityMap.put("id", ConvertUtils.UUID(alarmTypeId));
+            entityMap.put("alarm_type_id", alarmTypeId);
+            entityMap.put("alarm_level", "T001");
+            entityMap.put("send_flag", "1");
+            entityMap.put("alarm_start_time", "00");
+            entityMap.put("alarm_end_time", "23");
+            entityMapList.add(entityMap);
+        }
+        mppService.insertBatch("third_alarm_config", entityMapList);
+    }
+
 }
