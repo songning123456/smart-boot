@@ -2,10 +2,14 @@ package com.sonin;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.sonin.core.constant.BusinessConstant;
 import com.sonin.core.context.SpringContext;
+import com.sonin.core.mpp.DataSourceTemplate;
 import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
+import com.sonin.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.QueueUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +81,34 @@ public class ZhongtieBootApplicationTest {
                 updateWrapper0.set("equip_code", tempEquipCode)
                         .eq("id", id);
                 baseService.update("equip_info", updateWrapper0);
+            }
+        }
+    }
+
+    @Test
+    public void updateCountData() {
+        List<Map<String, Object>> srcDataMapList = DataSourceTemplate.execute("native", () -> baseService.queryForList("select * from baoxie_data", new QueryWrapper<>()));
+        for (Map<String, Object> item : srcDataMapList) {
+            String nm = ConvertUtils.getString(item.get("nm"));
+            String time = ConvertUtils.getString(item.get("time"));
+            String ts = DateUtils.dateStr2Sec(time, BusinessConstant.DATE_FORMAT).toString();
+            double v = ConvertUtils.getDouble(item.get("v"), 0D);
+            // 查询数据
+            QueryWrapper<?> tmpQueryWrapper = new QueryWrapper<>();
+            tmpQueryWrapper.eq("nm", nm)
+                    .eq("ts", ts);
+            Map<String, Object> tmpMap = DataSourceTemplate.execute("pg-db", () -> baseService.queryForMap("select * from bxwsclc_count", tmpQueryWrapper));
+            if (tmpMap != null) {
+                String tmpId = ConvertUtils.getString(tmpMap.get("id"));
+                String tmpV = ConvertUtils.getString(tmpMap.get("v"));
+                double tmpV0 = ConvertUtils.getDouble(tmpV, 0D);
+                if (tmpV0 != v) {
+                    // 更新数据
+                    UpdateWrapper<?> tmpUpdateWrapper = new UpdateWrapper<>();
+                    tmpUpdateWrapper.set("v", v)
+                            .eq("id", Integer.parseInt(tmpId));
+                    DataSourceTemplate.execute("pg-db", () -> baseService.update("bxwsclc_count", tmpUpdateWrapper));
+                }
             }
         }
     }
