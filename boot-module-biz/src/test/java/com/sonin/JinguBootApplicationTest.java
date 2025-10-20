@@ -910,6 +910,88 @@ public class JinguBootApplicationTest {
         }
     }
 
+    /**
+     * 工艺仪表 6组数据
+     */
+    @Test
+    public void runDataInstrumentTest2() {
+        // 氨氮集合
+        List<String> andanParentIdList = Arrays.asList("1912046256905101313", "1912046256905101314", "1912046256905101315", "1912046256905101316", "1912046256905101317", "1912046256905101318");
+        List<String[]> andanMapList = new ArrayList<String[]>(){{
+            add(new String[]{"NH0", "进水"});
+            add(new String[]{"NH1", "预缺氧"});
+            add(new String[]{"NH2", "厌氧"});
+            add(new String[]{"NH3", "缺氧"});
+            add(new String[]{"NH4", "好氧"});
+            add(new String[]{"NH5", "后缺氧"});
+            add(new String[]{"NH6", "后好氧"});
+            add(new String[]{"NH9", "出水"});
+        }};
+        // 硝氮集合
+        List<String> xiaodanParentIdList = Arrays.asList("1912046318376820737", "1912046318376820738", "1912046318376820739", "1912046318376820740", "1912046318376820741", "1912046318376820742");
+        List<String[]> xiaodanMapList = new ArrayList<String[]>(){{
+            add(new String[]{"NO1", "预缺氧"});
+            add(new String[]{"NO2", "厌氧"});
+            add(new String[]{"NO3", "缺氧"});
+            add(new String[]{"NO4", "好氧"});
+            add(new String[]{"NO5", "后缺氧"});
+            add(new String[]{"NO6", "后好氧"});
+        }};
+        // 总氮集合
+        List<String> zongdanParentIdList = Arrays.asList("1912046372625948674", "1912046372625948675", "1912046372625948676", "1912046372625948677", "1912046372625948678", "1912046372625948679");
+        List<String[]> zongdanMapList = new ArrayList<String[]>(){{
+            add(new String[]{"TN0", "进水"});
+            add(new String[]{"TN1", "预缺氧"});
+            add(new String[]{"TN2", "厌氧"});
+            add(new String[]{"TN3", "缺氧"});
+            add(new String[]{"TN4", "好氧"});
+            add(new String[]{"TN5", "后缺氧"});
+            add(new String[]{"TN6", "后好氧"});
+            add(new String[]{"TN7", "深床滤池进口"});
+            add(new String[]{"TN8", "深床滤池出口"});
+            add(new String[]{"TN9", "出水"});
+        }};
+        // 总磷集合
+        List<String> zonglinParentIdList = Arrays.asList("1912046494415953921", "1912046494415953922", "1912046494415953923", "1912046494415953924", "1912046494415953925", "191204649441595396");
+        List<String[]> zonglinMapList = new ArrayList<String[]>(){{
+            add(new String[]{"TP0", "进水"});
+            add(new String[]{"TP6", "后好氧"});
+            add(new String[]{"TP7", "高效沉淀池进口"});
+            add(new String[]{"TP8", "高效沉淀池出口"});
+            add(new String[]{"TP9", "出水"});
+        }};
+        // 当前变量，动态修改
+//        List<String> curParentIdList = andanParentIdList;
+//        List<String[]> curMapList = andanMapList;
+//        List<String> curParentIdList = xiaodanParentIdList;
+//        List<String[]> curMapList = xiaodanMapList;
+//        List<String> curParentIdList = zongdanParentIdList;
+//        List<String[]> curMapList = zongdanMapList;
+        List<String> curParentIdList = zonglinParentIdList;
+        List<String[]> curMapList = zonglinMapList;
+        Date now = new Date();
+        for (String parentId : curParentIdList) {
+            int orderNum = 0;
+            for (String[] item : curMapList) {
+                // 封装对象
+                Map<String, Object> entityMap = new HashMap<>();
+                entityMap.put("id", null);
+                entityMap.put("parent_id", parentId);
+                entityMap.put("relation_id", "{jingu01_GXCA_Tag371}");
+                entityMap.put("data_name", item[0]);
+                entityMap.put("data_alias", item[1]);
+                entityMap.put("data_type", "data");
+                entityMap.put("remark", "");
+                entityMap.put("create_time", now);
+                entityMap.put("order_num", orderNum);
+                entityMap.put("del_flag", "0");
+                baseService.insert("run_data_instrument", entityMap);
+                orderNum += 10;
+            }
+
+        }
+    }
+
     @Test
     public void wordTest() throws Exception {
         // 加载文档
@@ -1015,7 +1097,7 @@ public class JinguBootApplicationTest {
         List<Map<String, Object>> queryMapList1 = baseService.queryForList("select * from sys_algorithm_library_detail", queryWrapper1);
         List<Map<String, Object>> reportConvertFormList = new ArrayList<>();
         Set<String> convertCodeSet = new HashSet<>();
-        for (Map<String, Object> item: queryMapList1) {
+        for (Map<String, Object> item : queryMapList1) {
             String indexCode = ConvertUtils.getString(item.get("index_code"));
             String realIndexCode = ConvertUtils.getString(item.get("real_index_code"));
             if (convertCodeSet.contains(indexCode)) {
