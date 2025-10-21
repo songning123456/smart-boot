@@ -9,10 +9,13 @@ import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
 import com.sonin.utils.ExpressionUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,12 +24,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.aspose.words.*;
+import org.springframework.transaction.support.TransactionTemplate;
 
 
 /**
@@ -40,7 +45,9 @@ import com.aspose.words.*;
 public class JinguBootApplicationTest {
 
     @Autowired
-    private IMPPService baseService;
+    private IMPPService mppService;
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     /**
      * 读取excel
@@ -58,7 +65,7 @@ public class JinguBootApplicationTest {
         List<Map<String, Object>> dataMapList = new ArrayList<>();
         String prevScoreOne = "", prevScoreTwo = "", prevScoreThree = "", prevScoreThreeElement = "", prevScoreThreeRule = "";
         String scoreTime = "2025-01";
-        List<Map<String, Object>> queryMapList0 = baseService.queryForList("select * from evaluate_score_desc", new QueryWrapper<>());
+        List<Map<String, Object>> queryMapList0 = mppService.queryForList("select * from evaluate_score_desc", new QueryWrapper<>());
         Map<String, String> dictMap = queryMapList0.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("score_desc")), item -> ConvertUtils.getString(item.get("id"))));
         for (Row row : sheet) {
             if (index != 0) {
@@ -97,7 +104,7 @@ public class JinguBootApplicationTest {
             }
             index++;
         }
-        baseService.insertBatch("evaluate_score", dataMapList);
+        mppService.insertBatch("evaluate_score", dataMapList);
         // 5. 关闭文件流
         workbook.close();
         fileInputStream.close();
@@ -111,7 +118,7 @@ public class JinguBootApplicationTest {
         String scoreTime = "2025-01";
         String rootId = ConvertUtils.UUID("root");
         int orderNum = 10;
-        List<Map<String, Object>> queryMapList0 = baseService.queryForList("select * from evaluate_score_20250228", new QueryWrapper<>().eq("score_time", scoreTime));
+        List<Map<String, Object>> queryMapList0 = mppService.queryForList("select * from evaluate_score_20250228", new QueryWrapper<>().eq("score_time", scoreTime));
         for (Map<String, Object> item : queryMapList0) {
             String scoreOne = ConvertUtils.getString(item.get("score_one"));
             String scoreTwo = ConvertUtils.getString(item.get("score_two"));
@@ -127,7 +134,7 @@ public class JinguBootApplicationTest {
             dataMap0.put("score_desc_id", scoreOne);
             dataMap0.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("evaluate_score", dataMap0, MPPConstant.INSERT_IGNORE);
+            mppService.insert("evaluate_score", dataMap0, MPPConstant.INSERT_IGNORE);
             // 2
             Map<String, Object> dataMap1 = new HashMap<>();
             dataMap1.put("id", ConvertUtils.UUID(scoreTwo + scoreOne));
@@ -136,7 +143,7 @@ public class JinguBootApplicationTest {
             dataMap1.put("score_desc_id", scoreTwo);
             dataMap1.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("evaluate_score", dataMap1, MPPConstant.INSERT_IGNORE);
+            mppService.insert("evaluate_score", dataMap1, MPPConstant.INSERT_IGNORE);
             // 3
             Map<String, Object> dataMap2 = new HashMap<>();
             dataMap2.put("id", ConvertUtils.UUID(scoreThree + scoreTwo + scoreOne));
@@ -145,7 +152,7 @@ public class JinguBootApplicationTest {
             dataMap2.put("score_desc_id", scoreThree);
             dataMap1.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("evaluate_score", dataMap2, MPPConstant.INSERT_IGNORE);
+            mppService.insert("evaluate_score", dataMap2, MPPConstant.INSERT_IGNORE);
             // 4
             Map<String, Object> dataMap3 = new HashMap<>();
             dataMap3.put("id", ConvertUtils.UUID(scoreThreeElement + scoreThree + scoreTwo + scoreOne));
@@ -156,9 +163,9 @@ public class JinguBootApplicationTest {
             dataMap3.put("score_remark", scoreThreeRule);
             dataMap3.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("evaluate_score", dataMap3, MPPConstant.INSERT_IGNORE);
+            mppService.insert("evaluate_score", dataMap3, MPPConstant.INSERT_IGNORE);
         }
-        baseService.insert("evaluate_score", new HashMap<String, Object>() {{
+        mppService.insert("evaluate_score", new HashMap<String, Object>() {{
             put("id", rootId);
             put("score_time", scoreTime);
             put("score_desc_id", "root");
@@ -213,7 +220,7 @@ public class JinguBootApplicationTest {
                 dataMapList.add(dataMap3);
             }
         }
-        baseService.insertBatch("carbon_qualitative_desc", dataMapList);
+        mppService.insertBatch("carbon_qualitative_desc", dataMapList);
         // 5. 关闭文件流
         workbook.close();
         fileInputStream.close();
@@ -228,9 +235,9 @@ public class JinguBootApplicationTest {
         String rootId = ConvertUtils.UUID("root");
         int orderNum = 10;
         // 翻译
-        List<Map<String, Object>> queryMapList0 = baseService.queryForList("select * from carbon_qualitative_desc", new QueryWrapper<>());
+        List<Map<String, Object>> queryMapList0 = mppService.queryForList("select * from carbon_qualitative_desc", new QueryWrapper<>());
         Map<String, String> dictMap = queryMapList0.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("qualitative_desc")), item -> ConvertUtils.getString(item.get("id"))));
-        List<Map<String, Object>> queryMapList1 = baseService.queryForList("select * from demo_excel_carbon_qualitative", new QueryWrapper<>());
+        List<Map<String, Object>> queryMapList1 = mppService.queryForList("select * from demo_excel_carbon_qualitative", new QueryWrapper<>());
         for (Map<String, Object> item : queryMapList1) {
             String one = ConvertUtils.getString(item.get("a0"));
             String two = ConvertUtils.getString(item.get("a1"));
@@ -245,7 +252,7 @@ public class JinguBootApplicationTest {
             dataMap0.put("qualitative_desc_id", dictMap.get(one));
             dataMap0.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap0, MPPConstant.INSERT_IGNORE);
+            mppService.insert("carbon_qualitative", dataMap0, MPPConstant.INSERT_IGNORE);
             // 2
             Map<String, Object> dataMap1 = new HashMap<>();
             dataMap1.put("id", ConvertUtils.UUID(two + one));
@@ -254,7 +261,7 @@ public class JinguBootApplicationTest {
             dataMap1.put("qualitative_desc_id", dictMap.get(two));
             dataMap1.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap1, MPPConstant.INSERT_IGNORE);
+            mppService.insert("carbon_qualitative", dataMap1, MPPConstant.INSERT_IGNORE);
             // 3
             Map<String, Object> dataMap2 = new HashMap<>();
             dataMap2.put("id", ConvertUtils.UUID(three + two + one));
@@ -266,7 +273,7 @@ public class JinguBootApplicationTest {
             }
             dataMap1.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap2, MPPConstant.INSERT_IGNORE);
+            mppService.insert("carbon_qualitative", dataMap2, MPPConstant.INSERT_IGNORE);
             // 4
             if (StringUtils.isEmpty(four)) {
                 continue;
@@ -279,9 +286,9 @@ public class JinguBootApplicationTest {
             dataMap3.put("qualitative_value", value);
             dataMap3.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap3, MPPConstant.INSERT_IGNORE);
+            mppService.insert("carbon_qualitative", dataMap3, MPPConstant.INSERT_IGNORE);
         }
-        baseService.insert("carbon_qualitative", new HashMap<String, Object>() {{
+        mppService.insert("carbon_qualitative", new HashMap<String, Object>() {{
             put("id", rootId);
             put("qualitative_time", qualitativeTime);
             put("qualitative_desc_id", "root");
@@ -295,7 +302,7 @@ public class JinguBootApplicationTest {
         String rootId = ConvertUtils.UUID("root");
         int orderNum = 10;
         // 翻译
-        List<Map<String, Object>> queryMapList0 = baseService.queryForList("select * from carbon_qualitative_desc", new QueryWrapper<>());
+        List<Map<String, Object>> queryMapList0 = mppService.queryForList("select * from carbon_qualitative_desc", new QueryWrapper<>());
         Map<String, String> dictMap = queryMapList0.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("qualitative_desc")), item -> ConvertUtils.getString(item.get("id"))));
         // 1. 创建输入流，读取Excel文件
         FileInputStream fileInputStream = new FileInputStream("E:\\Company\\kingtrol\\033-津沽\\碳中和分析\\定性分析.xlsx");
@@ -317,7 +324,7 @@ public class JinguBootApplicationTest {
             dataMap0.put("qualitative_desc_id", one);
             dataMap0.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap0, MPPConstant.INSERT_IGNORE);
+            mppService.insert("carbon_qualitative", dataMap0, MPPConstant.INSERT_IGNORE);
             // 2
             Map<String, Object> dataMap1 = new HashMap<>();
             dataMap1.put("id", two + one);
@@ -326,7 +333,7 @@ public class JinguBootApplicationTest {
             dataMap1.put("qualitative_desc_id", two);
             dataMap1.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap1, MPPConstant.INSERT_IGNORE);
+            mppService.insert("carbon_qualitative", dataMap1, MPPConstant.INSERT_IGNORE);
             // 3
             Map<String, Object> dataMap2 = new HashMap<>();
             dataMap2.put("id", three + two + one);
@@ -338,7 +345,7 @@ public class JinguBootApplicationTest {
             }
             dataMap1.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap2, MPPConstant.INSERT_IGNORE);
+            mppService.insert("carbon_qualitative", dataMap2, MPPConstant.INSERT_IGNORE);
             // 4
             if (StringUtils.isEmpty(four)) {
                 continue;
@@ -351,9 +358,9 @@ public class JinguBootApplicationTest {
             dataMap3.put("qualitative_value", value);
             dataMap3.put("order_num", orderNum);
             orderNum += 10;
-            baseService.insert("carbon_qualitative", dataMap3, MPPConstant.INSERT_IGNORE);
+            mppService.insert("carbon_qualitative", dataMap3, MPPConstant.INSERT_IGNORE);
         }
-        baseService.insert("carbon_qualitative", new HashMap<String, Object>() {{
+        mppService.insert("carbon_qualitative", new HashMap<String, Object>() {{
             put("id", rootId);
             put("qualitative_time", qualitativeTime);
             put("qualitative_desc_id", "root");
@@ -779,7 +786,7 @@ public class JinguBootApplicationTest {
                 entityMap.put("create_time", now);
                 entityMap.put("order_num", orderNum);
                 entityMap.put("del_flag", "0");
-                baseService.insert("run_data_display", entityMap);
+                mppService.insert("run_data_display", entityMap);
                 orderNum += 10;
             }
         }
@@ -904,7 +911,7 @@ public class JinguBootApplicationTest {
                 entityMap.put("create_time", now);
                 entityMap.put("order_num", orderNum);
                 entityMap.put("del_flag", "0");
-                baseService.insert("run_data_instrument", entityMap);
+                mppService.insert("run_data_instrument", entityMap);
                 orderNum += 10;
             }
         }
@@ -917,7 +924,7 @@ public class JinguBootApplicationTest {
     public void runDataInstrumentTest2() {
         // 氨氮集合
         List<String> andanParentIdList = Arrays.asList("1912046256905101313", "1912046256905101314", "1912046256905101315", "1912046256905101316", "1912046256905101317", "1912046256905101318");
-        List<String[]> andanMapList = new ArrayList<String[]>(){{
+        List<String[]> andanMapList = new ArrayList<String[]>() {{
             add(new String[]{"NH0", "进水"});
             add(new String[]{"NH1", "预缺氧"});
             add(new String[]{"NH2", "厌氧"});
@@ -929,7 +936,7 @@ public class JinguBootApplicationTest {
         }};
         // 硝氮集合
         List<String> xiaodanParentIdList = Arrays.asList("1912046318376820737", "1912046318376820738", "1912046318376820739", "1912046318376820740", "1912046318376820741", "1912046318376820742");
-        List<String[]> xiaodanMapList = new ArrayList<String[]>(){{
+        List<String[]> xiaodanMapList = new ArrayList<String[]>() {{
             add(new String[]{"NO1", "预缺氧"});
             add(new String[]{"NO2", "厌氧"});
             add(new String[]{"NO3", "缺氧"});
@@ -939,7 +946,7 @@ public class JinguBootApplicationTest {
         }};
         // 总氮集合
         List<String> zongdanParentIdList = Arrays.asList("1912046372625948674", "1912046372625948675", "1912046372625948676", "1912046372625948677", "1912046372625948678", "1912046372625948679");
-        List<String[]> zongdanMapList = new ArrayList<String[]>(){{
+        List<String[]> zongdanMapList = new ArrayList<String[]>() {{
             add(new String[]{"TN0", "进水"});
             add(new String[]{"TN1", "预缺氧"});
             add(new String[]{"TN2", "厌氧"});
@@ -953,7 +960,7 @@ public class JinguBootApplicationTest {
         }};
         // 总磷集合
         List<String> zonglinParentIdList = Arrays.asList("1912046494415953921", "1912046494415953922", "1912046494415953923", "1912046494415953924", "1912046494415953925", "191204649441595396");
-        List<String[]> zonglinMapList = new ArrayList<String[]>(){{
+        List<String[]> zonglinMapList = new ArrayList<String[]>() {{
             add(new String[]{"TP0", "进水"});
             add(new String[]{"TP6", "后好氧"});
             add(new String[]{"TP7", "高效沉淀池进口"});
@@ -985,7 +992,7 @@ public class JinguBootApplicationTest {
                 entityMap.put("create_time", now);
                 entityMap.put("order_num", orderNum);
                 entityMap.put("del_flag", "0");
-                baseService.insert("run_data_instrument", entityMap);
+                mppService.insert("run_data_instrument", entityMap);
                 orderNum += 10;
             }
 
@@ -1023,7 +1030,7 @@ public class JinguBootApplicationTest {
         queryWrapper0.eq("report_id", "5101948d8a2e893012889dca94a5cd2e")
                 .likeRight("item_alias", "碳中和_")
                 .orderByAsc("sort_num");
-        List<Map<String, Object>> queryMapList0 = baseService.queryForList("select * from f_report_item", queryWrapper0);
+        List<Map<String, Object>> queryMapList0 = mppService.queryForList("select * from f_report_item", queryWrapper0);
         for (Map<String, Object> item : queryMapList0) {
             String id = ConvertUtils.getString(item.get("id"));
             String reportId = ConvertUtils.getString(item.get("report_id"));
@@ -1042,13 +1049,13 @@ public class JinguBootApplicationTest {
             entityMap.put("report_item_id", id);
             entityMap.put("report_item_name", reportId + "," + id);
             entityMap.put("scale", "2");
-            baseService.insert("f_report_custom_item", entityMap);
+            mppService.insert("f_report_custom_item", entityMap);
         }
     }
 
     @Test
     public void jsonMapTest() {
-        List<Map<String, Object>> queryMapList0 = baseService.queryForList("select * from run_data_instrument", new QueryWrapper<>().like("data_name", "浓度"));
+        List<Map<String, Object>> queryMapList0 = mppService.queryForList("select * from run_data_instrument", new QueryWrapper<>().like("data_name", "浓度"));
         for (Map<String, Object> item : queryMapList0) {
             String id = ConvertUtils.getString(item.get("id"));
             String relationId = ConvertUtils.getString(item.get("relation_id"));
@@ -1059,7 +1066,7 @@ public class JinguBootApplicationTest {
             UpdateWrapper<?> updateWrapper0 = new UpdateWrapper<>();
             updateWrapper0.set("data_value_type", jsonStr)
                     .eq("id", id);
-            baseService.update("run_data_instrument", updateWrapper0);
+            mppService.update("run_data_instrument", updateWrapper0);
         }
     }
 
@@ -1085,7 +1092,7 @@ public class JinguBootApplicationTest {
         // 1. 获取 公式id
         QueryWrapper<?> queryWrapper0 = new QueryWrapper<>();
         queryWrapper0.in("statistics_code", statisticsodeList).isNotNull("algorithm_id");
-        List<Map<String, Object>> queryMapList0 = baseService.queryForList("select * from sys_algorithm_statistics_library", queryWrapper0);
+        List<Map<String, Object>> queryMapList0 = mppService.queryForList("select * from sys_algorithm_statistics_library", queryWrapper0);
         List<String> algorithmIdList = new ArrayList<>();
         for (Map<String, Object> item : queryMapList0) {
             String algorithmId = ConvertUtils.getString(item.get("algorithm_id"));
@@ -1094,7 +1101,7 @@ public class JinguBootApplicationTest {
         // 2. 获取 公式数据项
         QueryWrapper<?> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.in("library_id", algorithmIdList);
-        List<Map<String, Object>> queryMapList1 = baseService.queryForList("select * from sys_algorithm_library_detail", queryWrapper1);
+        List<Map<String, Object>> queryMapList1 = mppService.queryForList("select * from sys_algorithm_library_detail", queryWrapper1);
         List<Map<String, Object>> reportConvertFormList = new ArrayList<>();
         Set<String> convertCodeSet = new HashSet<>();
         for (Map<String, Object> item : queryMapList1) {
@@ -1113,7 +1120,124 @@ public class JinguBootApplicationTest {
             entityMap.put("metric_info_id", realIndexCode);
             reportConvertFormList.add(entityMap);
         }
-        baseService.insertBatch("report_convert_form", reportConvertFormList);
+        mppService.insertBatch("report_convert_form", reportConvertFormList);
+    }
+
+    @Test
+    public void equipmentInfoImportTest() throws Exception {
+        // String filePath = "E:\\Company\\kingtrol\\037-亦庄\\亦庄设备台账导入模板v1.xlsx";
+        String filePath = "E:\\Company\\kingtrol\\033-津沽\\设备台账\\津沽水厂设备台账v1.xlsx";
+        FileInputStream fileInputStream = new FileInputStream(new File(filePath));
+        Workbook workbook = WorkbookFactory.create(fileInputStream);
+        Sheet sheet0 = workbook.getSheetAt(0);
+        // 1. 获取所有字段
+        Map<Integer, String> colIndex2ColumnMap = new LinkedHashMap<>();
+        Row headRow = sheet0.getRow(0);
+        for (int j = 0; j <= headRow.getLastCellNum(); j++) {
+            org.apache.poi.ss.usermodel.Cell curCell = headRow.getCell(j);
+            String cellValue = ConvertUtils.getString(curCell);
+            if (StringUtils.isNotEmpty(cellValue)) {
+                colIndex2ColumnMap.put(j, cellValue);
+            }
+        }
+        // 需要 新增 或者 更新 的数据
+        List<Map<String, Object>> toAddEquipmentInfoMapList = new ArrayList<>();
+        List<Map<String, Object>> toUpdateEquipmentInfoMapList = new ArrayList<>();
+        Set<String> toUpdateIdSet = new HashSet<>();
+        // 2. 从第二行开始，读取数据
+        for (int i = 1; i <= sheet0.getLastRowNum(); i++) {
+            Row curRow = sheet0.getRow(i);
+            // id
+            String id = ConvertUtils.getString(curRow.getCell(0));
+            // id为空，则下一个
+            if (StringUtils.isEmpty(id)) {
+                continue;
+            }
+            Map<String, Object> tmpEquipmentInfoMap = new HashMap<>();
+            for (int j = 0; j <= curRow.getLastCellNum(); j++) {
+                String column = colIndex2ColumnMap.get(j);
+                if (column != null && !column.equals("")) {
+                    String cellValue = ConvertUtils.getString(curRow.getCell(j));
+                    tmpEquipmentInfoMap.put(column, cellValue);
+                }
+            }
+            if ("新增".equals(id)) {
+                toAddEquipmentInfoMapList.add(tmpEquipmentInfoMap);
+            } else if (StringUtils.isNotEmpty(id)) {
+                // 更新
+                String tmpId = ConvertUtils.getString((int) ConvertUtils.getDouble(id, 0D));
+                tmpEquipmentInfoMap.put("id", tmpId);
+                toUpdateEquipmentInfoMapList.add(tmpEquipmentInfoMap);
+                toUpdateIdSet.add(tmpId);
+            }
+        }
+        // 组装 新增 数据
+        if (!toAddEquipmentInfoMapList.isEmpty()) {
+            List<Map<String, Object>> equipmentAssetMapList = new ArrayList<>();
+            List<Map<String, Object>> equipmentExtMapList = new ArrayList<>();
+            for (Map<String, Object> item : toAddEquipmentInfoMapList) {
+                String equipmentCode = ConvertUtils.getString(item.get("equipment_code"));
+                String equipmentName = ConvertUtils.getString(item.get("equipment_name"));
+                String orderNum = ConvertUtils.getString(item.get("order_num"));
+                String uniqueId = equipmentCode + equipmentName + orderNum;
+                String infoId = ConvertUtils.UUID(uniqueId);
+                String assetId = ConvertUtils.UUID(uniqueId + "1");
+                String extId = ConvertUtils.UUID(uniqueId + "2");
+                item.put("id", infoId);
+                item.put("asset_id", assetId);
+                // 翻译部分
+                item.put("depart_id", "af880d6a13404a67825e94bc0f2f3808");
+                // 设置null
+                for (String key : item.keySet()) {
+                    if (item.get(key) != null && "".equals(String.valueOf(item.get(key)))) {
+                        item.put(key, null);
+                    }
+                }
+                // 扩展部分
+                Map<String, Object> equipmentAssetMap = new LinkedHashMap<String, Object>() {{
+                    put("id", assetId);
+                }};
+                equipmentAssetMapList.add(equipmentAssetMap);
+                Map<String, Object> equipmentExtMap = new LinkedHashMap<String, Object>() {{
+                    put("id", extId);
+                    put("info_id", infoId);
+                }};
+                equipmentExtMapList.add(equipmentExtMap);
+            }
+            List<List<Map<String, Object>>> infoPartitionList = ListUtils.partition(toAddEquipmentInfoMapList, 100);
+            List<List<Map<String, Object>>> assetPartitionList = ListUtils.partition(equipmentAssetMapList, 100);
+            List<List<Map<String, Object>>> extPartitionList = ListUtils.partition(equipmentExtMapList, 100);
+            transactionTemplate.execute(transactionStatus -> {
+                infoPartitionList.forEach(partition -> mppService.insertBatch("equipment_info", partition, MPPConstant.INSERT));
+                assetPartitionList.forEach(partition -> mppService.insertBatch("equipment_asset", partition, MPPConstant.INSERT));
+                extPartitionList.forEach(partition -> mppService.insertBatch("equipment_ext", partition, MPPConstant.INSERT));
+                return 1;
+            });
+        }
+        // 组装 更新 数据
+        if (!toUpdateEquipmentInfoMapList.isEmpty()) {
+            List<Map<String, Object>> toUpdateMapList = new ArrayList<>();
+            // 查询目前数据库数据
+            List<Map<String, Object>> oldEntityMapList = mppService.queryForList("select * from equipment_info", new QueryWrapper<>().in("id", toUpdateIdSet));
+            Map<String, Map<String, Object>> oldId2EntityMap = oldEntityMapList.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("id")), item -> item));
+            for (Map<String, Object> updateItem : toUpdateEquipmentInfoMapList) {
+                String tmpId = ConvertUtils.getString(updateItem.get("id"));
+                if (oldId2EntityMap.containsKey(tmpId)) {
+                    Map<String, Object> tmpToUpdateMap = new HashMap<>(oldId2EntityMap.get(tmpId));
+                    for (String key : new HashSet<>(updateItem.keySet())) {
+                        tmpToUpdateMap.put(key, updateItem.get(key));
+                    }
+                    toUpdateMapList.add(tmpToUpdateMap);
+                }
+            }
+            List<List<Map<String, Object>>> partitionList = ListUtils.partition(toUpdateMapList, 100);
+            transactionTemplate.execute((transactionStatus) -> {
+                partitionList.forEach(partition -> mppService.insertBatch("equipment_info", partition, MPPConstant.REPLACE));
+                return 1;
+            });
+        }
+        workbook.close();
+        fileInputStream.close();
     }
 
 }
