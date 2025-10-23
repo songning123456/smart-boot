@@ -627,7 +627,7 @@ public class YizhuangBootApplicationTest {
 //            add("液碱");
 //            add("盐酸");
         }});
-        reportName2DataItemListMap.put("水质水量日数据(污水厂)", new ArrayList<String>(){{
+        reportName2DataItemListMap.put("水质水量日数据(污水厂)", new ArrayList<String>() {{
             add("外供水量");
         }});
         long curSec = System.currentTimeMillis() / 1000;
@@ -940,7 +940,8 @@ public class YizhuangBootApplicationTest {
         FileInputStream fileInputStream = new FileInputStream(new File(filePath));
         XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
         List<String> sheetNameList = new ArrayList<String>() {{
-            add("水质水量日数据(污水厂)");
+            // add("水质水量日数据(污水厂)");
+            add("中控运行记录表");
         }};
         for (String curSheetName : sheetNameList) {
             XSSFSheet curSheet = workbook.getSheet(curSheetName);
@@ -951,10 +952,32 @@ public class YizhuangBootApplicationTest {
                 if (curRow == null) {
                     continue;
                 }
-                String srcItemId = ConvertUtils.getString(curRow.getCell(1));
-                String targetReportId = ConvertUtils.getString(curRow.getCell(2));
-                String targetItemId = ConvertUtils.getString(curRow.getCell(3));
-                String targetDepartId = ConvertUtils.getString(curRow.getCell(4));
+                String srcItemId = ConvertUtils.getString(curRow.getCell(0));
+                // 重新解析表达式
+                if ("中控运行记录表".equals(curSheetName)) {
+                    Map<String, String> src2TargetSrcItemIdMap = new HashMap<>();
+                    String[] itemIdArr = srcItemId.split("\\*");
+                    // 左侧 体积数据
+                    String leftItemId = itemIdArr[0];
+                    List<String> leftExpressionIdList = ExpressionUtils.parseExpression(leftItemId);
+                    for (String leftExpressionId : leftExpressionIdList) {
+                        String key = "\\{" + leftExpressionId + "}";
+                        String value = "(\\{val=>next_day 16}-\\{val=>next_day 04})+(\\{val=>cur_day 16}-\\{val=>cur_day 04})";
+                        value = value.replaceAll("val", leftExpressionId);
+                        src2TargetSrcItemIdMap.put(key, value);
+                    }
+                    String rightItemId = itemIdArr[1];
+                    for (Map.Entry<String, String> entry : src2TargetSrcItemIdMap.entrySet()) {
+                        srcItemId = srcItemId.replaceAll(entry.getKey(), entry.getValue());
+                    }
+                }
+                String targetReportId = ConvertUtils.getString(curRow.getCell(1));
+                String targetItemId = ConvertUtils.getString(curRow.getCell(2));
+                String targetDepartId = ConvertUtils.getString(curRow.getCell(3));
+                String updateFlag = ConvertUtils.getString(curRow.getCell(4));
+                if (!"是".equals(updateFlag)) {
+                    continue;
+                }
                 Map<String, Object> entityMap = new HashMap<>();
                 entityMap.put("id", targetItemId);
                 entityMap.put("src_item_id", srcItemId);
