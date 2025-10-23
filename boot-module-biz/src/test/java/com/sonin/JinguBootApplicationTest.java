@@ -1240,4 +1240,47 @@ public class JinguBootApplicationTest {
         fileInputStream.close();
     }
 
+    @Test
+    public void updateProductModelTest() throws Exception {
+        // 查询所有的设备台账
+        List<Map<String, Object>> infoMapList = mppService.queryForList("select * from equipment_info", new QueryWrapper<>());
+        Map<String, Map<String, Object>> id2InfoMap = infoMapList.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("id")), item -> item));
+        // 解析excel
+        String filePath = "E:\\Company\\kingtrol\\033-津沽\\设备台账\\津沽水厂设备台账v1.xlsx";
+        FileInputStream fileInputStream = new FileInputStream(new File(filePath));
+        Workbook workbook = WorkbookFactory.create(fileInputStream);
+        Sheet sheet0 = workbook.getSheetAt(0);
+        // 2. 从第二行开始，读取数据
+        for (int i = 1; i <= sheet0.getLastRowNum(); i++) {
+            Row curRow = sheet0.getRow(i);
+            String equipmentCode = ConvertUtils.getString(curRow.getCell(4));
+            String equipmentName = ConvertUtils.getString(curRow.getCell(2));
+            String orderNum = ConvertUtils.getString(curRow.getCell(19));
+            // id
+            String uniqueId = equipmentCode + equipmentName + orderNum;
+            String infoId = ConvertUtils.UUID(uniqueId);
+            if (id2InfoMap.containsKey(infoId)) {
+                // 更新product_model
+                String model0 = ConvertUtils.getString(curRow.getCell(5));
+                String model1 = ConvertUtils.getString(curRow.getCell(6));
+                String productModel = "";
+                if (StringUtils.isEmpty(model0) && StringUtils.isNotEmpty(model1)) {
+                    productModel = model1;
+                } else if (StringUtils.isNotEmpty(model0) && StringUtils.isEmpty(model1)) {
+                    productModel = model0;
+                } else if (StringUtils.isNotEmpty(model0) && StringUtils.isNotEmpty(model1)) {
+                    productModel = model0 + "," + model1;
+                }
+                UpdateWrapper<?> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.set("product_model", productModel)
+                        .eq("id", infoId);
+                try {
+                    mppService.update("equipment_info", updateWrapper);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 }
