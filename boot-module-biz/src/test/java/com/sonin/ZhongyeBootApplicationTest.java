@@ -29,10 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -316,8 +313,8 @@ public class ZhongyeBootApplicationTest {
     public void equipmentSparepartTest() throws Exception {
         // excel文件全路径
 //        String fileName = "E:\\Company\\kingtrol\\034-中冶\\物料信息导入20250704\\物料信息- 导入类别v1.xlsx";
-        String fileName = "E:\\Company\\kingtrol\\034-中冶\\物料信息导入20250704\\物料信息- 导入类别wh_v1.xlsx";
-        String remarkPrefix = "20250902";
+        String fileName = "E:\\Company\\kingtrol\\034-中冶\\物料信息导入20250704\\物料信息导入类别wh1107v2.xlsx";
+        String remarkPrefix = "20251107";
         FileInputStream fileInputStream = null;
         Workbook workbook = null;
         try {
@@ -338,7 +335,7 @@ public class ZhongyeBootApplicationTest {
             List<Map<String, Object>> entityMapList = new ArrayList<>();
             for (Row row: sheet0) {
                 String sparepart_type = ConvertUtils.getString(row.getCell(1));
-                if (!sparepart_type.startsWith("18") && !sparepart_type.startsWith("16")) {
+                if (!sparepart_type.startsWith("16") && !sparepart_type.startsWith("17") && !sparepart_type.startsWith("18")&& !sparepart_type.startsWith("19")) {
                     continue;
                 }
                 String sparepart_name = ConvertUtils.getString(row.getCell(3));
@@ -347,6 +344,7 @@ public class ZhongyeBootApplicationTest {
                 String measuring_unit = ConvertUtils.getString(row.getCell(6));
                 Map<String, Object> entityMap = new HashMap<>();
                 entityMap.put("id", ConvertUtils.UUID(sparepart_type + sparepart_name + sparepart_code + specification + measuring_unit));
+                log.info("id:{}=>{}", ConvertUtils.UUID(sparepart_type + sparepart_name + sparepart_code + specification + measuring_unit), sparepart_type + sparepart_name + sparepart_code + specification + measuring_unit);
                 entityMap.put("sparepart_type", sparepart_type);
                 entityMap.put("sparepart_name", sparepart_name);
                 entityMap.put("sparepart_code", sparepart_code);

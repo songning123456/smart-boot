@@ -44,7 +44,7 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://47.104.23.94:13306/sk-zhongye?characterEncoding=UTF-8&useUnicode=true&useSSL=false
+          url: jdbc:mysql://192.168.20.24:3307/sk-zhongye?characterEncoding=UTF-8&useUnicode=true&useSSL=false
           username: root
           password: jkauto@123
           driver-class-name: com.mysql.cj.jdbc.Driver
