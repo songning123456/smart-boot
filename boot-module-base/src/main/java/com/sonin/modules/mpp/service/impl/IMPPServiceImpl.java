@@ -21,38 +21,38 @@ import java.util.*;
 public class IMPPServiceImpl implements IMPPService {
 
     @Resource
-    private MPPMapper MPPMapper;
+    private MPPMapper mppMapper;
     @Resource
     private UniqueIdService uniqueIdService;
 
     @Override
     public String queryForString(String sqlSelect, Wrapper<?> wrapper) {
-        return MPPMapper.queryForString(sqlSelect, wrapper);
+        return mppMapper.queryForString(sqlSelect, wrapper);
     }
 
     @Override
     public Map<String, Object> queryForMap(String sqlSelect, Wrapper<?> wrapper) {
-        return MPPMapper.queryForMap(sqlSelect, wrapper);
+        return mppMapper.queryForMap(sqlSelect, wrapper);
     }
 
     @Override
     public IPage<Map<String, Object>> queryForPage(IPage<?> page, String sqlSelect, Wrapper<?> wrapper) {
-        return MPPMapper.queryForPage(page, sqlSelect, wrapper);
+        return mppMapper.queryForPage(page, sqlSelect, wrapper);
     }
 
     @Override
     public List<Map<String, Object>> queryForList(String sqlSelect, Wrapper<?> wrapper) {
-        return MPPMapper.queryForList(sqlSelect, wrapper);
+        return mppMapper.queryForList(sqlSelect, wrapper);
     }
 
     @Override
     public Integer update(String tableName, Wrapper<?> wrapper) {
-        return MPPMapper.update(tableName, wrapper);
+        return mppMapper.update(tableName, wrapper);
     }
 
     @Override
     public Integer delete(String tableName, Wrapper<?> wrapper) {
-        return MPPMapper.delete(tableName, wrapper);
+        return mppMapper.delete(tableName, wrapper);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class IMPPServiceImpl implements IMPPService {
     public Integer insert(String tableName, Map<String, Object> ew, String insertType) {
         // 设置主键ID
         IDFunc(ew);
-        return MPPMapper.insert(tableName, ew, insertType);
+        return mppMapper.insert(tableName, ew, insertType);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class IMPPServiceImpl implements IMPPService {
         }
         // 设置主键ID
         IDFunc(ew);
-        return MPPMapper.insert(tableName, ew, insertType);
+        return mppMapper.insert(tableName, ew, insertType);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class IMPPServiceImpl implements IMPPService {
             IDFunc(ew);
             ewList.add(ew);
         }
-        return MPPMapper.insertBatch(tableName, keys, ewList, insertType);
+        return mppMapper.insertBatch(tableName, keys, ewList, insertType);
     }
 
     @Override
@@ -172,7 +172,7 @@ public class IMPPServiceImpl implements IMPPService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return MPPMapper.insertBatch(tableName, keys, ewList, insertType);
+        return mppMapper.insertBatch(tableName, keys, ewList, insertType);
     }
 
     /**
