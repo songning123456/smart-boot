@@ -120,7 +120,7 @@ public class IMPPServiceImpl implements IMPPService {
         List<Map> ewList = new ArrayList<>();
         Map ew;
         for (Map<String, Object> data : dataList) {
-            ew = new LinkedHashMap();
+            ew = new LinkedHashMap<>();
             for (String key : keys) {
                 ew.put(key, data.get(key));
             }
@@ -144,14 +144,14 @@ public class IMPPServiceImpl implements IMPPService {
         List<String> keys = new ArrayList<>();
         List<Map> ewList = new ArrayList<>();
         Map ew;
-        Class clazz;
+        Class<?> clazz;
         Field[] fields;
         S entity;
         try {
             for (int i = 0; i < dataList.size(); i++) {
                 clazz = dataList.get(i).getClass();
                 entity = dataList.get(i);
-                ew = new LinkedHashMap();
+                ew = new LinkedHashMap<>();
                 while (!MPPConstant.OBJECT_CLASS_NAME.equals(clazz.getName())) {
                     fields = clazz.getDeclaredFields();
                     for (Field field : fields) {
