@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sonin.core.constant.BusinessConstant;
 import com.sonin.core.context.SpringContext;
+import com.sonin.core.mpp.DataSourceTemplate;
 import com.sonin.modules.mpp.constant.MPPConstant;
 import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
@@ -333,9 +334,9 @@ public class ZhongyeBootApplicationTest {
             Sheet sheet0 = workbook.getSheetAt(0);
             // 结果集
             List<Map<String, Object>> entityMapList = new ArrayList<>();
-            for (Row row: sheet0) {
+            for (Row row : sheet0) {
                 String sparepart_type = ConvertUtils.getString(row.getCell(1));
-                if (!sparepart_type.startsWith("16") && !sparepart_type.startsWith("17") && !sparepart_type.startsWith("18")&& !sparepart_type.startsWith("19")) {
+                if (!sparepart_type.startsWith("16") && !sparepart_type.startsWith("17") && !sparepart_type.startsWith("18") && !sparepart_type.startsWith("19")) {
                     continue;
                 }
                 String sparepart_name = ConvertUtils.getString(row.getCell(3));
@@ -415,6 +416,42 @@ public class ZhongyeBootApplicationTest {
             if (!entityMapList.isEmpty()) {
                 baseService.insertBatch("f_report_itemv_sync", entityMapList, MPPConstant.REPLACE);
             }
+        }
+    }
+
+    /**
+     * 恩菲数据吨改成kg
+     */
+    @Test
+    public void updateEnfeiDataTest() {
+        // 查询所有恩菲机构
+        QueryWrapper<?> enfeiQueryWrapper = new QueryWrapper<>();
+        enfeiQueryWrapper.eq("item_type", "nhrb");
+        List<Map<String, Object>> enfeiMapList = DataSourceTemplate.execute("nf-db", () -> baseService.queryForList("select distinct depart_id from day_report_data", enfeiQueryWrapper));
+        List<String> departIdList = enfeiMapList.stream().map(item -> ConvertUtils.getString(item.get("depart_id"))).collect(Collectors.toList());
+        // 查询所有itemv数据
+        List<String> itemCodeList = new ArrayList<String>() {{
+            add("PACGT");
+            add("PAMZ");
+            add("PAMF");
+            add("PAMRJ");
+            add("SH");
+        }};
+        String updateBy = "sonin20251110";
+        String inItemCodeStr = itemCodeList.stream().map(item -> "'" + item + "'").collect(Collectors.joining(","));
+        QueryWrapper<?> itemvQueryWrapper = new QueryWrapper<>();
+        itemvQueryWrapper.in("depart_id", departIdList)
+                .inSql("reit_id", "select id from f_report_item where report_id = '3a243d5715b9e1a3753c180872ca0df9' and item_code in (" + inItemCodeStr + ")");
+        List<Map<String, Object>> itemvMapList = baseService.queryForList("select * from f_report_itemv", itemvQueryWrapper);
+        for (Map<String, Object> item: itemvMapList) {
+            String id = ConvertUtils.getString(item.get("id"));
+            String itemValue = ConvertUtils.getString(item.get("item_value"));
+            String newItemValue = ConvertUtils.getString(ConvertUtils.getDouble(itemValue, 0D) * 1000);
+            UpdateWrapper<?> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.set("item_value", newItemValue)
+                    .set("update_by", updateBy)
+                    .eq("id", id);
+            baseService.update("f_report_itemv", updateWrapper);
         }
     }
 

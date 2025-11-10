@@ -48,6 +48,12 @@ spring:
           username: root
           password: jkauto@123
           driver-class-name: com.mysql.cj.jdbc.Driver
+        # 恩菲数据同步
+        nf-db:
+          url: jdbc:mysql://192.168.20.24:3307/zhongye?characterEncoding=UTF-8&useUnicode=true&useSSL=false
+          username: root
+          password: jkauto@123
+          driver-class-name: com.mysql.jdbc.Driver
 
 mybatis-plus:
   mapper-locations: classpath*:com/sonin/modules/**/xml/*Mapper.xml
