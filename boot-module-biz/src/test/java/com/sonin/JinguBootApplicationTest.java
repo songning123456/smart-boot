@@ -1283,4 +1283,46 @@ public class JinguBootApplicationTest {
         }
     }
 
+    @Test
+    public void reportAnalysisDataExcelTest() throws Exception {
+        String filePath = "E:\\Company\\kingtrol\\033-津沽\\报表分析数据\\报表分析数据.xlsx";
+        FileInputStream fileInputStream = new FileInputStream(new File(filePath));
+        XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+        List<String> sheetNameList = new ArrayList<String>() {{
+            add("药耗分析日报");
+        }};
+        for (String curSheetName : sheetNameList) {
+            XSSFSheet curSheet = workbook.getSheet(curSheetName);
+            // 从第1行开始，过滤标题行
+            List<Map<String, Object>> entityMapList = new ArrayList<>();
+            for (int i = 1; i <= curSheet.getLastRowNum(); i++) {
+                Row curRow = curSheet.getRow(i);
+                String id = ConvertUtils.getString(curRow.getCell(0));
+                if (StringUtils.isEmpty(id)) {
+                    continue;
+                }
+                String dataExpression = ConvertUtils.getString(curRow.getCell(1));
+                String dataName = ConvertUtils.getString(curRow.getCell(2));
+                String dataUnit = ConvertUtils.getString(curRow.getCell(3));
+                String dataPoint = ConvertUtils.getString(curRow.getCell(4));
+                // String remark = ConvertUtils.getString(curRow.getCell(5));
+                String syncFlag = ConvertUtils.getString(curRow.getCell(6));
+                if (!syncFlag.equals("是")) {
+                    continue;
+                }
+                Map<String, Object> entityMap = new HashMap<>();
+                entityMap.put("id", id);
+                entityMap.put("data_expression", dataExpression);
+                entityMap.put("data_name", dataName);
+                entityMap.put("data_unit", dataUnit);
+                entityMap.put("data_point", dataPoint);
+                entityMap.put("create_by", curSheetName);
+                entityMapList.add(entityMap);
+            }
+            if (!entityMapList.isEmpty()) {
+                mppService.insertBatch("report_analysis_data", entityMapList, MPPConstant.REPLACE);
+            }
+        }
+    }
+
 }
