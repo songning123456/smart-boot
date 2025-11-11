@@ -455,4 +455,40 @@ public class ZhongyeBootApplicationTest {
         }
     }
 
+    /**
+     * 补充污泥含水率
+     */
+    @Test
+    public void addWnhslTest() {
+        // 查询全部的时间和数据
+        QueryWrapper<?> efQueryWrapper = new QueryWrapper<>();
+        efQueryWrapper.eq("item_type", "nhrb");
+        List<Map<String, Object>> efMapList = DataSourceTemplate.execute("nf-db", () -> baseService.queryForList("select * from day_report_data", efQueryWrapper));
+        Set<String> efTime0DepartIdSet = efMapList.stream().map(item -> item.get("time") + "=>" + item.get("depart_id")).collect(Collectors.toSet());
+        // 遍历插入
+        String reitId = "1843834884271906818";
+        for (String key: efTime0DepartIdSet) {
+            String[] arr = key.split("=>");
+            String tmpTime = arr[0];
+            String tmpDepartId = arr[1];
+            // 查询当天是否有录入过数据
+            QueryWrapper<?> existQueryWrapper = new QueryWrapper<>();
+            existQueryWrapper.eq("depart_id", tmpDepartId)
+                    .eq("data_time", tmpTime);
+            List<Map<String, Object>> existMapList = baseService.queryForList("select * from f_report_itemv", existQueryWrapper);
+            if (!existMapList.isEmpty()) {
+                List<String> existReitIdList = existMapList.stream().map(item -> ConvertUtils.getString(item.get("reit_id"))).collect(Collectors.toList());
+                // 不包含污泥含水率，则插入
+                if (!existReitIdList.contains(reitId)) {
+                    Map<String, Object> entityMap = new HashMap<>(existMapList.get(0));
+                    entityMap.put("id", ConvertUtils.UUID(reitId + tmpDepartId + tmpTime));
+                    entityMap.put("reit_id", reitId);
+                    entityMap.put("item_value", "60");
+                    entityMap.put("create_by", "sonin20251111");
+                    baseService.insert("f_report_itemv", entityMap);
+                }
+            }
+        }
+    }
+
 }
