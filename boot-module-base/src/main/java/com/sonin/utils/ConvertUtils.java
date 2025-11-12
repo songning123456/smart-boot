@@ -276,13 +276,18 @@ public class ConvertUtils {
      * @author Li Yuanyuan, 2020年5月19日 下午5:18:35
      */
     public static boolean isNumeric(String str) {
-        // Pattern pattern = Pattern.compile("^-?[0-9]+"); //这个也行
-        Pattern pattern = Pattern.compile("^-?\\d+(\\.\\d+)?$");//这个也行
+        // 先判断空字符串（避免后续无效处理）
         if (StringUtils.isEmpty(str)) {
             return false;
         }
-        Matcher isNum = pattern.matcher(str);
-        return isNum.matches();
+        // 正则：匹配整数、小数、科学计数法（严格限制格式）
+        // 说明：
+        // - ^ 和 $ 锚定字符串首尾，确保整体匹配
+        // - \. 转义表示小数点（避免匹配任意字符）
+        // - 科学计数法部分限制为 E/e 后跟正负号（可选）和数字
+        Pattern pattern = Pattern.compile("^[+-]?([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([Ee][+-]?[0-9]+)?$");
+        Matcher matcher = pattern.matcher(str);
+        return matcher.matches();
     }
 
     /**
