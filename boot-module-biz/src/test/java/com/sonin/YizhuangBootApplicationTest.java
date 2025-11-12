@@ -1640,4 +1640,115 @@ public class YizhuangBootApplicationTest {
         }
     }
 
+    @Test
+    public void updateEquipmentTest() throws Exception {
+        String filePath = "E:\\Company\\kingtrol\\037-亦庄\\设备导入\\路南区污水处理厂一二期设备清单发自控工程师v1.xlsx";
+        FileInputStream fileInputStream = new FileInputStream(new File(filePath));
+        XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+        XSSFSheet curSheet = workbook.getSheetAt(0);
+        for (int i = 0; i <= curSheet.getLastRowNum(); i++) {
+            Row curRow = curSheet.getRow(i);
+            String productModel = ConvertUtils.getString(curRow.getCell(3));
+            if (StringUtils.isEmpty(productModel)) {
+                continue;
+            }
+            String cellStr2 = ConvertUtils.getString(curRow.getCell(2));
+            String cellStr6 = ConvertUtils.getString(curRow.getCell(6));
+            String cellStr8 = ConvertUtils.getString(curRow.getCell(8));
+            // 查看此品牌是否存在
+            String equipmentBrandName = ConvertUtils.getString(curRow.getCell(7));
+            String brandId = "";
+            if (StringUtils.isNotEmpty(equipmentBrandName)) {
+                QueryWrapper<?> brandQueryWrapper = new QueryWrapper<>();
+                brandQueryWrapper.like("brand_name", equipmentBrandName);
+                List<Map<String, Object>> brandMapList = baseService.queryForList("select * from equipment_brand", brandQueryWrapper);
+                if (!brandMapList.isEmpty()) {
+                    brandId = ConvertUtils.getString(brandMapList.get(0).get("id"));
+                } else {
+                    Map<String, Object> brandMap = new HashMap<>();
+                    brandId = ConvertUtils.UUID(equipmentBrandName);
+                    brandMap.put("id", brandId.substring(0, 30));
+                    brandMap.put("brand_name", equipmentBrandName);
+                    brandMap.put("brand_company", equipmentBrandName);
+                    brandMap.put("create_by", "sonin20251112");
+                    baseService.insert("equipment_brand", brandMap);
+                }
+            }
+            List<String> remarkList = new ArrayList<String>(){{
+                add("型号" + cellStr2);
+                add(cellStr6);
+                add(cellStr8);
+            }};
+            // 在设备台账中查询此信息
+            QueryWrapper<?> infoQueryWrapper = new QueryWrapper<>();
+            infoQueryWrapper.like("product_model", productModel);
+            List<Map<String, Object>> infoMapList = baseService.queryForList("select * from equipment_info", infoQueryWrapper);
+            for (Map<String, Object> infoMap : infoMapList) {
+                String tmpId = ConvertUtils.getString(infoMap.get("id"));
+                UpdateWrapper<?> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.set("remark", String.join("。", remarkList))
+                        .set("equipment_brand", brandId)
+                        .eq("id", tmpId);
+                baseService.update("equipment_info", updateWrapper);
+            }
+        }
+    }
+
+    @Test
+    public void updateEquipmentTestV2() throws Exception {
+        String filePath = "E:\\Company\\kingtrol\\037-亦庄\\设备导入\\路南区污水处理厂一二期设备清单发自控工程师v1.xlsx";
+        FileInputStream fileInputStream = new FileInputStream(new File(filePath));
+        XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+        XSSFSheet curSheet = workbook.getSheetAt(1);
+        for (int i = 2; i <= curSheet.getLastRowNum(); i++) {
+            Row curRow = curSheet.getRow(i);
+            String productModel = ConvertUtils.getString(curRow.getCell(3));
+            if (StringUtils.isEmpty(productModel)) {
+                continue;
+            }
+            // 编号
+            String cellStr1 = ConvertUtils.getString(curRow.getCell(1));
+            // 材质
+            String cellStr4 = ConvertUtils.getString(curRow.getCell(4));
+            // 备注
+            String cellStr7 = ConvertUtils.getString(curRow.getCell(7));
+            // 查看此品牌是否存在
+            String equipmentBrandName = ConvertUtils.getString(curRow.getCell(8));
+            String brandId = "";
+            if (StringUtils.isNotEmpty(equipmentBrandName)) {
+                QueryWrapper<?> brandQueryWrapper = new QueryWrapper<>();
+                brandQueryWrapper.like("brand_name", equipmentBrandName);
+                List<Map<String, Object>> brandMapList = baseService.queryForList("select * from equipment_brand", brandQueryWrapper);
+                if (!brandMapList.isEmpty()) {
+                    brandId = ConvertUtils.getString(brandMapList.get(0).get("id"));
+                } else {
+                    Map<String, Object> brandMap = new HashMap<>();
+                    brandId = ConvertUtils.UUID(equipmentBrandName);
+                    brandMap.put("id", brandId.substring(0, 30));
+                    brandMap.put("brand_name", equipmentBrandName);
+                    brandMap.put("brand_company", equipmentBrandName);
+                    brandMap.put("create_by", "sonin20251112");
+                    baseService.insert("equipment_brand", brandMap);
+                }
+            }
+            List<String> remarkList = new ArrayList<String>(){{
+                add("编号" + cellStr1);
+                add("材质" + cellStr4);
+                add(cellStr7);
+            }};
+            // 在设备台账中查询此信息
+            QueryWrapper<?> infoQueryWrapper = new QueryWrapper<>();
+            infoQueryWrapper.like("product_model", productModel);
+            List<Map<String, Object>> infoMapList = baseService.queryForList("select * from equipment_info", infoQueryWrapper);
+            for (Map<String, Object> infoMap : infoMapList) {
+                String tmpId = ConvertUtils.getString(infoMap.get("id"));
+                UpdateWrapper<?> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.set("remark", String.join("。", remarkList))
+                        .set("equipment_brand", brandId)
+                        .eq("id", tmpId);
+                baseService.update("equipment_info", updateWrapper);
+            }
+        }
+    }
+
 }
