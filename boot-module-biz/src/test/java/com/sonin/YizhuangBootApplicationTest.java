@@ -73,10 +73,10 @@ public class YizhuangBootApplicationTest {
 //             add("MF清洗报表");
 //             add("RO清洗报表");
 //            add("能耗日数据");
-//            add("能耗日报表(标厂)");
+            add("能耗日报表(标厂)");
 //            add("水质水量日数据(标厂)");
 //            add("生产药剂填报报表");
-            add("水质水量日数据(污水厂)");
+//            add("水质水量日数据(污水厂)");
         }};
         Map<String, List<String>> reportName2DataItemListMap = new LinkedHashMap<>();
         reportName2DataItemListMap.put("南区污水厂物料能耗日报", new ArrayList<String>() {{
@@ -586,18 +586,19 @@ public class YizhuangBootApplicationTest {
             add("班次");
         }});
         reportName2DataItemListMap.put("能耗日报表(标厂)", new ArrayList<String>() {{
-            add("次氯酸钠");
-            add("用电量");
-            add("非氧化杀菌剂");
-            add("阻垢剂");
-            add("液碱");
-            add("盐酸");
-            add("亚硫酸氢钠");
-            add("氢氧化钠");
-            add("柠檬酸");
-            add("十二烷基苯磺酸钠");
-            add("EDTA");
-            add("草酸");
+//            add("次氯酸钠");
+//            add("用电量");
+//            add("非氧化杀菌剂");
+//            add("阻垢剂");
+//            add("液碱");
+//            add("盐酸");
+//            add("亚硫酸氢钠");
+//            add("氢氧化钠");
+//            add("柠檬酸");
+//            add("十二烷基苯磺酸钠");
+//            add("EDTA");
+//            add("草酸");
+            add("生产用电量");
         }});
         reportName2DataItemListMap.put("水质水量日数据(标厂)", new ArrayList<String>() {{
 //            add("进水余氯");
@@ -1674,7 +1675,7 @@ public class YizhuangBootApplicationTest {
                     baseService.insert("equipment_brand", brandMap);
                 }
             }
-            List<String> remarkList = new ArrayList<String>(){{
+            List<String> remarkList = new ArrayList<String>() {{
                 add("型号" + cellStr2);
                 add(cellStr6);
                 add(cellStr8);
@@ -1731,7 +1732,7 @@ public class YizhuangBootApplicationTest {
                     baseService.insert("equipment_brand", brandMap);
                 }
             }
-            List<String> remarkList = new ArrayList<String>(){{
+            List<String> remarkList = new ArrayList<String>() {{
                 add("编号" + cellStr1);
                 add("材质" + cellStr4);
                 add(cellStr7);
