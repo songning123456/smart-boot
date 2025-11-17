@@ -443,7 +443,7 @@ public class ZhongyeBootApplicationTest {
         itemvQueryWrapper.in("depart_id", departIdList)
                 .inSql("reit_id", "select id from f_report_item where report_id = '3a243d5715b9e1a3753c180872ca0df9' and item_code in (" + inItemCodeStr + ")");
         List<Map<String, Object>> itemvMapList = baseService.queryForList("select * from f_report_itemv", itemvQueryWrapper);
-        for (Map<String, Object> item: itemvMapList) {
+        for (Map<String, Object> item : itemvMapList) {
             String id = ConvertUtils.getString(item.get("id"));
             String itemValue = ConvertUtils.getString(item.get("item_value"));
             String newItemValue = ConvertUtils.getString(ConvertUtils.getDouble(itemValue, 0D) * 1000);
@@ -452,6 +452,45 @@ public class ZhongyeBootApplicationTest {
                     .set("update_by", updateBy)
                     .eq("id", id);
             baseService.update("f_report_itemv", updateWrapper);
+        }
+    }
+
+    /**
+     * 恩菲数据还原 污泥量 数据
+     */
+    @Test
+    public void updateEnfeiData2Test() {
+        // 查询所有恩菲 污泥量 数据
+        QueryWrapper<?> enfeiQueryWrapper = new QueryWrapper<>();
+        enfeiQueryWrapper.eq("item_type", "nhrb")
+                .eq("item_code", "WNL");
+        List<Map<String, Object>> enfeiMapList = DataSourceTemplate.execute("nf-db", () -> baseService.queryForList("select * from day_report_data", enfeiQueryWrapper));
+        Map<String, String> departId0Time2ValueMap = new HashMap<>();
+        Set<String> departIdSet = new HashSet<>();
+        for (Map<String, Object> item : enfeiMapList) {
+            String tmpDepartId = ConvertUtils.getString(item.get("depart_id"));
+            String tmpTime = ConvertUtils.getString(item.get("time"));
+            String tmpItemValue = ConvertUtils.getString(item.get("item_value"));
+            departId0Time2ValueMap.put(tmpDepartId + "=>" + tmpTime, tmpItemValue);
+            departIdSet.add(tmpDepartId);
+        }
+        String updateBy = "sonin20251117";
+        QueryWrapper<?> itemvQueryWrapper = new QueryWrapper<>();
+        itemvQueryWrapper.in("depart_id", departIdSet)
+                .eq("reit_id", "1818218337424027649");
+        List<Map<String, Object>> itemvMapList = baseService.queryForList("select * from f_report_itemv", itemvQueryWrapper);
+        for (Map<String, Object> item : itemvMapList) {
+            String tmpId = ConvertUtils.getString(item.get("id"));
+            String tmpDepartId = ConvertUtils.getString(item.get("depart_id"));
+            String tmpDataTime = ConvertUtils.getString(item.get("data_time"));
+            String key = tmpDepartId + "=>" + tmpDataTime;
+            if (departId0Time2ValueMap.containsKey(key)) {
+                UpdateWrapper<?> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.set("item_value", departId0Time2ValueMap.get(key))
+                        .set("update_by", updateBy)
+                        .eq("id", tmpId);
+                baseService.update("f_report_itemv", updateWrapper);
+            }
         }
     }
 
@@ -467,7 +506,7 @@ public class ZhongyeBootApplicationTest {
         Set<String> efTime0DepartIdSet = efMapList.stream().map(item -> item.get("time") + "=>" + item.get("depart_id")).collect(Collectors.toSet());
         // 遍历插入
         String reitId = "1843834884271906818";
-        for (String key: efTime0DepartIdSet) {
+        for (String key : efTime0DepartIdSet) {
             String[] arr = key.split("=>");
             String tmpTime = arr[0];
             String tmpDepartId = arr[1];
