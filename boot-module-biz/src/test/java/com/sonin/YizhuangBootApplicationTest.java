@@ -10,6 +10,7 @@ import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
 import com.sonin.utils.DateUtils;
 import com.sonin.utils.ExpressionUtils;
+import com.sonin.utils.ParamUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1749,6 +1750,95 @@ public class YizhuangBootApplicationTest {
                         .eq("id", tmpId);
                 baseService.update("equipment_info", updateWrapper);
             }
+        }
+    }
+
+    @Test
+    public void reportItemvImportTest() throws Exception {
+        String filePath = "E:\\Company\\kingtrol\\037-亦庄\\报表数据补录\\标厂基础数据9-10月v1.xlsx";
+        FileInputStream fileInputStream = new FileInputStream(new File(filePath));
+        XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+        XSSFSheet curSheet = workbook.getSheetAt(1);
+        // 从第1行开始，过滤标题行
+        for (int i = 1; i <= curSheet.getLastRowNum(); i++) {
+            Row curRow = curSheet.getRow(i);
+            if (StringUtils.isEmpty(ConvertUtils.getString(curRow.getCell(0)))) {
+                continue;
+            }
+            // 时间,excel日期写错，需要+5年
+            String dataTime = DateUtils.date2Str(DateUtils.someDate(curRow.getCell(0).getDateCellValue(), Calendar.YEAR, 5), BusinessConstant.DATE_FORMAT.substring(0, 10));
+            // G 供水量
+            String cell6 = ConvertUtils.getString(curRow.getCell(6));
+            saveOrUpdate("1948220736815198210", dataTime, cell6);
+            // J RO3
+            String cell9 = ConvertUtils.getString(curRow.getCell(9));
+            saveOrUpdate("1948220736785838081", dataTime, cell9);
+            // K RO4
+            String cell10 = ConvertUtils.getString(curRow.getCell(10));
+            saveOrUpdate("1948220736777449474", dataTime, cell10);
+            // S 次氯酸钠
+            String cell18 = ConvertUtils.getString(curRow.getCell(18));
+            saveOrUpdate("1948220736685174785", dataTime, cell18);
+            // T 非氧化杀菌剂
+            String cell19 = ConvertUtils.getString(curRow.getCell(19));
+            saveOrUpdate("1948220736676786177", dataTime, cell19);
+            // U 阻垢剂
+            String cell20 = ConvertUtils.getString(curRow.getCell(20));
+            saveOrUpdate("1948220736668397570", dataTime, cell20);
+            // V 还原剂
+            String cell21 = ConvertUtils.getString(curRow.getCell(21));
+            saveOrUpdate("1948220736647426049", dataTime, cell21);
+            // Y 液碱
+            String cell24 = ConvertUtils.getString(curRow.getCell(24));
+            saveOrUpdate("1948220736609677314", dataTime, cell24);
+            // AA 柠檬酸
+            String cell26 = ConvertUtils.getString(curRow.getCell(26));
+            saveOrUpdate("1948220736588705793", dataTime, cell26);
+            // AB EDTA
+            String cell27 = ConvertUtils.getString(curRow.getCell(27));
+            saveOrUpdate("1948220736576122882", dataTime, cell27);
+            // AD 浸泡
+            String cell29 = ConvertUtils.getString(curRow.getCell(29));
+            saveOrUpdate("1948220736555151361", dataTime, cell29);
+        }
+    }
+
+    private void saveOrUpdate(String reitId, String dataTime, String value) {
+        // 如果为空则过滤
+        if (StringUtils.isEmpty(value)) {
+            return;
+        }
+        if (value.contains("+")) {
+            List<String> tmpValueList = Arrays.asList(value.split("\\+"));
+            value = ConvertUtils.nPoint(tmpValueList.stream().mapToDouble(item -> ConvertUtils.getDouble(item, 0D)).sum(), 2);
+        }
+        String updateBy = "smart-empty-20251118";
+        Date now = new Date();
+        // 标厂数据
+        String departId = "1945296425003417600";
+        // 更新数据
+        UpdateWrapper<?> updateWrapper0 = new UpdateWrapper<>();
+        updateWrapper0.set("item_value", value)
+                .set("update_by", updateBy)
+                .set("update_time", now)
+                .eq("reit_id", reitId)
+                .eq("data_time", dataTime)
+                .eq("depart_id", departId);
+        int updateCount = baseService.update("f_report_itemv", updateWrapper0);
+        // 如果不存在则插入
+        if (updateCount == 0) {
+            Map<String, Object> tmpMap = new HashMap<>();
+            tmpMap.put("id", null);
+            tmpMap.put("reit_id", reitId);
+            tmpMap.put("data_id", ConvertUtils.UUID(dataTime));
+            tmpMap.put("item_value", value);
+            tmpMap.put("data_time", dataTime);
+            tmpMap.put("depart_id", departId);
+            tmpMap.put("create_by", updateBy);
+            tmpMap.put("create_time", now);
+            tmpMap.put("update_by", updateBy);
+            tmpMap.put("update_time", now);
+            baseService.insert("f_report_itemv", tmpMap);
         }
     }
 
