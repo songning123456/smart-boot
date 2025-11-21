@@ -10,6 +10,7 @@ import com.sonin.modules.mpp.service.IMPPService;
 import com.sonin.utils.ConvertUtils;
 import com.sonin.utils.DateUtils;
 import com.sonin.utils.ExpressionUtils;
+import com.sonin.utils.ParamUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -501,33 +502,58 @@ public class ZhongyeBootApplicationTest {
     public void addWnhslTest() {
         // 查询全部的时间和数据
         QueryWrapper<?> efQueryWrapper = new QueryWrapper<>();
-        efQueryWrapper.eq("item_type", "nhrb");
+        efQueryWrapper.eq("item_code", "wnhslb60d");
         List<Map<String, Object>> efMapList = DataSourceTemplate.execute("nf-db", () -> baseService.queryForList("select * from day_report_data", efQueryWrapper));
-        Set<String> efTime0DepartIdSet = efMapList.stream().map(item -> item.get("time") + "=>" + item.get("depart_id")).collect(Collectors.toSet());
+        Map<String, String> efTime0DepartId2ValueMap = new HashMap<>();
+        for (Map<String, Object> item: efMapList) {
+            efTime0DepartId2ValueMap.put(item.get("time") + "=>" + item.get("depart_id"), ConvertUtils.getString(item.get("item_value")));
+        }
         // 遍历插入
         String reitId = "1843834884271906818";
-        for (String key : efTime0DepartIdSet) {
+        String syncUser = "sonin20251118v1";
+        Date now = new Date();
+        for (String key : efTime0DepartId2ValueMap.keySet()) {
             String[] arr = key.split("=>");
             String tmpTime = arr[0];
             String tmpDepartId = arr[1];
-            // 查询当天是否有录入过数据
-            QueryWrapper<?> existQueryWrapper = new QueryWrapper<>();
-            existQueryWrapper.eq("depart_id", tmpDepartId)
-                    .eq("data_time", tmpTime);
-            List<Map<String, Object>> existMapList = baseService.queryForList("select * from f_report_itemv", existQueryWrapper);
-            if (!existMapList.isEmpty()) {
-                List<String> existReitIdList = existMapList.stream().map(item -> ConvertUtils.getString(item.get("reit_id"))).collect(Collectors.toList());
-                // 不包含污泥含水率，则插入
-                if (!existReitIdList.contains(reitId)) {
-                    Map<String, Object> entityMap = new HashMap<>(existMapList.get(0));
-                    entityMap.put("id", ConvertUtils.UUID(reitId + tmpDepartId + tmpTime));
-                    entityMap.put("reit_id", reitId);
-                    entityMap.put("item_value", "60");
-                    entityMap.put("create_by", "sonin20251111");
-                    baseService.insert("f_report_itemv", entityMap);
-                }
+            // 更新数据
+            UpdateWrapper<?> updateWrapper0 = new UpdateWrapper<>();
+            updateWrapper0.set("item_value", efTime0DepartId2ValueMap.get(key))
+                    .set("update_by", syncUser)
+                    .set("update_time", now)
+                    .eq("reit_id", reitId)
+                    .eq("data_time", tmpTime)
+                    .eq("depart_id", tmpDepartId);
+            int updateCount = baseService.update("f_report_itemv", updateWrapper0);
+            // 如果不存在则插入
+            if (updateCount == 0) {
+                Map<String, Object> tmpMap = new HashMap<>();
+                tmpMap.put("id", null);
+                tmpMap.put("reit_id", reitId);
+                tmpMap.put("data_id", ConvertUtils.UUID(tmpTime));
+                tmpMap.put("item_value", efTime0DepartId2ValueMap.get(key));
+                tmpMap.put("data_time", tmpTime);
+                tmpMap.put("depart_id", tmpDepartId);
+                tmpMap.put("create_by", syncUser);
+                tmpMap.put("create_time", now);
+                tmpMap.put("update_by", syncUser);
+                tmpMap.put("update_time", now);
+                baseService.insert("f_report_itemv", tmpMap);
             }
         }
+    }
+
+    /**
+     * 删除所有恩菲下面的污泥含水率
+     */
+    @Test
+    public void deleteWnhslTest() {
+        // 恩菲
+        Set<String> childDepartIdSet = ParamUtils.getChildDepartIdFunc("1818215543140909056");
+        QueryWrapper<?> queryWrapper0 = new QueryWrapper<>();
+        queryWrapper0.in("depart_id", childDepartIdSet)
+                .eq("reit_id", "1843834884271906818");
+        baseService.delete("f_report_itemv", queryWrapper0);
     }
 
 }

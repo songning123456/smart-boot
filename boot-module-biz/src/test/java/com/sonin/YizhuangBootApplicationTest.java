@@ -830,11 +830,11 @@ public class YizhuangBootApplicationTest {
         List<String> sheetNameList = new ArrayList<String>() {{
 //            add("能耗日报表");
 //            add("中控运行记录");
-//            add("汇总报表");
+            add("汇总报表");
 //            add("成本控制表");
 //            add("能耗日报表(污水厂)");
 //            add("能耗日报表(标厂)");
-            add("水务局报表");
+//            add("水务局报表");
         }};
         for (String curSheetName : sheetNameList) {
             XSSFSheet curSheet = workbook.getSheet(curSheetName);
