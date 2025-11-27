@@ -71,3 +71,10 @@ biz:
   scheduled:
     # 是否开启定时任务配置
     enable: false
+
+tuya:
+  api:
+    access-id: pv478uemp8e5a4mxk89y
+    access-key: 7c643010d97b40f297a065fb743ee926
+    base-url: https://openapi.tuyacn.com  # 国内服务器地址
+    # base-url: https://openapi.tuyaus.com # 海外服务器地址
