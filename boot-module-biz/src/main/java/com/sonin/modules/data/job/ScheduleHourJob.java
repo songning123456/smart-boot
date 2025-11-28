@@ -34,7 +34,15 @@ public class ScheduleHourJob {
         Map<String, Object> paramsMap = new HashMap<>(2);
         paramsMap.put("startTime", timeArr[0]);
         paramsMap.put("endTime", timeArr[1]);
-        dataBusinessService.handleAggDataFunc(paramsMap);
+        String jobName000 = "PG小时数据转换";
+        try {
+            log.info(">>> 执行小时任务 {} 开始<<<", jobName000);
+            dataBusinessService.handleAggDataFunc(paramsMap);
+            log.info(">>> 执行小时任务 {} 结束<<<", jobName000);
+        } catch (Exception e) {
+            log.info(">>> 执行小时任务 {} 异常<<<", jobName000);
+            e.printStackTrace();
+        }
     }
 
     /**
