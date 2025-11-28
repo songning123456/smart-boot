@@ -53,7 +53,13 @@ spring:
           url: jdbc:mysql://192.168.20.24:3307/zhongye?characterEncoding=UTF-8&useUnicode=true&useSSL=false
           username: root
           password: jkauto@123
-          driver-class-name: com.mysql.jdbc.Driver
+          driver-class-name: com.mysql.cj.jdbc.Driver
+        # 多数据源配置
+        pg-db:
+          url: jdbc:postgresql://112.123.135.140:10086/postgres?useUnicode=true&characterEncoding=UTF8
+          username: postgres
+          password: jkauto@123
+          driver-class-name: org.postgresql.Driver
 
 mybatis-plus:
   mapper-locations: classpath*:com/sonin/modules/**/xml/*Mapper.xml
@@ -61,3 +67,15 @@ mybatis-plus:
   configuration:
     call-setters-on-nulls: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+biz:
+  scheduled:
+    # 是否启用定时任务
+    enable: false
+    # 每天凌晨一点执行
+    task01: 0 0 1 * * ?
+    task02: 0 0 2 * * ?
+    # 每隔xx分钟执行一次
+    task1min: 0 */1 * * * *
+    # 每隔10分钟执行一次
+    task60min: 0 */60 * * * *
