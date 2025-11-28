@@ -154,13 +154,13 @@ public class DataBusinessServiceImpl implements IDataBusinessService {
         // 获取这些nm对应的count表
         if (!realtimeMapList.isEmpty()) {
             // 待插入对象集合
-            Map<String, List<Map<String, Object>>> tableName2AggListMap = new HashMap<>();
+            Map<String, List<Map<String, Object>>> tableNamePrefix2AggListMap = new HashMap<>();
             Map<String, String> nm2TypeDictMap = realtimeMapList.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("nm")), item -> ConvertUtils.getString(item.get("type")), (v1, v2) -> v1));
             Map<String, String> nm2FactoryNameDictMap = realtimeMapList.stream().collect(Collectors.toMap(item -> ConvertUtils.getString(item.get("nm")), item -> ConvertUtils.getString(item.get("factoryname")), (v1, v2) -> v1));
             // 查询点位对应的count表
             List<String> metricInfoColumnList = new ArrayList<String>() {{
                 add("sys_monitor_metric_info.id as nm");
-                add("sys_factory_device.device_id as tableName");
+                add("ifnull(sys_factory_device.device_id, 'default') as tableName");
             }};
             List<Map<String, Object>> metricInfoMapList = mppService.queryForList("select " + String.join(",", metricInfoColumnList) + " from sys_monitor_metric_info left join sys_factory_device on sys_monitor_metric_info.depart_id = sys_factory_device.depart_id", new QueryWrapper<>().in("sys_monitor_metric_info.id", nm2TypeDictMap.keySet()));
             if (!metricInfoMapList.isEmpty()) {
@@ -210,17 +210,17 @@ public class DataBusinessServiceImpl implements IDataBusinessService {
                         aggMap.put("devicename", "API");
                         aggMap.put("type", tmpType);
                         aggMap.put("gatewaycode", ConvertUtils.UUID(tmpNm + tmpTs));
-                        String tmpTableName = nm2TableNameMap.get(tmpNm);
-                        tableName2AggListMap.putIfAbsent(tmpTableName, new ArrayList<>());
-                        tableName2AggListMap.get(tmpTableName).add(aggMap);
+                        String tmpTableNamePrefix = nm2TableNameMap.get(tmpNm);
+                        tableNamePrefix2AggListMap.putIfAbsent(tmpTableNamePrefix, new ArrayList<>());
+                        tableNamePrefix2AggListMap.get(tmpTableNamePrefix).add(aggMap);
                     }
                 }
             }
-            for (String tmpTablePrefix : tableName2AggListMap.keySet()) {
+            for (String tmpTablePrefix : tableNamePrefix2AggListMap.keySet()) {
                 if (StringUtils.isEmpty(tmpTablePrefix)) {
                     continue;
                 }
-                List<List<Map<String, Object>>> partitionList = ListUtils.partition(tableName2AggListMap.get(tmpTablePrefix), 100);
+                List<List<Map<String, Object>>> partitionList = ListUtils.partition(tableNamePrefix2AggListMap.get(tmpTablePrefix), 100);
                 String tmpTable = tmpTablePrefix.toLowerCase() + "_count";
                 DataSourceTemplate.execute("pg-db", () -> {
                     transactionTemplate.execute(transactionStatus -> {
