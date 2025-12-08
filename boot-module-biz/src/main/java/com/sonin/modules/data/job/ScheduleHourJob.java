@@ -28,7 +28,7 @@ public class ScheduleHourJob {
     /**
      * 每小时同步数据
      */
-    @Scheduled(cron = "${biz.scheduled.task60min}")
+    @Scheduled(cron = "${biz.scheduled.task1hour10min}")
     public void hourJob() {
         String[] timeArr = this.timeRangeByDateFunc(new Date());
         Map<String, Object> paramsMap = new HashMap<>(2);
