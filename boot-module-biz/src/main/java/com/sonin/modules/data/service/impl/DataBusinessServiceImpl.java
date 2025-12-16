@@ -175,6 +175,7 @@ public class DataBusinessServiceImpl implements IDataBusinessService {
                 pgQueryWrapper.ge("ts", tmpStartTs)
                         .le("ts", tmpEndTs)
                         .in("nm", nm2TableNameMap.keySet())
+                        .apply("v is not null and v != ''")
                         .groupBy("nm", tmpGroupByTime);
                 List<String> pgColumnList = new ArrayList<String>() {{
                     add("nm");
